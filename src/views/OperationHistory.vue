@@ -86,7 +86,7 @@ export default {
   },
   methods: {
     getOperations(pageNum) {
-      this.$httpUtil.get('/api/v1/operation/list', {
+      this.$httpUtil.get('/linker-server/api/v1/operation/list', {
         search: this.search,
         pageNum: pageNum
       }).then(res => {

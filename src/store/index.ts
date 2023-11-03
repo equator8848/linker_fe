@@ -14,7 +14,7 @@ function getDefaultBaseUrl() {
         return cachedBaseUrl;
     }
     return process.env.NODE_ENV === 'production' ?
-        'https://prod.domain.com/linker' : 'http://127.0.0.1:8888/linker'
+        '' : ''
 }
 
 const cachedUserInfo = getKeyFromStorage('user_info');
@@ -27,7 +27,7 @@ export default createStore({
     state: {
         userInfo: cachedUserInfo ? JSON.parse(cachedUserInfo) : null,
         token: cachedToken ? cachedToken : null,
-        baseUrl: cachedBaseUrl ? cachedBaseUrl : null,
+        baseUrl: cachedBaseUrl ? cachedBaseUrl : '',
         baseDomain: cachedBaseDomain ? cachedBaseDomain : null,
         expiredAt: cachedExpiredAt ? cachedExpiredAt : null,
         refreshingInterval: null,

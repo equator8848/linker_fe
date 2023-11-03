@@ -57,7 +57,7 @@ export default {
       this.getImageList(pageNum);
     },
     getImageList(pageNum) {
-      this.$httpUtil.get('/api/v1/image/list', {
+      this.$httpUtil.get('/linker-server/linker-server/api/v1/image/list', {
         pageNum: pageNum,
       }).then(res => {
         if (res) {

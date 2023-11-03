@@ -35,9 +35,9 @@
         </div>
         <el-checkbox v-model="userLoginForm.rememberMe">记住我的登录信息</el-checkbox>
         <el-button type="primary" @click="login" style="width: 100%">登录</el-button>
-        <div id="user-agreement">登录则认为您已同意<a
-            href="https://aomoow1hlm.feishu.cn/wiki/wikcnFiJQHUDG9LBM9ms7R41ebg?from=from_copylink" target="_blank">《用户使用协议》</a>
-        </div>
+<!--        <div id="user-agreement">登录则认为您已同意<a-->
+        <!--            href="#" target="_blank">《用户使用协议》</a>-->
+        <!--        </div>-->
       </el-form>
     </div>
   </div>
@@ -86,7 +86,7 @@ export default {
     this.userInfo = userInfo;
     console.log("check login, userInfo: " + userInfo)
     if (userInfo) {
-      this.$httpUtil.get('/api/v1/user/check-token', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/user/check-token', {}).then(res => {
         if (res) {
           this.isLogin = true;
         }
@@ -119,7 +119,7 @@ export default {
       this.store.commit("clearLoginInfo");
     },
     getCaptcha() {
-      this.$httpUtil.get('/api/v1/user/captcha', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/user/captcha', {}).then(res => {
         if (res) {
           let captcha = res.data;
           this.userLoginForm.captchaUrl = captcha.image;
@@ -131,7 +131,7 @@ export default {
       })
     },
     login() {
-      this.$httpUtil.jsonPost('/api/v1/user/login', {
+      this.$httpUtil.jsonPost('/linker-server/api/v1/user/login', {
         userIdentificationType: this.userLoginForm.userIdentificationType,
         userIdentification: this.userLoginForm.userIdentificationType === "email" ? this.userLoginForm.userIdentification : "86#" + this.userLoginForm.userIdentification,
         userPassword: this.userLoginForm.userPassword,

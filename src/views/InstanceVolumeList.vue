@@ -141,7 +141,7 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       });
-      this.$httpUtil.urlEncoderPut('/api/v1/volume/delete', {
+      this.$httpUtil.urlEncoderPut('/linker-server/api/v1/volume/delete', {
         volumeId: volume.id
       }).then(res => {
         if (res) {
@@ -160,7 +160,7 @@ export default {
       });
     },
     getVolumeList(pageNum) {
-      this.$httpUtil.get('/api/v1/volume/list', {
+      this.$httpUtil.get('/linker-server/api/v1/volume/list', {
         pageNum: pageNum
       }).then(res => {
         if (res) {

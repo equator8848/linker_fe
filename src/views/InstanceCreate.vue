@@ -170,7 +170,7 @@ export default {
             background: 'rgba(0, 0, 0, 0.7)'
           });
           const createInstanceForm = this.createInstanceForm;
-          this.$httpUtil.jsonPost('/api/v1/instance/create', {
+          this.$httpUtil.jsonPost('/linker-server/api/v1/instance/create', {
             imageId: createInstanceForm.selectImageId,
             specificationId: createInstanceForm.selectSpecificationId,
             nodeId: createInstanceForm.selectNodeId,
@@ -288,7 +288,7 @@ export default {
       return clusterNode.allowPlannings.indexOf(selectSpecification.planing) === -1;
     },
     getImageList() {
-      this.$httpUtil.get('/api/v1/image/list', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/image/list', {}).then(res => {
         if (res) {
           this.images = res.data.data;
           this.handleImageChange(this.createInstanceForm.selectImageId);
@@ -298,7 +298,7 @@ export default {
       });
     },
     getSpecification() {
-      this.$httpUtil.get('/api/v1/specification/list', {
+      this.$httpUtil.get('/linker-server/api/v1/specification/list', {
         onlyAvailable: true
       }).then(res => {
         if (res) {
@@ -309,7 +309,7 @@ export default {
       });
     },
     getCluster() {
-      this.$httpUtil.get('/api/v1/cluster/resource-data', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/cluster/resource-data', {}).then(res => {
         if (res) {
           this.clusters = res.data.nodeResources.filter(x => x.maintenanceMode !== true && x.memoryUsage && x.cpuUsage);
         }

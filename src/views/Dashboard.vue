@@ -288,7 +288,7 @@ export default {
       this.initClusterResourceDashboardData(this.clusterResourceNodeId, this.clusterResourceQueryType, this.clusterResourceQueryRangeDay);
     },
     getClusterResourceInfo() {
-      this.$httpUtil.get('/api/v1/cluster/resource-data', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/cluster/resource-data', {}).then(res => {
         if (res) {
           this.clusterResourceTableData = res.data.nodeResources;
           this.clusterResourceTableData.forEach(node => {
@@ -312,7 +312,7 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       });
-      this.$httpUtil.get('/api/v1/instance/my-instances', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/instance/my-instances', {}).then(res => {
         if (res) {
           this.instanceResourceTableData = res.data;
         }
@@ -323,7 +323,7 @@ export default {
       });
     },
     getSpecificationList() {
-      this.$httpUtil.get('/api/v1/specification/list', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/specification/list', {}).then(res => {
         if (res) {
           this.specificationList = res.data;
         }
@@ -332,7 +332,7 @@ export default {
       })
     },
     getMessageList() {
-      this.$httpUtil.get('/api/v1/message/message-inbox-list', {
+      this.$httpUtil.get('/linker-server/api/v1/message/message-inbox-list', {
         pageSize: this.messagePageSize,
         onlyUnRead: this.onlyUnReadMessage
       }).then(res => {
@@ -347,7 +347,7 @@ export default {
       this.getMessageList();
     },
     displayMsgDetails(item) {
-      this.$httpUtil.get('/api/v1/message/message-inbox-details', {
+      this.$httpUtil.get('/linker-server/api/v1/message/message-inbox-details', {
         messageId: item.id
       }).then(res => {
         if (res) {
@@ -396,7 +396,7 @@ export default {
     },
     initClusterResourceDashboardData(nodeId, queryType, queryRangeDay) {
       this.clusterResourceDashboardLoading = true;
-      this.$httpUtil.get('/api/v1/cluster/resource-serial-data', {
+      this.$httpUtil.get('/linker-server/api/v1/cluster/resource-serial-data', {
         nodeId,
         queryType,
         queryRangeDay

@@ -794,7 +794,7 @@ export default {
       this.execCommandData.execCommandStdError = '';
     },
     handleClickExecCommandButton(instance) {
-      this.$httpUtil.get('/api/v1/command-template/list', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/command-template/list', {}).then(res => {
         if (res) {
           this.instanceCommandExecOptions = res.data;
         }
@@ -833,7 +833,7 @@ export default {
         return;
       }
       this.execCommandData.loading = true;
-      this.$httpUtil.jsonPost('/api/v1/instance/exec-command', {
+      this.$httpUtil.jsonPost('/linker-server/api/v1/instance/exec-command', {
         instanceId: this.execCommandData.instanceId,
         commandTemplateId: this.execCommandData.commandTemplateId,
         command: this.execCommandData.command
@@ -916,7 +916,7 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       });
-      this.$httpUtil.jsonPut('/api/v1/instance/delete', {
+      this.$httpUtil.jsonPut('/linker-server/api/v1/instance/delete', {
         instanceId: deleteInstanceData.instanceId,
         deleteVolume: this.deleteInstanceData.deleteVolume
       }).then(res => {
@@ -939,7 +939,7 @@ export default {
     handleClickPasswordButton(instance) {
       this.instanceAccountInfo.instanceId = instance.id;
       this.passwordDialogVisible = true;
-      this.$httpUtil.get('/api/v1/instance/get-password', {
+      this.$httpUtil.get('/linker-server/api/v1/instance/get-password', {
         instanceId: instance.id,
       }).then(res => {
         if (res) {
@@ -975,7 +975,7 @@ export default {
         });
         return;
       }
-      this.$httpUtil.jsonPut('/api/v1/instance/update-password', {
+      this.$httpUtil.jsonPut('/linker-server/api/v1/instance/update-password', {
         instanceId: this.instancePassword.instanceId,
         password: newPwd
       }).then(res => {
@@ -996,7 +996,7 @@ export default {
       this.instancePassword.newPasswordConfirm = null;
     },
     getCluster(currentNodeId) {
-      this.$httpUtil.get('/api/v1/cluster/resource-data', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/cluster/resource-data', {}).then(res => {
         if (res.status === 0) {
           this.clusters = res.data.nodeResources.filter(c => {
             return c.nodeId !== currentNodeId && c.maintenanceMode !== true && c.memoryUsage && c.cpuUsage
@@ -1023,7 +1023,7 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       });
-      this.$httpUtil.jsonPut('/api/v1/instance/migrate', {
+      this.$httpUtil.jsonPut('/linker-server/api/v1/instance/migrate', {
         instanceId: this.instanceMigrateInfo.instanceId,
         nodeId: this.instanceMigrateInfo.nodeId
       }).then(res => {
@@ -1053,7 +1053,7 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
       }).then(({value}) => {
-        this.$httpUtil.jsonPut('/api/v1/instance/update-remark', {
+        this.$httpUtil.jsonPut('/linker-server/api/v1/instance/update-remark', {
           instanceId: instance.id,
           userRemark: value
         }).then(res => {
@@ -1075,7 +1075,7 @@ export default {
       });
     },
     handleClickShowOperationHistoryButton(instance) {
-      this.$httpUtil.get('/api/v1/operation/get-by-instance-id', {
+      this.$httpUtil.get('/linker-server/api/v1/operation/get-by-instance-id', {
         instanceId: instance.id
       }).then(res => {
         if (res) {
@@ -1096,7 +1096,7 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       });
-      this.$httpUtil.jsonPost('/api/v1/instance/update-state', {
+      this.$httpUtil.jsonPost('/linker-server/api/v1/instance/update-state', {
         instanceId: instance.id,
         state: state,
         force: force
@@ -1127,7 +1127,7 @@ export default {
           background: 'rgba(0, 0, 0, 0.7)'
         });
       }
-      this.$httpUtil.get('/api/v1/instance/list', {
+      this.$httpUtil.get('/linker-server/api/v1/instance/list', {
         search: this.search,
         pageNum: pageNum,
         pageSize: 32
@@ -1239,7 +1239,7 @@ export default {
     },
     initInstanceResourceDashboardData(instanceName, queryType, queryRangeDay) {
       this.instanceResourceDashboardLoading = true;
-      this.$httpUtil.get('/api/v1/instance/resource-data', {
+      this.$httpUtil.get('/linker-server/api/v1/instance/resource-data', {
         instanceName,
         queryType,
         queryRangeDay

@@ -60,7 +60,7 @@ export default {
   },
   methods: {
     wxNoticeTest() {
-      this.$httpUtil.get('/api/v1/wx/send-template-message-test', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/wx/send-template-message-test', {}).then(res => {
         this.$notify.success({
           title: '消息发送成功',
           message: '消息发送成功，请到微信查看'
@@ -70,7 +70,7 @@ export default {
       });
     },
     getEmail() {
-      this.$httpUtil.get('/api/v1/user-info/get-notice-config', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/user-info/get-notice-config', {}).then(res => {
         if (res) {
           let bindEmail = res.data.email;
           this.updateEmailForm.email = bindEmail ? bindEmail : "";
@@ -81,7 +81,7 @@ export default {
       });
     },
     updateEmail() {
-      this.$httpUtil.jsonPut('/api/v1/user-info/update-bind-email', {
+      this.$httpUtil.jsonPut('/linker-server/api/v1/user-info/update-bind-email', {
         email: this.updateEmailForm.email,
         emailNoticeSwitch: this.updateEmailForm.emailNoticeSwitch
       }).then(res => {

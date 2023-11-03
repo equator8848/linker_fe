@@ -126,7 +126,7 @@ export default defineComponent({
           this.backUpDomain3Loading = true;
           break;
       }
-      this.$httpUtil.getWithoutBaseUrl(`https://dayu.xiyoucloud.net/${domain}/dayu/api/v1/anonymous/ping`, {}).then(res => {
+      this.$httpUtil.getWithoutBaseUrl(`https://dayu.xiyoucloud.net/${domain}/dayu/linker-server/api/v1/anonymous/ping`, {}).then(res => {
         if (res) {
           switch (domain) {
             case serverDomain.PRIMARY:

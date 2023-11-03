@@ -19,7 +19,7 @@ export default {
       storage.setItem('expired_at', JSON.stringify(loginData.tokenExpiredAt));
     },
     getUserInfoByToken(token) {
-      this.$httpUtil.get('/api/v1/user/user-info-by-token', {
+      this.$httpUtil.get('/linker-server/api/v1/user/user-info-by-token', {
         token
       }).then(res => {
         if (res) {

@@ -124,7 +124,7 @@ export default {
       }
     },
     getUrgencyNotice() {
-      this.$httpUtil.get('/api/v1/base/notice', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/base/notice', {}).then(res => {
         if (res) {
           this.urgencyNotice = res.data.urgencyNotice;
           localStorage.setItem('residentNotice', res.data.residentNotice);
@@ -166,7 +166,7 @@ export default {
       }, 1000);
     },
     wxBindCheck() {
-      this.$httpUtil.get('/api/v1/wx/wx-bind-check', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/wx/wx-bind-check', {}).then(res => {
         if (res) {
           let responseData = res.data;
           this.hasBindWx = responseData.hasBindWx;
@@ -187,7 +187,7 @@ export default {
       });
     },
     emailBindCheck() {
-      this.$httpUtil.get('/api/v1/user-info/get-bind-email', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/user-info/get-bind-email', {}).then(res => {
         if (res) {
           let email = res.data;
           this.hasBindEmail = (email != null && email !== '');
@@ -214,7 +214,7 @@ export default {
     },
     displayQrCode() {
       if (!this.hasBindWx && !this.wxQrCodeUrl) {
-        this.$httpUtil.get('/api/v1/wx/user-bind-qr-code', {}).then(res => {
+        this.$httpUtil.get('/linker-server/api/v1/wx/user-bind-qr-code', {}).then(res => {
           this.wxQrCodeUrl = res.data;
           this.wxQrCodeVisible = true;
         }, (res) => {
