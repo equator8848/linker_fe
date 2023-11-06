@@ -13,7 +13,6 @@ import InstanceCreate from '@/views/InstanceCreate.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import OperationHistory from '@/views/OperationHistory.vue'
 import Me from '@/views/Me.vue'
-import StatusCheck from '@/views/StatusCheck.vue'
 import LoginByToken from '@/views/LoginByToken.vue'
 
 import store from '../store/index'
@@ -29,11 +28,6 @@ const routes: Array<RouteRecordRaw> = [
                 path: '/intro',
                 name: 'Intro',
                 component: Intro
-            },
-            {
-                path: '/check',
-                name: 'StatusCheck',
-                component: StatusCheck
             },
             {
                 path: '/help',

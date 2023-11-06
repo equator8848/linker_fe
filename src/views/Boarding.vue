@@ -1,10 +1,5 @@
 <template>
   <div id="container">
-    <div id="notice">
-      <h2>
-        如果管理员开放了自助注册功能，你可以自行注册；如果没有开启自助注册功能，请联系管理员添加用户
-      </h2>
-    </div>
     <div class="boarding login-info" v-if="isLogin">
       <h2>欢迎您，{{ userInfo.nickName }}</h2>
       <div class="operation-button">
@@ -15,14 +10,14 @@
     <div class="boarding" v-else>
       <el-form label-position="top" label-width="80px" :model="userLoginForm" ref="userLoginForm"
                :rules="userLoginFormRules">
-        <el-form-item label="登录方式" prop="userIdentificationType" id="login-type">
-          <el-radio-group v-model="userLoginForm.userIdentificationType" prop="userIdentificationType">
-            <el-radio label="phone">手机登录（默认+86）</el-radio>
-            <el-radio label="email">邮箱登录</el-radio>
-          </el-radio-group>
-        </el-form-item>
+        <!--        <el-form-item label="登录方式" prop="userIdentificationType" id="login-type">-->
+        <!--          <el-radio-group v-model="userLoginForm.userIdentificationType" prop="userIdentificationType">-->
+        <!--            <el-radio label="phone">手机登录（默认+86）</el-radio>-->
+        <!--            <el-radio label="email">邮箱登录</el-radio>-->
+        <!--          </el-radio-group>-->
+        <!--        </el-form-item>-->
         <el-form-item label="账号" prop="userIdentification">
-          <el-input v-model="userLoginForm.userIdentification" clearable placeholder="请输入手机号或者邮箱"></el-input>
+          <el-input v-model="userLoginForm.userIdentification" clearable placeholder="请输入邮箱"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="userPassword">
           <el-input v-model="userLoginForm.userPassword" show-password></el-input>
@@ -35,11 +30,12 @@
         </div>
         <el-checkbox v-model="userLoginForm.rememberMe">记住我的登录信息</el-checkbox>
         <el-button type="primary" @click="login" style="width: 100%">登录</el-button>
-<!--        <div id="user-agreement">登录则认为您已同意<a-->
-        <!--            href="#" target="_blank">《用户使用协议》</a>-->
-        <!--        </div>-->
+        <div id="user-agreement">
+          如果管理员开放了自助注册功能，未注册的账号将自动注册；如果没有开启自助注册功能，请联系管理员添加用户。
+        </div>
       </el-form>
     </div>
+    <div style="color:grey"></div>
   </div>
 </template>
 
@@ -52,7 +48,7 @@ export default {
   data() {
     return {
       userLoginForm: {
-        userIdentificationType: "phone",
+        userIdentificationType: "email",
         userIdentification: '',
         userPassword: '',
         userInfo: null,
@@ -86,7 +82,7 @@ export default {
     this.userInfo = userInfo;
     console.log("check login, userInfo: " + userInfo)
     if (userInfo) {
-      this.$httpUtil.get('/linker-server/api/v1/user/check-token', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/auth/check-token', {}).then(res => {
         if (res) {
           this.isLogin = true;
         }
@@ -119,7 +115,7 @@ export default {
       this.store.commit("clearLoginInfo");
     },
     getCaptcha() {
-      this.$httpUtil.get('/linker-server/api/v1/user/captcha', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/auth/captcha', {}).then(res => {
         if (res) {
           let captcha = res.data;
           this.userLoginForm.captchaUrl = captcha.image;
@@ -131,7 +127,7 @@ export default {
       })
     },
     login() {
-      this.$httpUtil.jsonPost('/linker-server/api/v1/user/login', {
+      this.$httpUtil.jsonPost('/linker-server/api/v1/auth/login', {
         userIdentificationType: this.userLoginForm.userIdentificationType,
         userIdentification: this.userLoginForm.userIdentificationType === "email" ? this.userLoginForm.userIdentification : "86#" + this.userLoginForm.userIdentification,
         userPassword: this.userLoginForm.userPassword,
@@ -182,31 +178,13 @@ export default {
 #container {
   min-height: 768px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
 
-  #notice {
-    width: 512px;
-    height: 512px;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 16px;
-    .card-item();
-    background-color: skyblue;
-    color: white;
-
-    a {
-      text-decoration: none;
-    }
-  }
-
   .boarding {
-    width: 512px;
+    width: 60%;
     height: 512px;
     background: linear-gradient(to bottom, #409EFF, skyblue);
     display: flex;
@@ -239,6 +217,7 @@ export default {
     #user-agreement {
       color: gray;
       margin-top: 4px;
+      max-width: 384px;
 
       a {
         text-decoration: none;

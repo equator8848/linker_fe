@@ -107,13 +107,10 @@ export default {
   mounted() {
     let current = window.location.href;
     let arr = current.split("#");
-    this.getUrgencyNotice();
+    // this.getUrgencyNotice();
     this.activeIndex = arr[arr.length - 1];
     this.store = useStore()
     this.userInfo = this.store.getters['userInfo'];
-    this.wxBindCheckInterval = setInterval(() => {
-      this.wxBindCheck();
-    }, 3000);
   },
   methods: {
     handleSelect(key, keyPath) {
@@ -164,65 +161,6 @@ export default {
           path: '/home/boarding',
         })
       }, 1000);
-    },
-    wxBindCheck() {
-      this.$httpUtil.get('/linker-server/api/v1/wx/wx-bind-check', {}).then(res => {
-        if (res) {
-          let responseData = res.data;
-          this.hasBindWx = responseData.hasBindWx;
-          if (!this.hasBindWx) {
-            this.displayQrCode();
-          } else {
-            console.log("用户已关注公众号");
-            if (this.wxBindCheckInterval) {
-              console.log("clear wxBindCheckInterval...")
-              clearInterval(this.wxBindCheckInterval);
-            }
-            this.wxQrCodeVisible = false;
-          }
-          this.emailBindCheck();
-        }
-      }, (res) => {
-        console.log(res);
-      });
-    },
-    emailBindCheck() {
-      this.$httpUtil.get('/linker-server/api/v1/user-info/get-bind-email', {}).then(res => {
-        if (res) {
-          let email = res.data;
-          this.hasBindEmail = (email != null && email !== '');
-          if (this.hasBindWx && (this.$route.path !== '/home/me') && !this.hasBindEmail) {
-            this.$confirm('为了增加通知覆盖率，请前往个人中心补充邮箱地址', '补充邮箱地址', {
-              confirmButtonText: '立刻前往',
-              cancelButtonText: '稍后',
-              type: 'warning'
-            }).then(() => {
-              // 跳转个人页面
-              this.$router.push({
-                path: '/home/me',
-              })
-            }).catch(() => {
-              //
-            });
-          } else {
-            console.log("用户未关注公众号，或者已绑定邮箱，不展示邮箱绑定弹窗");
-          }
-        }
-      }, (res) => {
-        console.log(res);
-      });
-    },
-    displayQrCode() {
-      if (!this.hasBindWx && !this.wxQrCodeUrl) {
-        this.$httpUtil.get('/linker-server/api/v1/wx/user-bind-qr-code', {}).then(res => {
-          this.wxQrCodeUrl = res.data;
-          this.wxQrCodeVisible = true;
-        }, (res) => {
-          console.log(res);
-        });
-      } else {
-        console.log("用户已关注公众号或者已展示二维码");
-      }
     }
   }
 }

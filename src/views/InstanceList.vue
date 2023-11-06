@@ -1,6 +1,5 @@
 <template>
   <div id="container">
-    <DomainCheck/>
     <el-empty description="空空如也" v-show="instances.length===0" class="instance-info">
       <router-link to='/home/imageMarket' style="text-decoration: none;color: gray">没有实例，点此去创建实例
       </router-link>
@@ -557,7 +556,6 @@ import {
 import {getPlaningStr} from '@/common/format'
 import {useStore} from "vuex";
 import Throttle from "@/common/throttle";
-import DomainCheck from "@/components/DomainCheck";
 import * as echarts from 'echarts/core';
 import {
   TitleComponent,
@@ -575,7 +573,6 @@ echarts.use([GridComponent, TitleComponent, ToolboxComponent, TooltipComponent, 
 
 export default {
   name: "InstanceList",
-  components: {DomainCheck},
   inject: ['reload'],
   data() {
     return {

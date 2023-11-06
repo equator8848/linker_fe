@@ -189,12 +189,6 @@
       </div>
     </div>
 
-    <div id="domainCheck">
-      <h3>线路检测</h3>
-      <h6 style="color:grey;">自动检验线路连通性，如遇到某个线路不可用，请切换到其它线路使用</h6>
-      <DomainCheck style="margin: auto"/>
-    </div>
-
     <el-dialog title="查看消息详情" v-model="messageDetailsDialogVisible">
       <el-form :model="messageInboxDetails" label-position="top">
         <el-form-item label="消息标题" label-width="150px">
@@ -216,18 +210,12 @@
 
 <script>
 import {getPlaningStrList, nodeIdMask} from '@/common/format'
-import DomainCheck from "@/components/DomainCheck";
 import * as echarts from "echarts/core";
 
 export default {
   name: "DashBoard",
-  components: {DomainCheck},
   mounted() {
-    this.getClusterResourceInfo();
-    this.getSpecificationList();
-    this.getInstanceList();
-    this.getMessageList();
-    this.residentNotice = localStorage.getItem('residentNotice');
+    //
   },
   unmounted() {
     if (this.clusterResourceDashboardChart) {
