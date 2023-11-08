@@ -15,30 +15,32 @@
         <div id="logo">
           <router-link to="/boarding"><img src="../assets/logo.png"></router-link>
         </div>
+
+        <el-dropdown>
+          <span class="el-dropdown-link">
+            <span style="color: #ebeef5">{{ currentProject.name }}</span>
+            <el-icon class="el-icon--right">
+              <arrow-down/>
+            </el-icon>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item v-show="projectList" v-for="project in projectList" :key="project.id">
+                <span>{{ project.name }}</span>
+              </el-dropdown-item>
+              <el-dropdown-item v-show="!projectList">
+                <span>空空如也</span>
+              </el-dropdown-item>
+              <el-dropdown-item divided @click="gotoCreateProjectPage">新建项目</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+
         <el-menu-item index="/home/dashboard">
           <el-icon>
             <Odometer/>
           </el-icon>
           <span>仪表盘</span>
-        </el-menu-item>
-
-        <el-sub-menu index="instance">
-          <template #title>
-            <el-icon>
-              <MostlyCloudy/>
-            </el-icon>
-            <span>实例管理</span>
-          </template>
-          <el-menu-item index="/home/imageMarket">镜像市场</el-menu-item>
-          <el-menu-item index="/home/instanceList">实例列表</el-menu-item>
-          <el-menu-item index="/home/instanceVolumeList">数据存储卷列表</el-menu-item>
-        </el-sub-menu>
-
-        <el-menu-item index="/home/operationHistory">
-          <el-icon>
-            <Operation/>
-          </el-icon>
-          <span>操作日志</span>
         </el-menu-item>
 
         <el-sub-menu index="user">
@@ -94,6 +96,11 @@ export default {
     return {
       activeIndex: '/home/dashboard',
       userInfo: {},
+      currentProject: {
+        id: 0,
+        name: "当前项目",
+      },
+      projectList: [],
       refreshSwitch: true,
       store: null,
       hasBindWx: false,
@@ -149,6 +156,11 @@ export default {
     handleClose(key, keyPath) {
       // console.log(key, keyPath);
     },
+    gotoCreateProjectPage() {
+      this.$router.push({
+        path: `/home/projectCreate`,
+      })
+    },
     removeUserInfo() {
       localStorage.clear();
       sessionStorage.clear();
@@ -190,7 +202,7 @@ export default {
       background-color: #409EFF;
 
       img {
-        width: 128px;
+        width: 96px;
       }
     }
 
