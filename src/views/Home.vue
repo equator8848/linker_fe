@@ -158,7 +158,7 @@ export default {
     },
     gotoCreateProjectPage() {
       this.$router.push({
-        path: `/home/projectCreate`,
+        path: `/home/projectOps`,
       })
     },
     removeUserInfo() {

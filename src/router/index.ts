@@ -10,7 +10,7 @@ import ImageMarket from '@/views/ImageMarket.vue'
 import InstanceList from '@/views/InstanceList.vue'
 import InstanceVolumeList from '@/views/InstanceVolumeList.vue'
 import InstanceCreate from '@/views/InstanceCreate.vue'
-import ProjectCreate from '@/views/ProjectCreate'
+import ProjectOps from '@/views/ProjectOps.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import OperationHistory from '@/views/OperationHistory.vue'
 import Me from '@/views/Me.vue'
@@ -89,9 +89,9 @@ const routes: Array<RouteRecordRaw> = [
                 component: InstanceCreate
             },
             {
-                path: '/home/projectCreate',
-                name: 'ProjectCreate',
-                component: ProjectCreate
+                path: '/home/projectOps',
+                name: 'ProjectOps',
+                component: ProjectOps
             },
             {
                 path: '/home/operationHistory',

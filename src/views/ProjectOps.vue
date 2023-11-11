@@ -6,23 +6,23 @@
     </div>
     <div id="main">
 
-      <el-form ref="createProjectForm" :model="createProjectForm" label-position="top"
-               :rules="createProjectFormRules">
+      <el-form ref="projectOpsForm" :model="projectOpsForm" label-position="top"
+               :rules="projectOpsFormRules">
         <el-form-item label="项目名称" prop="projectName">
-          <el-input v-model="createProjectForm.name"></el-input>
+          <el-input v-model="projectOpsForm.name"></el-input>
         </el-form-item>
         <el-form-item label="项目描述" prop="projectIntro">
-          <el-input v-model="createProjectForm.intro" type="textarea" rows="2" maxlength="255"></el-input>
+          <el-input v-model="projectOpsForm.intro" type="textarea" rows="2" maxlength="255"></el-input>
         </el-form-item>
 
         <el-form-item label="SCM用户名" prop="scmConfigUsername">
-          <el-input v-model="createProjectForm.scmConfig.username"></el-input>
+          <el-input v-model="projectOpsForm.scmConfig.username"></el-input>
         </el-form-item>
         <el-form-item label="SCM仓库地址" prop="scmConfigRepositoryUrl">
-          <el-input v-model="createProjectForm.scmConfig.repositoryUrl"></el-input>
+          <el-input v-model="projectOpsForm.scmConfig.repositoryUrl"></el-input>
         </el-form-item>
         <el-form-item label="选择或输入默认分支" prop="scmConfigDefaultBranch">
-          <el-select v-model="createProjectForm.scmConfig.defaultBranch"
+          <el-select v-model="projectOpsForm.scmConfig.defaultBranch"
                      placeholder="选择或输入默认分支，默认拉取该分支代码进行打包"
                      filterable
                      allow-create>
@@ -35,12 +35,12 @@
           </el-select>
         </el-form-item>
         <el-form-item label="SCM AccessKey" prop="scmConfigAccessToken">
-          <el-input v-model="createProjectForm.scmConfig.accessToken" show-password></el-input>
+          <el-input v-model="projectOpsForm.scmConfig.accessToken" show-password></el-input>
         </el-form-item>
 
 
         <el-form-item label="打包镜像" prop="packageImage">
-          <el-select v-model="createProjectForm.packageImage" placeholder="请选择或输入打包使用的镜像" filterable
+          <el-select v-model="projectOpsForm.packageImage" placeholder="请选择或输入打包使用的镜像" filterable
                      allow-create>
             <el-option
                 v-for="item in packageImageOptions"
@@ -52,23 +52,46 @@
         </el-form-item>
 
         <el-form-item label="打包脚本" prop="packageScript">
-          <el-input v-model="createProjectForm.packageScript" type="textarea" rows="5" maxlength="1024"></el-input>
+          <el-input v-model="projectOpsForm.packageScript" type="textarea" rows="5" maxlength="1024"></el-input>
         </el-form-item>
 
         <el-form-item label="打包输出目录" prop="packageOutputDir">
-          <el-input v-model="createProjectForm.packageOutputDir"></el-input>
+          <el-input v-model="projectOpsForm.packageOutputDir"></el-input>
         </el-form-item>
 
         <el-form-item label="入口相对路径" prop="packageOutputDir">
-          <el-input v-model="createProjectForm.accessPath"></el-input>
+          <el-input v-model="projectOpsForm.accessPath"></el-input>
         </el-form-item>
 
         <el-form-item label="权限控制" prop="accessLevel">
-          <el-radio-group v-model="createProjectForm.accessLevel">
+          <el-radio-group v-model="projectOpsForm.accessLevel">
             <el-radio label="PRIVATE">私有项目</el-radio>
             <el-radio label="PROTECTED">邀请访问</el-radio>
             <el-radio label="PUBLIC">公开访问</el-radio>
           </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="代理配置">
+          <el-table :data="projectOpsForm.proxyConfig.proxyPassConfigs" style="width: 100%" max-height="250">
+            <el-table-column prop="location" label="匹配模式（nginx的location）"/>
+            <el-table-column prop="proxyPass" label="API代理（nginx的proxy_pass）"/>
+            <el-table-column fixed="right" label="操作" width="120">
+              <template #default="scope">
+                <el-button
+                    link
+                    type="primary"
+                    size="small"
+                    @click.prevent="removeProxyPassConfig(scope.$index)">
+                  移除
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div id="proxyPassConfigBoard">
+            <el-input label="匹配模式"></el-input>
+            <el-input label="API代理"></el-input>
+            <el-button type="primary" style="width: 100%" @click="addProxyPassConfig">新增配置</el-button>
+          </div>
         </el-form-item>
 
         <el-button type="primary" @click="handleCreateInstance" style="width: 100%">创建</el-button>
@@ -81,15 +104,12 @@
 import {getPlaningStrList} from "@/common/format";
 
 export default {
-  name: "InstanceCreateStep",
+  name: "ProjectOps",
   inject: ['reload'],
   mounted() {
-    this.getImageList();
-    this.getSpecification();
-    this.getCluster();
-    let imageId = this.$route.params.imageId;
-    if (imageId) {
-      this.createInstanceForm.selectImageId = parseInt(imageId);
+    let projectId = this.$route.params.projectId;
+    if (projectId) {
+      this.projectOpsForm.id = parseInt(projectId);
     }
   },
   data() {
@@ -114,9 +134,9 @@ export default {
           value: "dev"
         }
       ],
-      specifications: [],
-      clusters: [],
-      createProjectForm: {
+
+      projectOpsForm: {
+        id: null,
         name: null,
         intro: null,
         scmConfig: {
@@ -126,14 +146,16 @@ export default {
           defaultBranch: 'master',
           accessToken: null
         },
-        proxyConfig: {},
+        proxyConfig: {
+          proxyPassConfigs: []
+        },
         packageImage: null,
         packageScript: null,
         packageOutputDir: 'dist',
         accessPath: "/",
         accessLevel: 'PUBLIC'
       },
-      createProjectFormRules: {
+      projectOpsFormRules: {
         selectImageId: [
           {required: true, message: '请选择镜像', trigger: 'blur'}
         ],
@@ -226,6 +248,12 @@ export default {
     goBack() {
       this.$router.back();
     },
+    addProxyPassConfig() {
+      //
+    },
+    removeProxyPassConfig(idx) {
+      this.projectOpsForm.proxyConfig.proxyPassConfigs.remove()
+    },
     handleSpecChange(specId) {
       const targetSpec = this.specifications.find(x => x.id === specId);
       if (!targetSpec) {
@@ -268,49 +296,6 @@ export default {
           console.log("用户坚持使用测试版镜像");
         });
       }
-    },
-    getSpecificationLabel(item) {
-      if (item.volumeId) {
-        return `${item.name}(套餐ID：${item.id}  核心数：${item.cpu}  内存：${item.memory}GB  硬盘总大小${item.disk}GB  系统盘大小：${item.osDisk}GB  数据存储卷ID：${item.volumeId})`;
-      }
-      return `${item.name}(套餐ID：${item.id}  核心数：${item.cpu}  内存：${item.memory}GB  硬盘总大小：${item.disk}GB  系统盘大小：${item.osDisk}GB)`;
-    },
-    getNodeLabel(item) {
-      return `${item.displayName}(CPU使用率 ${item.cpuUsage.toFixed(2)}%，
-      内存使用率 ${item.memoryUsage.toFixed(2)}%，系统15分钟平均负载：${item.nodeLoadAvg15}，可以使用此节点的套餐：${getPlaningStrList(item.allowPlannings)})`;
-    },
-    getNodeIsCrowdedStatusTagColor(node) {
-      if (node.isCrowded) {
-        return 'danger';
-      }
-      return 'primary';
-    },
-    getNodeLoadStatusStr(item) {
-      if (item.cpuUsage > 80 || item.memoryUsage > 80) {
-        return '负载高';
-      } else if (item.cpuUsage > 60 || item.memoryUsage > 60) {
-        return '负载中等';
-      } else {
-        return '负载低';
-      }
-    },
-    getNodeLoadStatusColor(item) {
-      if (item.cpuUsage > 80 || item.memoryUsage > 80) {
-        return 'danger';
-      } else if (item.cpuUsage > 60 || item.memoryUsage > 60) {
-        return 'warning';
-      } else {
-        return 'success';
-      }
-    },
-    getDisableStatus(clusterNode) {
-      let selectSpecificationId = this.createInstanceForm.selectSpecificationId | 0;
-      let selectSpecification = this.specifications.filter(x => x.id === selectSpecificationId)[0];
-      if (selectSpecification == null) {
-        return true;
-      }
-      // selectSpecification.planing !== clusterNode.lowestPlaning;
-      return clusterNode.allowPlannings.indexOf(selectSpecification.planing) === -1;
     },
     getImageList() {
       this.$httpUtil.get('/linker-server/api/v1/image/list', {}).then(res => {
@@ -374,6 +359,13 @@ export default {
     .el-form-item {
       margin-top: 16px;
     }
+  }
+
+  #proxyPassConfigBoard {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-content: space-between;
   }
 }
 </style>
