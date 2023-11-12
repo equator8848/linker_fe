@@ -5,23 +5,21 @@
       </el-page-header>
     </div>
     <div id="main">
-
       <el-form ref="projectOpsForm" :model="projectOpsForm" label-position="top"
                :rules="projectOpsFormRules">
-        <el-form-item label="项目名称" prop="projectName">
+        <el-form-item label="项目名称" prop="name">
           <el-input v-model="projectOpsForm.name"></el-input>
         </el-form-item>
-        <el-form-item label="项目描述" prop="projectIntro">
+        <el-form-item label="项目描述" prop="intro">
           <el-input v-model="projectOpsForm.intro" type="textarea" rows="2" maxlength="255"></el-input>
         </el-form-item>
-
-        <el-form-item label="SCM用户名" prop="scmConfigUsername">
+        <el-form-item label="SCM用户名" prop="scmConfig.username">
           <el-input v-model="projectOpsForm.scmConfig.username"></el-input>
         </el-form-item>
-        <el-form-item label="SCM仓库地址" prop="scmConfigRepositoryUrl">
+        <el-form-item label="SCM仓库地址" prop="scmConfig.repositoryUrl">
           <el-input v-model="projectOpsForm.scmConfig.repositoryUrl"></el-input>
         </el-form-item>
-        <el-form-item label="选择或输入默认分支" prop="scmConfigDefaultBranch">
+        <el-form-item label="选择或输入默认分支" prop="scmConfig.defaultBranch">
           <el-select v-model="projectOpsForm.scmConfig.defaultBranch"
                      placeholder="选择或输入默认分支，默认拉取该分支代码进行打包"
                      filterable
@@ -34,7 +32,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="SCM AccessKey" prop="scmConfigAccessToken">
+        <el-form-item label="SCM AccessKey" prop="scmConfig.accessToken">
           <el-input v-model="projectOpsForm.scmConfig.accessToken" show-password></el-input>
         </el-form-item>
 
@@ -59,8 +57,8 @@
           <el-input v-model="projectOpsForm.packageOutputDir"></el-input>
         </el-form-item>
 
-        <el-form-item label="入口相对路径" prop="packageOutputDir">
-          <el-input v-model="projectOpsForm.accessPath"></el-input>
+        <el-form-item label="入口相对路径" prop="accessEntrance">
+          <el-input v-model="projectOpsForm.accessEntrance"></el-input>
         </el-form-item>
 
         <el-form-item label="权限控制" prop="accessLevel">
@@ -71,7 +69,7 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="代理配置">
+        <el-form-item label="代理配置" prop="proxyConfig">
           <el-table :data="projectOpsForm.proxyConfig.proxyPassConfigs" style="width: 100%" max-height="250">
             <el-table-column prop="location" label="匹配模式（nginx的location）"/>
             <el-table-column prop="proxyPass" label="API代理（nginx的proxy_pass）"/>
@@ -88,20 +86,19 @@
             </el-table-column>
           </el-table>
           <div id="proxyPassConfigBoard">
-            <el-input label="匹配模式"></el-input>
-            <el-input label="API代理"></el-input>
-            <el-button type="primary" style="width: 100%" @click="addProxyPassConfig">新增配置</el-button>
+            <el-input label="匹配模式" ref="locationInput" v-model="locationInput"></el-input>
+            <el-input label="API代理" ref="proxyPassInput" v-model="proxyPassInput"></el-input>
+            <el-button type="success" style="width: 20%" @click="addProxyPassConfig">新增配置</el-button>
           </div>
         </el-form-item>
 
-        <el-button type="primary" @click="handleCreateInstance" style="width: 100%">创建</el-button>
+        <el-button type="primary" @click="handleCreateProject" style="width: 100%">创建项目</el-button>
       </el-form>
     </div>
   </div>
 </template>
 
 <script>
-import {getPlaningStrList} from "@/common/format";
 
 export default {
   name: "ProjectOps",
@@ -135,6 +132,8 @@ export default {
         }
       ],
 
+      locationInput: null,
+      proxyPassInput: null,
       projectOpsForm: {
         id: null,
         name: null,
@@ -152,93 +151,76 @@ export default {
         packageImage: null,
         packageScript: null,
         packageOutputDir: 'dist',
-        accessPath: "/",
+        accessEntrance: "/",
         accessLevel: 'PUBLIC'
       },
       projectOpsFormRules: {
-        selectImageId: [
-          {required: true, message: '请选择镜像', trigger: 'blur'}
+        "name": [
+          {required: true, message: '请输入名称', trigger: 'blur'}
         ],
-        selectSpecificationId: [
-          {required: true, message: '请选择套餐', trigger: 'blur'}
+        "intro": [
+          {required: true, message: '请输入介绍', trigger: 'blur'}
         ],
-        selectNodeId: [
-          {required: true, message: '请选择节点', trigger: 'blur'}
+        "scmConfig.username": [
+          {required: true, message: '请输入SCM用户名', trigger: 'blur'}
         ],
-        instanceUsername: [
-          {required: true, message: '请输入实例用户名', trigger: 'blur'},
-          {
-            pattern: "^[a-z][-a-z0-9_]*$",
-            message: '用户名不符合规范，必须全部小写字母，可以使用-或_分割',
-            trigger: 'blur'
-          }
+        "scmConfig.repositoryUrl": [
+          {required: true, message: '请输入SCM仓库地址', trigger: 'blur'}
         ],
-        instancePassword: [
-          {required: true, message: '请输入实例密码', trigger: 'blur'},
-          {
-            pattern: "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[.#?!@$%^&*-]).{10,20}$",
-            message: '密码强度不符合要求，必须包含至少1位大写字母，1位小写字母，1位数字，1位特殊字符(.#?!@$%^&*-)，长度在10-20之间',
-            trigger: 'blur'
-          }
+        "scmConfig.defaultBranch": [
+          {required: true, message: '选择或输入SCM默认分支', trigger: 'blur'}
         ],
-        instancePasswordConfirm: [
-          {required: true, message: '请确认实例密码', trigger: 'blur'},
-          {
-            pattern: "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[.#?!@$%^&*-]).{10,20}$",
-            message: '密码强度不符合要求，必须包含至少1位大写字母，1位小写字母，1位数字，1位特殊字符(.#?!@$%^&*-)，长度在10-20之间',
-            trigger: 'blur'
-          }
+        "scmConfig.accessToken": [
+          {required: true, message: '请输入SCM密钥', trigger: 'blur'}
+        ],
+        "packageImage": [
+          {required: true, message: '请选择或输入打包使用的镜像', trigger: 'blur'}
+        ],
+        "packageScript": [
+          {required: true, message: '请输入打包脚本', trigger: 'blur'}
+        ],
+        "packageOutputDir": [
+          {required: true, message: '请输入打包输出目录', trigger: 'blur'}
+        ],
+        "accessEntrance": [
+          {required: true, message: '请输入访问入口路径', trigger: 'blur'}
+        ],
+        "accessLevel": [
+          {required: true, message: '请选择权限控制等级', trigger: 'blur'}
         ],
       }
     }
   },
   methods: {
-    handleCreateInstance() {
-      if (this.createInstanceForm.instancePassword !== this.createInstanceForm.instancePasswordConfirm) {
-        this.$notify.warning({
-          title: '两次密码不一致',
-          message: '两次输入的密码不一致，请再次确认密码'
-        });
-        return;
-      }
-      if (this.createInstanceForm.instanceUsername === "root") {
-        this.$notify.warning({
-          title: '用户名不能是root',
-          message: '用户名不能是root，请修改用户名'
-        });
-        return;
-      }
-      this.$refs['createInstanceForm'].validate((valid) => {
+    handleCreateProject() {
+      this.$refs['projectOpsForm'].validate((valid) => {
         if (valid) {
-          const loading = this.$loading({
-            lock: true,
-            text: '操作中，请耐心等待（约一分钟）',
-            spinner: 'el-icon-loading',
-            background: 'rgba(0, 0, 0, 0.7)'
-          });
-          const createInstanceForm = this.createInstanceForm;
-          this.$httpUtil.jsonPost('/linker-server/api/v1/instance/create', {
-            imageId: createInstanceForm.selectImageId,
-            specificationId: createInstanceForm.selectSpecificationId,
-            nodeId: createInstanceForm.selectNodeId,
-            instanceUsername: createInstanceForm.instanceUsername,
-            instancePassword: createInstanceForm.instancePassword,
-            savePassword: createInstanceForm.savePassword
-          }).then(res => {
+          if (this.projectOpsForm.proxyConfig.proxyPassConfigs.length === 0) {
+            this.$message({
+              showClose: true,
+              message: '至少配置一个API代理',
+              type: 'error'
+            });
+            return;
+          }
+
+          this.$httpUtil.jsonPost('/linker-server/api/v1/project/create', this.projectOpsForm).then(res => {
             if (res) {
-              this.$alert('创建实例时可能需要拉取镜像，导致耗时较长，此操作为异步操作。即将跳转到实例列表页面等待操作完毕', '提示', {
-                confirmButtonText: '确定',
-                callback: action => {
-                  this.$router.push({
-                    path: '/home/instanceList',
-                  })
-                }
+              this.$notify({
+                title: '成功',
+                message: '项目创建成功，即将返回首页',
+                type: 'success'
               });
+              setTimeout(() => {
+                this.$router.push({
+                  path: '/home/dashboard',
+                }, 1500)
+              })
             }
           }, res => {
             console.log(res);
           }).finally(() => {
-            loading.close();
+            //
           });
         } else {
           return false;
@@ -249,10 +231,19 @@ export default {
       this.$router.back();
     },
     addProxyPassConfig() {
-      //
+      if (!this.locationInput || !this.proxyPassInput) {
+        return;
+      }
+      const proxyPassConfig = {
+        location: this.locationInput,
+        proxyPass: this.proxyPassInput
+      }
+      this.projectOpsForm.proxyConfig.proxyPassConfigs.push(proxyPassConfig);
+      this.proxyPassInput = null;
+      this.locationInput = null;
     },
     removeProxyPassConfig(idx) {
-      this.projectOpsForm.proxyConfig.proxyPassConfigs.remove()
+      this.projectOpsForm.proxyConfig.proxyPassConfigs.splice(idx, 1);
     },
     handleSpecChange(specId) {
       const targetSpec = this.specifications.find(x => x.id === specId);

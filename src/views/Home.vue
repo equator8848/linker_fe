@@ -25,11 +25,8 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item v-show="projectList" v-for="project in projectList" :key="project.id">
-                <span>{{ project.name }}</span>
-              </el-dropdown-item>
-              <el-dropdown-item v-show="!projectList">
-                <span>空空如也</span>
+              <el-dropdown-item :v-show="projectList.length!==0" v-for="project in projectList" :key="project.id">
+                <span :style="getProjectStyle(project)" @click="changeProject(project)">{{ project.name }}</span>
               </el-dropdown-item>
               <el-dropdown-item divided @click="gotoCreateProjectPage">新建项目</el-dropdown-item>
             </el-dropdown-menu>
@@ -108,16 +105,22 @@ export default {
       wxBindCheckInterval: null,
       wxQrCodeVisible: false,
       wxQrCodeUrl: null,
-      urgencyNotice: null
+      urgencyNotice: null,
     }
   },
   mounted() {
     let current = window.location.href;
     let arr = current.split("#");
-    // this.getUrgencyNotice();
+    this.getProjectList();
     this.activeIndex = arr[arr.length - 1];
     this.store = useStore()
     this.userInfo = this.store.getters['userInfo'];
+
+    const currentProjectStr = localStorage.getItem("currentProject");
+    if (currentProjectStr) {
+      console.log("set current project in mounted method");
+      this.currentProject = JSON.parse(currentProjectStr);
+    }
   },
   methods: {
     handleSelect(key, keyPath) {
@@ -126,6 +129,23 @@ export default {
         clearInterval(refreshingInterval);
         console.log("clearInterval" + refreshingInterval)
       }
+    },
+    getProjectList() {
+      this.$httpUtil.get('/linker-server/api/v1/project/all', {}).then(res => {
+        if (res) {
+          this.projectList = res.data;
+          if (this.currentProject.id === 0) {
+            const firstProject = this.projectList[0];
+            this.currentProject = {
+              id: firstProject.id,
+              name: firstProject.name
+            }
+            localStorage.setItem('currentProject', JSON.stringify(this.currentProject));
+          }
+        }
+      }, (res) => {
+        console.log(res);
+      });
     },
     getUrgencyNotice() {
       this.$httpUtil.get('/linker-server/api/v1/base/notice', {}).then(res => {
@@ -160,6 +180,15 @@ export default {
       this.$router.push({
         path: `/home/projectOps`,
       })
+    },
+    changeProject(project) {
+      this.currentProject = project
+    },
+    getProjectStyle(project) {
+      if (this.currentProject.id === project.id) {
+        return "color: #409EFF";
+      }
+      return "";
     },
     removeUserInfo() {
       localStorage.clear();
