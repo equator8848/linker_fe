@@ -40,23 +40,13 @@
           <span>仪表盘</span>
         </el-menu-item>
 
-        <el-sub-menu index="user">
-          <template #title>
-            <el-icon>
-              <WindPower/>
-            </el-icon>
-            <span>用户中心</span>
-          </template>
-          <el-menu-item index="/home/me">个人信息</el-menu-item>
-          <el-menu-item index="/home/help">用户手册</el-menu-item>
-          <el-menu-item index="/home/workOrder">提交工单</el-menu-item>
-        </el-sub-menu>
+
         <el-popover trigger="hover" placement="bottom" :width="120" :hide-after="300">
           <div style="display: flex;flex-direction: row;justify-content: center;align-items: center;">
             <el-button size="small" type="warning" @click="handleLogout">退出登录</el-button>
           </div>
           <template #reference>
-            <el-button type="primary">{{ userInfo.nickName }}</el-button>
+            <el-button type="primary" @click="gotoUserCenter">{{ userInfo.nickName }}</el-button>
           </template>
         </el-popover>
       </el-menu>
@@ -91,7 +81,7 @@ export default {
   name: "AircraftCarrier",
   data() {
     return {
-      activeIndex: '/home/dashboard',
+      activeIndex: '',
       userInfo: {},
       currentProject: {
         id: 0,
@@ -116,10 +106,11 @@ export default {
     this.store = useStore()
     this.userInfo = this.store.getters['userInfo'];
 
-    const currentProjectStr = localStorage.getItem("currentProject");
-    if (currentProjectStr) {
+    const currentProjectJson = this.store.getters['currentProject'];
+    if (currentProjectJson) {
       console.log("set current project in mounted method");
-      this.currentProject = JSON.parse(currentProjectStr);
+      this.currentProject = currentProjectJson;
+      this.store.commit("setCurrentProject", this.currentProject);
     }
   },
   methods: {
@@ -140,7 +131,7 @@ export default {
               id: firstProject.id,
               name: firstProject.name
             }
-            localStorage.setItem('currentProject', JSON.stringify(this.currentProject));
+            this.store.commit("setCurrentProject", this.currentProject);
           }
         }
       }, (res) => {
@@ -181,8 +172,15 @@ export default {
         path: `/home/projectOps`,
       })
     },
+    gotoUserCenter() {
+      this.$router.push({
+        path: '/home/me'
+      })
+      this.activeIndex = ''
+    },
     changeProject(project) {
-      this.currentProject = project
+      this.currentProject = project;
+      this.store.commit("setCurrentProject", this.currentProject);
     },
     getProjectStyle(project) {
       if (this.currentProject.id === project.id) {

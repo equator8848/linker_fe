@@ -63,7 +63,7 @@
 
         <el-form-item label="权限控制" prop="accessLevel">
           <el-radio-group v-model="projectOpsForm.accessLevel">
-            <el-radio label="PRIVATE">私有项目</el-radio>
+            <el-radio label="PRIVATE">私有访问</el-radio>
             <el-radio label="PROTECTED">邀请访问</el-radio>
             <el-radio label="PUBLIC">公开访问</el-radio>
           </el-radio-group>
@@ -245,48 +245,8 @@ export default {
     removeProxyPassConfig(idx) {
       this.projectOpsForm.proxyConfig.proxyPassConfigs.splice(idx, 1);
     },
-    handleSpecChange(specId) {
-      const targetSpec = this.specifications.find(x => x.id === specId);
-      if (!targetSpec) {
-        return;
-      }
-      if (targetSpec.volumeLastUsername) {
-        this.$confirm('检测到当前套餐关联的数据卷存在历史用户名，建议使用历史用户名；否则除非使用root权限，新用户不能看到家目录旧用户的数据', '提示', {
-          confirmButtonText: '使用历史用户名',
-          cancelButtonText: '使用新的用户名',
-          type: 'warning'
-        }).then(() => {
-          this.createInstanceForm.instanceUsername = targetSpec.volumeLastUsername;
-        }).catch(() => {
-          console.log("用户忽略上一次使用的用户");
-        });
-      }
-    },
     getImageLabel(item) {
       return `${item.imageName}(${item.description})`;
-    },
-    handleImageChange(imageId) {
-      const image = this.images.filter(x => x.id === imageId)[0];
-      if (image.betaImageFlag) {
-        this.$confirm('当前选择的镜像是测试镜像，不建议选择', '警告', {
-          confirmButtonText: '切换到正式镜像',
-          cancelButtonText: '仍要选择',
-          type: 'error'
-        }).then(() => {
-          const officialImages = this.images.filter(x => !x.betaImageFlag);
-          if (!officialImages || officialImages.length === 0) {
-            this.$notify.error({
-              title: '请联系管理员',
-              message: "找不到正式的镜像"
-            });
-            return;
-          }
-          console.log("选择正式镜像" + officialImages[0])
-          this.createInstanceForm.selectImageId = officialImages[0].id;
-        }).catch(() => {
-          console.log("用户坚持使用测试版镜像");
-        });
-      }
     },
     getImageList() {
       this.$httpUtil.get('/linker-server/api/v1/image/list', {}).then(res => {
@@ -298,26 +258,6 @@ export default {
         console.log(res);
       });
     },
-    getSpecification() {
-      this.$httpUtil.get('/linker-server/api/v1/specification/list', {
-        onlyAvailable: true
-      }).then(res => {
-        if (res) {
-          this.specifications = res.data;
-        }
-      }, res => {
-        console.log(res);
-      });
-    },
-    getCluster() {
-      this.$httpUtil.get('/linker-server/api/v1/cluster/resource-data', {}).then(res => {
-        if (res) {
-          this.clusters = res.data.nodeResources.filter(x => x.maintenanceMode !== true && x.memoryUsage && x.cpuUsage);
-        }
-      }, res => {
-        console.log(res);
-      });
-    }
   }
 }
 </script>
@@ -328,7 +268,7 @@ export default {
 #container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
 
   #header {
     background-color: white;

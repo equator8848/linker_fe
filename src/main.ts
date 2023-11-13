@@ -13,6 +13,7 @@ app.use(router)
 app.use(VueClipboard)
 app.use(ElementPlus)
 app.config.globalProperties.$httpUtil = HttpUtil;
+app.config.globalProperties.$storage = store;
 
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

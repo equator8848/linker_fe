@@ -22,6 +22,8 @@ const cachedToken = getKeyFromStorage('token');
 const cachedBaseDomain = getKeyFromStorage('base_domain');
 const cachedBaseUrl = getDefaultBaseUrl();
 const cachedExpiredAt = getKeyFromStorage('expired_at');
+const cachedCurrentProject = getKeyFromStorage('current_project')
+
 
 export default createStore({
     state: {
@@ -32,7 +34,7 @@ export default createStore({
         expiredAt: cachedExpiredAt ? cachedExpiredAt : null,
         refreshingInterval: null,
         refreshSwitch: true,
-        residentNotice: null
+        currentProject: cachedCurrentProject ? JSON.parse(cachedCurrentProject) : null
     },
     getters: {
         userInfo(state) {
@@ -53,8 +55,8 @@ export default createStore({
         refreshSwitch(state) {
             return state.refreshSwitch;
         },
-        residentNotice(state) {
-            return state.residentNotice;
+        currentProject(state) {
+            return state.currentProject;
         },
         baseUrl(state) {
             return state.baseUrl;
@@ -77,8 +79,9 @@ export default createStore({
         setRefreshSwitch(state, val) {
             state.refreshSwitch = val;
         },
-        setResidentNotice(state, val) {
-            state.residentNotice = val;
+        setCurrentProject(state, val) {
+            state.currentProject = val;
+            localStorage.setItem('current_project', JSON.stringify(val));
         },
         setBaseUrl(state, val) {
             console.log("切换baseUrl", val);

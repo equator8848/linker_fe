@@ -19,14 +19,14 @@
     </div>
     <div id="footer">
       <div id="foot-left">
-        <img src="../assets/wx.jpg" width="128px" height="128px">
+        <h5>支持付费私有化部署</h5>
         <h5>电子邮箱： 841116931@qq.com</h5>
-        <h5>QQ交流群： 123456</h5>
+        <img src="../assets/wx.jpg" width="128px" height="128px">
       </div>
       <div id="foot-right">
         <h4>相关链接</h4>
-        <h5><a target="_blank" href="https://github.com/libinkai/linker_fe">GitHub前端项目地址</a></h5>
-        <h5><a target="_blank" href="https://github.com/libinkai/linker_be">GitHub后端项目地址</a></h5>
+        <h5><a target="_blank" href="https://github.com/libinkai/linker_fe">GitHub前端项目地址（404即未开源）</a></h5>
+        <h5><a target="_blank" href="https://github.com/libinkai/linker_be">GitHub后端项目地址（404即未开源）</a></h5>
       </div>
     </div>
   </div>
