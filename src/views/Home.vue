@@ -18,7 +18,7 @@
 
         <el-dropdown>
           <span class="el-dropdown-link">
-            <span style="color: #ebeef5">{{ currentProject.name }}</span>
+            <span style="color: #ebeef5">{{ currentProjectName }}</span>
             <el-icon class="el-icon--right">
               <arrow-down/>
             </el-icon>
@@ -58,19 +58,6 @@
         </transition>
       </router-view>
     </div>
-    <el-dialog v-model="wxQrCodeVisible" title="微信扫码绑定微信账号">
-      <div style="display: flex;flex-direction: column;align-items: center">
-        <el-tag class="ml-2" type="warning">
-          您还没有绑定微信账号，请及时关注公众号，我们会在主机资源不足快内存溢出时及时通知疏散用户迁移实例
-        </el-tag>
-        <el-image style="width: 256px; height: 256px" :src="wxQrCodeUrl"/>
-      </div>
-      <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="wxQrCodeVisible = false">稍后关注</el-button>
-      </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -87,15 +74,8 @@ export default {
         id: 0,
         name: "当前项目",
       },
-      projectList: [],
       refreshSwitch: true,
       store: null,
-      hasBindWx: false,
-      hasBindEmail: false,
-      wxBindCheckInterval: null,
-      wxQrCodeVisible: false,
-      wxQrCodeUrl: null,
-      urgencyNotice: null,
     }
   },
   mounted() {
@@ -113,6 +93,16 @@ export default {
       this.store.commit("setCurrentProject", this.currentProject);
     }
   },
+  computed: {
+    projectList() {
+      const projectList = this.$store.getters['projectList'];
+      return projectList ? projectList : [];
+    },
+    currentProjectName() {
+      const currentPjo = this.projectList.find(x => x.id === this.currentProject.id);
+      return currentPjo ? currentPjo.name : "无";
+    }
+  },
   methods: {
     handleSelect(key, keyPath) {
       let refreshingInterval = this.store.getters['refreshingInterval'];
@@ -124,7 +114,7 @@ export default {
     getProjectList() {
       this.$httpUtil.get('/linker-server/api/v1/project/all', {}).then(res => {
         if (res) {
-          this.projectList = res.data;
+          this.store.commit("setProjectList", res.data);
           if (this.currentProject.id === 0) {
             const firstProject = this.projectList[0];
             this.currentProject = {
@@ -132,29 +122,6 @@ export default {
               name: firstProject.name
             }
             this.store.commit("setCurrentProject", this.currentProject);
-          }
-        }
-      }, (res) => {
-        console.log(res);
-      });
-    },
-    getUrgencyNotice() {
-      this.$httpUtil.get('/linker-server/api/v1/base/notice', {}).then(res => {
-        if (res) {
-          this.urgencyNotice = res.data.urgencyNotice;
-          localStorage.setItem('residentNotice', res.data.residentNotice);
-          let muteUrgencyNotice = localStorage.getItem('muteUrgencyNotice');
-          let urgencyNotice = this.urgencyNotice;
-          if (urgencyNotice && urgencyNotice !== muteUrgencyNotice) {
-            this.$confirm(urgencyNotice, '温馨提示', {
-              confirmButtonText: '我知道了',
-              cancelButtonText: '不再提示',
-              type: 'warning'
-            }).then(() => {
-              // 确认
-            }).catch(() => {
-              localStorage.setItem('muteUrgencyNotice', urgencyNotice);
-            });
           }
         }
       }, (res) => {
@@ -242,6 +209,7 @@ export default {
 
   #main {
     padding: 8px;
+    min-height: 100vh;
   }
 }
 </style>

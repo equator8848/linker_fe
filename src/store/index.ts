@@ -34,7 +34,8 @@ export default createStore({
         expiredAt: cachedExpiredAt ? cachedExpiredAt : null,
         refreshingInterval: null,
         refreshSwitch: true,
-        currentProject: cachedCurrentProject ? JSON.parse(cachedCurrentProject) : null
+        currentProject: cachedCurrentProject ? JSON.parse(cachedCurrentProject) : null,
+        projectList: []
     },
     getters: {
         userInfo(state) {
@@ -57,6 +58,9 @@ export default createStore({
         },
         currentProject(state) {
             return state.currentProject;
+        },
+        projectList(state) {
+            return state.projectList;
         },
         baseUrl(state) {
             return state.baseUrl;
@@ -82,6 +86,9 @@ export default createStore({
         setCurrentProject(state, val) {
             state.currentProject = val;
             localStorage.setItem('current_project', JSON.stringify(val));
+        },
+        setProjectList(state, val) {
+            state.projectList = val;
         },
         setBaseUrl(state, val) {
             console.log("切换baseUrl", val);

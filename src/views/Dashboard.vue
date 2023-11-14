@@ -5,8 +5,8 @@
         <el-descriptions class="margin-top" :column="2" border>
           <template #title>
             <div style="display: flex;align-items: center">
-              <span style="margin: 2px">当前项目：{{ currentProject.name }}</span>
-              <el-icon v-clipboard:copy="currentProject.name" v-clipboard:success="copySuccess"
+              <span style="margin: 2px">当前项目：{{ currentProjectDetails.name }}</span>
+              <el-icon v-clipboard:copy="currentProjectDetails.name" v-clipboard:success="copySuccess"
                        v-clipboard:error="copyFail">
                 <CopyDocument/>
               </el-icon>
@@ -17,7 +17,8 @@
                        @click="handleClickCreateInstance()">创建实例
             </el-button>
             <el-button type="info"
-                       @click="handleClickCreateInstance()">编辑项目
+                       v-show="currentProjectDetails.isOwner"
+                       @click="handleClickUpdateProject()">编辑项目
             </el-button>
           </template>
 
@@ -123,6 +124,15 @@
     </el-divider>
 
     <div id="instance-list">
+      <div>
+        <el-input
+            placeholder="请输入内容后键入回车键进行搜索"
+            @keydown.enter="getInstanceList(this.currentProject.id)"
+            v-model="instanceListSearch"
+            clearable>
+        </el-input>
+      </div>
+
       <el-empty description="空空如也" v-show="instanceList.length===0"></el-empty>
       <div class="instance-details" v-for="instance in instanceList" :key="instance.id">
         <el-descriptions class="margin-top" :column="2" border>
@@ -137,10 +147,11 @@
           </template>
           <template #extra>
             <el-button type="info"
-                       @click="handleClickUpdateInstance()">编辑实例
+                       v-show="instance.isOwner"
+                       @click="handleClickUpdateInstance(instance)">编辑实例
             </el-button>
             <el-button type="success"
-                       @click="handleClickCreateInstance()">实例构建
+                       @click="handleClickBuildInstance(instance)">实例构建
             </el-button>
           </template>
 
@@ -219,7 +230,7 @@
       </div>
     </div>
 
-    <el-dialog title="实例管理" v-model="instanceOpsDialogVisible">
+    <el-dialog :title="getInstanceOpsName(this.instanceOpsForm.id)" v-model="instanceOpsDialogVisible">
       <el-form ref="instanceOpsForm" :model="instanceOpsForm" label-position="top"
                :rules="instanceOpsFormRules">
         <el-form-item label="实例名称" prop="name">
@@ -274,7 +285,9 @@
           </div>
         </el-form-item>
 
-        <el-button type="primary" @click="handleCreateInstance" style="width: 100%">创建实例</el-button>
+        <el-button type="primary" @click="handleOpsInstance" style="width: 100%">
+          {{ getInstanceOpsName(this.instanceOpsForm.id) }}
+        </el-button>
       </el-form>
     </el-dialog>
   </div>
@@ -287,10 +300,11 @@ import {useStore} from "vuex";
 
 export default {
   name: "DashBoard",
+  inject: ['reload'],
   mounted() {
     this.store = useStore();
     this.getProjectDetails(this.currentProject.id);
-    this.getInstanceList();
+    this.getInstanceList(this.currentProject.id);
   },
   computed: {
     currentProject() {
@@ -302,6 +316,8 @@ export default {
     return {
       currentProjectDetails: {},
       instanceOpsDialogVisible: false,
+
+      instanceListSearch: null,
       instanceList: [],
 
       defaultBranchOptions: [
@@ -348,11 +364,18 @@ export default {
   watch: {
     currentProject(newVal, oldVal) {
       this.getProjectDetails(newVal.id);
+      this.getInstanceList(newVal.id);
+
     }
   },
   methods: {
     handleClickCreateInstance() {
       this.instanceOpsDialogVisible = true;
+    },
+    handleClickUpdateProject() {
+      this.$router.push({
+        path: `/home/projectOps/${this.currentProject.id}`,
+      })
     },
     copySuccess() {
       this.$message({
@@ -377,9 +400,10 @@ export default {
         //
       });
     },
-    getInstanceList() {
+    getInstanceList(projectId) {
       this.$httpUtil.jsonPost('/linker-server/api/v1/instance/list', {
-        projectId: this.currentProject.id
+        projectId,
+        searchKeyword: this.instanceListSearch
       }).then(res => {
         if (res) {
           this.instanceList = res.data;
@@ -406,36 +430,87 @@ export default {
     removeProxyPassConfig(idx) {
       this.instanceOpsForm.proxyConfig.proxyPassConfigs.splice(idx, 1);
     },
-    handleCreateInstance() {
+    refresh() {
+      this.reload();
+    },
+    handleOpsInstance() {
       this.$refs['instanceOpsForm'].validate((valid) => {
         if (valid) {
-          this.instanceOpsForm.projectId = this.currentProject.id;
-          this.$httpUtil.jsonPost('/linker-server/api/v1/instance/create', this.instanceOpsForm).then(res => {
-            if (res) {
-              this.$notify({
-                title: '成功',
-                message: '实例创建',
-                type: 'success'
-              });
-              setTimeout(() => {
-                this.instanceOpsForm.name = null;
-                this.instanceOpsForm.intro = null;
-                this.instanceOpsForm.scmBranch = null;
-                this.instanceOpsForm.proxyConfig = null;
-                this.instanceOpsForm.accessLevel = 'PUBLIC'
-                this.instanceOpsDialogVisible = false;
-                this.reload();
-              }, 1500)
-            }
-          }, res => {
-            console.log(res);
-          }).finally(() => {
-            //
-          });
+          const instanceId = this.instanceOpsForm.id;
+          if (instanceId) {
+            this.doUpdateInstance(instanceId);
+          } else {
+            this.doCreateInstance();
+          }
         } else {
           return false;
         }
       });
+    },
+    doCreateInstance() {
+      this.instanceOpsForm.projectId = this.currentProject.id;
+      this.$httpUtil.jsonPost('/linker-server/api/v1/instance/create', this.instanceOpsForm).then(res => {
+        if (res) {
+          this.$notify({
+            title: '成功',
+            message: '实例创建成功',
+            type: 'success'
+          });
+          setTimeout(() => {
+            this.instanceOpsForm.name = null;
+            this.instanceOpsForm.intro = null;
+            this.instanceOpsForm.scmBranch = null;
+            this.instanceOpsForm.proxyConfig = null;
+            this.instanceOpsForm.accessLevel = 'PUBLIC'
+            this.instanceOpsDialogVisible = false;
+            this.reload();
+          }, 1500)
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
+    doUpdateInstance(instanceId) {
+      this.instanceOpsForm.id = instanceId;
+      this.instanceOpsForm.projectId = this.currentProject.id;
+      this.$httpUtil.jsonPut('/linker-server/api/v1/instance/update', this.instanceOpsForm).then(res => {
+        if (res) {
+          this.$notify({
+            title: '成功',
+            message: '实例更新成功',
+            type: 'success'
+          });
+          setTimeout(() => {
+            this.instanceOpsForm.id = null;
+            this.instanceOpsForm.name = null;
+            this.instanceOpsForm.intro = null;
+            this.instanceOpsForm.scmBranch = null;
+            this.instanceOpsForm.proxyConfig.proxyPassConfigs = [];
+            this.instanceOpsForm.accessLevel = 'PUBLIC'
+            this.instanceOpsDialogVisible = false;
+            this.refresh();
+          }, 1500)
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
+    getInstanceOpsName(instanceId) {
+      if (instanceId) {
+        return "更新实例"
+      }
+      return "创建实例"
+    },
+    handleClickUpdateInstance(instance) {
+      this.instanceOpsDialogVisible = true;
+      this.instanceOpsForm = instance;
+    },
+    handleClickBuildInstance(instance) {
+      //
     }
   }
 }

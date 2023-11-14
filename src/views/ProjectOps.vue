@@ -1,7 +1,7 @@
 <template>
   <div id="container">
     <div id="header">
-      <el-page-header @back="goBack" title="返回" content="创建项目">
+      <el-page-header @back="goBack" title="返回" :content="getOpsName()">
       </el-page-header>
     </div>
     <div id="main">
@@ -92,7 +92,7 @@
           </div>
         </el-form-item>
 
-        <el-button type="primary" @click="handleCreateProject" style="width: 100%">创建项目</el-button>
+        <el-button type="primary" @click="handleOpsProject" style="width: 100%">{{ this.getOpsName() }}</el-button>
       </el-form>
     </div>
   </div>
@@ -107,6 +107,7 @@ export default {
     let projectId = this.$route.params.projectId;
     if (projectId) {
       this.projectOpsForm.id = parseInt(projectId);
+      this.getProjectDetails(projectId);
     }
   },
   data() {
@@ -192,7 +193,14 @@ export default {
     }
   },
   methods: {
-    handleCreateProject() {
+    getOpsName() {
+      if (this.projectOpsForm.id) {
+        return "更新项目"
+      } else {
+        return "创建项目"
+      }
+    },
+    handleOpsProject() {
       this.$refs['projectOpsForm'].validate((valid) => {
         if (valid) {
           if (this.projectOpsForm.proxyConfig.proxyPassConfigs.length === 0) {
@@ -203,28 +211,75 @@ export default {
             });
             return;
           }
-
-          this.$httpUtil.jsonPost('/linker-server/api/v1/project/create', this.projectOpsForm).then(res => {
-            if (res) {
-              this.$notify({
-                title: '成功',
-                message: '项目创建成功，即将返回首页',
-                type: 'success'
-              });
-              setTimeout(() => {
-                this.$router.push({
-                  path: '/home/dashboard',
-                }, 1500)
-              })
-            }
-          }, res => {
-            console.log(res);
-          }).finally(() => {
-            //
-          });
+          if (this.projectOpsForm.id) {
+            this.doUpdateProject();
+          } else {
+            this.doCreateProject();
+          }
         } else {
           return false;
         }
+      });
+    },
+    getProjectDetails(projectId) {
+      this.$httpUtil.get('/linker-server/api/v1/project/details', {projectId}).then(res => {
+        if (res) {
+          this.projectOpsForm = res.data;
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
+    doCreateProject() {
+      this.$httpUtil.jsonPost('/linker-server/api/v1/project/create', this.projectOpsForm).then(res => {
+        if (res) {
+          this.$notify({
+            title: '成功',
+            message: '项目创建成功，即将返回首页',
+            type: 'success'
+          });
+          setTimeout(() => {
+            this.$router.push({
+              path: '/home/dashboard',
+            }, 1500)
+          })
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
+    doUpdateProject() {
+      this.$httpUtil.jsonPut('/linker-server/api/v1/project/update', this.projectOpsForm).then(res => {
+        if (res) {
+          this.$notify({
+            title: '成功',
+            message: '项目更新成功，即将返回首页',
+            type: 'success'
+          });
+          setTimeout(() => {
+            this.updateProjectList();
+            this.$router.push({
+              path: '/home/dashboard',
+            }, 1500)
+          })
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
+    updateProjectList() {
+      this.$httpUtil.get('/linker-server/api/v1/project/all', {}).then(res => {
+        if (res) {
+          this.$store.commit("setProjectList", res.data);
+        }
+      }, (res) => {
+        console.log(res);
       });
     },
     goBack() {

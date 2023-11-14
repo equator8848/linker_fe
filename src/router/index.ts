@@ -89,7 +89,7 @@ const routes: Array<RouteRecordRaw> = [
                 component: InstanceCreate
             },
             {
-                path: '/home/projectOps',
+                path: '/home/projectOps/:projectId?',
                 name: 'ProjectOps',
                 component: ProjectOps
             },
