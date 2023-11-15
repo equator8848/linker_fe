@@ -1,6 +1,6 @@
 <template>
   <div id="container">
-    <div id="current-project-details" v-show="currentProject">
+    <div id="current-project-details" v-show="currentProject.id">
       <div>
         <el-descriptions class="margin-top" :column="2" border>
           <template #title>
@@ -15,6 +15,10 @@
           <template #extra>
             <el-button type="success"
                        @click="handleClickCreateInstance()">创建实例
+            </el-button>
+            <el-button type="danger"
+                       v-show="currentProjectDetails.isOwner"
+                       @click="handleClickDeleteProject(currentProjectDetails.id)">删除
             </el-button>
             <el-button type="info"
                        v-show="currentProjectDetails.isOwner"
@@ -149,6 +153,10 @@
             <el-button type="info"
                        v-show="instance.isOwner"
                        @click="handleClickUpdateInstance(instance)">编辑实例
+            </el-button>
+            <el-button type="danger"
+                       v-show="instance.isOwner"
+                       @click="handleClickDeleteInstance(instance.id)">删除
             </el-button>
             <el-button type="success"
                        @click="handleClickBuildInstance(instance)">实例构建
@@ -377,6 +385,76 @@ export default {
         path: `/home/projectOps/${this.currentProject.id}`,
       })
     },
+    updateProjectList() {
+      this.$httpUtil.get('/linker-server/api/v1/project/all', {}).then(res => {
+        if (res) {
+          const newProjectList = res.data;
+          this.$store.commit("setProjectList", newProjectList);
+          if (newProjectList && newProjectList.length !== 0) {
+            console.log("setCurrentProject", newProjectList[0])
+            this.$store.commit("setCurrentProject", newProjectList[0]);
+          } else {
+            console.log("setCurrentProject {}")
+            this.$store.commit("setCurrentProject", {});
+          }
+        }
+      }, (res) => {
+        console.log(res);
+      });
+    },
+    handleClickDeleteProject(projectId) {
+      this.$confirm('正在删除项目，是否继续？', '确认是否删除项目', {
+        confirmButtonText: '确认删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$httpUtil.urlEncoderDelete('/linker-server/api/v1/project/delete', {
+          projectId
+        }).then(res => {
+          if (res) {
+            this.$notify.success({
+              title: '成功',
+              message: '项目删除成功'
+            });
+            this.updateProjectList();
+          }
+        }, res => {
+          console.log(res);
+        }).finally(() => {
+          setTimeout(() => {
+            this.reload();
+          }, 1500);
+        });
+      }).catch(() => {
+        //
+      });
+    },
+    handleClickDeleteInstance(instanceId) {
+      this.$confirm('正在删除实例，是否继续？', '确认是否删除实例', {
+        confirmButtonText: '确认删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$httpUtil.urlEncoderDelete('/linker-server/api/v1/instance/delete', {
+          instanceId
+        }).then(res => {
+          if (res) {
+            this.$notify.success({
+              title: '成功',
+              message: '实例删除成功'
+            });
+          }
+        }, res => {
+          console.log(res);
+        }).finally(() => {
+          setTimeout(() => {
+            this.reload();
+          }, 1500);
+        });
+      }).catch(() => {
+        //
+      });
+    },
     copySuccess() {
       this.$message({
         type: 'success',
@@ -390,6 +468,9 @@ export default {
       });
     },
     getProjectDetails(projectId) {
+      if (!projectId) {
+        return;
+      }
       this.$httpUtil.get('/linker-server/api/v1/project/details', {projectId}).then(res => {
         if (res) {
           this.currentProjectDetails = res.data;
@@ -401,6 +482,9 @@ export default {
       });
     },
     getInstanceList(projectId) {
+      if (!projectId) {
+        return;
+      }
       this.$httpUtil.jsonPost('/linker-server/api/v1/instance/list', {
         projectId,
         searchKeyword: this.instanceListSearch

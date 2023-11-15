@@ -240,6 +240,7 @@ export default {
             message: '项目创建成功，即将返回首页',
             type: 'success'
           });
+          this.updateProjectList();
           setTimeout(() => {
             this.$router.push({
               path: '/home/dashboard',
@@ -260,8 +261,8 @@ export default {
             message: '项目更新成功，即将返回首页',
             type: 'success'
           });
+          this.updateProjectList();
           setTimeout(() => {
-            this.updateProjectList();
             this.$router.push({
               path: '/home/dashboard',
             }, 1500)

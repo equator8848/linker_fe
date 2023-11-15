@@ -25,8 +25,9 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item :v-show="projectList.length!==0" v-for="project in projectList" :key="project.id">
-                <span :style="getProjectStyle(project)" @click="changeProject(project)">{{ project.name }}</span>
+              <el-dropdown-item :v-show="projectList.length!==0" v-for="project in projectList"
+                                :key="project.id" @click="changeProject(project)">
+                <span :style="getProjectStyle(project)">{{ project.name }}</span>
               </el-dropdown-item>
               <el-dropdown-item divided @click="gotoCreateProjectPage">新建项目</el-dropdown-item>
             </el-dropdown-menu>
