@@ -19,7 +19,7 @@
     </div>
     <div id="footer">
       <div id="foot-left">
-        <h5>支持企业私有化部署，3999元协助部署，维保1年</h5>
+        <h5>支持企业私有化部署，4999元协助部署，维保1年</h5>
         <h5>电子邮箱： 841116931@qq.com</h5>
         <img src="../assets/wx.jpg" width="128px" height="128px">
       </div>

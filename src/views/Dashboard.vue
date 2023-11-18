@@ -237,7 +237,22 @@
                 访问地址
               </div>
             </template>
-            <el-button @click="jumpToNewTab(instance.accessUrl)">{{ instance.accessUrl }}</el-button>
+            <el-button @click="jumpToNewTab(instance.accessUrl)" size="small" type="primary">新窗口打开
+              {{ instance.accessUrl }}
+            </el-button>
+          </el-descriptions-item>
+
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <Setting/>
+                </el-icon>
+                构建信息
+              </div>
+            </template>
+            <a target="_blank"
+               :href="buildInstancePipelineBuildInfoUrl(instance)">{{ buildInstancePipelineBuildInfo(instance) }}</a>
           </el-descriptions-item>
 
         </el-descriptions>
@@ -443,6 +458,20 @@ export default {
       }).catch(() => {
         //
       });
+    },
+    buildInstancePipelineBuildInfo(instance) {
+      if (!instance || !instance.instancePipelineBuildResult) {
+        return "";
+      }
+      const instancePipelineBuildResult = instance.instancePipelineBuildResult;
+      return `流水线序号：${instancePipelineBuildResult.id}，提交时间：${instancePipelineBuildResult.submitTimeStr}前，
+      耗时：${instancePipelineBuildResult.durationStr}，构建状态：${instancePipelineBuildResult.pipelineResultStr}`;
+    },
+    buildInstancePipelineBuildInfoUrl(instance) {
+      if (!instance || !instance.instancePipelineBuildResult) {
+        return "";
+      }
+      return instance.instancePipelineBuildResult.pipelineUrl;
     },
     handleClickDeleteInstance(instanceId) {
       this.$confirm('正在删除实例，是否继续？', '确认是否删除实例', {
