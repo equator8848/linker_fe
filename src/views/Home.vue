@@ -38,7 +38,7 @@
           <el-icon>
             <Odometer/>
           </el-icon>
-          <span>仪表盘</span>
+          <span>主页</span>
         </el-menu-item>
 
 

@@ -228,6 +228,18 @@
             {{ instance.scmBranch }}
           </el-descriptions-item>
 
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <TopRight/>
+                </el-icon>
+                访问地址
+              </div>
+            </template>
+            <el-button @click="jumpToNewTab(instance.accessUrl)">{{ instance.accessUrl }}</el-button>
+          </el-descriptions-item>
+
         </el-descriptions>
         <div class="instance-proxy-config">
           <el-table :data="instance.proxyConfig.proxyPassConfigs" style="width: 100%" max-height="250">
@@ -377,6 +389,9 @@ export default {
     }
   },
   methods: {
+    jumpToNewTab(url) {
+      window.open(url, '_blank');
+    },
     handleClickCreateInstance() {
       this.instanceOpsDialogVisible = true;
     },
@@ -423,7 +438,7 @@ export default {
         }).finally(() => {
           setTimeout(() => {
             this.reload();
-          }, 1500);
+          }, 1000);
         });
       }).catch(() => {
         //
@@ -449,7 +464,7 @@ export default {
         }).finally(() => {
           setTimeout(() => {
             this.reload();
-          }, 1500);
+          }, 1000);
         });
       }).catch(() => {
         //
@@ -544,11 +559,11 @@ export default {
             this.instanceOpsForm.name = null;
             this.instanceOpsForm.intro = null;
             this.instanceOpsForm.scmBranch = null;
-            this.instanceOpsForm.proxyConfig = null;
+            this.instanceOpsForm.proxyConfig.proxyPassConfigs = [];
             this.instanceOpsForm.accessLevel = 'PUBLIC'
             this.instanceOpsDialogVisible = false;
             this.reload();
-          }, 1500)
+          }, 1000)
         }
       }, res => {
         console.log(res);
@@ -575,7 +590,7 @@ export default {
             this.instanceOpsForm.accessLevel = 'PUBLIC'
             this.instanceOpsDialogVisible = false;
             this.refresh();
-          }, 1500)
+          }, 1000)
         }
       }, res => {
         console.log(res);
@@ -594,7 +609,22 @@ export default {
       this.instanceOpsForm = instance;
     },
     handleClickBuildInstance(instance) {
-      //
+      this.$httpUtil.urlEncoderPut('/linker-server/api/v1/instance/build-pipeline', {
+        instanceId: instance.id
+      }).then(res => {
+        if (res) {
+          this.$notify({
+            title: '成功',
+            message: '成功触发构建',
+            type: 'success'
+          });
+          this.refresh();
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
     }
   }
 }
