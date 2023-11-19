@@ -2,17 +2,10 @@ import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
 import Index from '@/views/Index.vue'
 import Boarding from '@/views/Boarding.vue'
 import Help from '@/views/Help.vue'
-import InnerHelp from '@/views/Help.vue'
-import WorkOrder from '@/views/WorkOrder.vue'
 import Intro from '@/views/Intro.vue'
 import Home from '@/views/Home.vue'
-import ImageMarket from '@/views/ImageMarket.vue'
-import InstanceList from '@/views/admin/InstanceList.vue'
-import InstanceVolumeList from '@/views/InstanceVolumeList.vue'
-import InstanceCreate from '@/views/InstanceCreate.vue'
 import ProjectOps from '@/views/ProjectOps.vue'
 import Dashboard from '@/views/Dashboard.vue'
-import OperationHistory from '@/views/OperationHistory.vue'
 import Me from '@/views/Me.vue'
 import AdminHome from '@/views/admin/AdminHome'
 import DashboardStatistics from '@/views/admin/DashboardStatistics'
@@ -59,44 +52,9 @@ const routes: Array<RouteRecordRaw> = [
                 component: Dashboard
             },
             {
-                path: '/home/imageMarket',
-                name: 'ImageMarket',
-                component: ImageMarket
-            },
-            {
-                path: '/home/help',
-                name: 'HelpInner',
-                component: InnerHelp
-            },
-            {
-                path: '/home/workOrder',
-                name: 'WorkOrder',
-                component: WorkOrder
-            },
-            {
-                path: '/home/instanceList',
-                name: 'InstanceList',
-                component: InstanceList
-            },
-            {
-                path: '/home/instanceVolumeList',
-                name: 'InstanceVolumeList',
-                component: InstanceVolumeList
-            },
-            {
-                path: '/home/instanceCreate/:imageId',
-                name: 'InstanceCreate',
-                component: InstanceCreate
-            },
-            {
                 path: '/home/projectOps/:projectId?',
                 name: 'ProjectOps',
                 component: ProjectOps
-            },
-            {
-                path: '/home/operationHistory',
-                name: 'OperationHistory',
-                component: OperationHistory
             },
             {
                 path: '/home/me',

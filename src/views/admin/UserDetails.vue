@@ -14,6 +14,10 @@
         <el-descriptions-item label="用户ID">{{ userInfo.id }}</el-descriptions-item>
         <el-descriptions-item label="用户名称">{{ userInfo.userName }}</el-descriptions-item>
         <el-descriptions-item label="邮箱">{{ userInfo.email }}</el-descriptions-item>
+        <el-descriptions-item label="用户角色类型">{{
+            getUserRole(userInfo.roleType)
+          }}
+        </el-descriptions-item>
         <el-descriptions-item label="状态">{{ userInfo.status === 1 ? "已激活" : "已冻结" }}</el-descriptions-item>
       </el-descriptions>
     </div>
@@ -26,6 +30,13 @@
         </el-form-item>
         <el-form-item label="密码（设置则重置密码）" label-width="120px" prop="userPassword">
           <el-input v-model="updateUserInfoForm.userPassword" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="角色类型" label-width="120px" prop="roleType">
+          <el-radio-group v-model="updateUserInfoForm.roleType">
+            <el-radio :label="2">普通用户</el-radio>
+            <el-radio :label="4">系统管理员</el-radio>
+            <el-radio :label="8">超级管理员</el-radio>
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="是否激活">
           <el-radio-group v-model="updateUserInfoForm.status">
@@ -45,7 +56,7 @@
 </template>
 
 <script>
-import {userStatus} from "@/common/constant";
+import {roleType, userStatus} from "@/common/constant";
 
 export default {
   name: "UserDetails",
@@ -79,6 +90,18 @@ export default {
     handleClickEditUserInfoButton() {
       this.updateUserInfoForm = Object.assign({}, this.userInfo);
       this.updateUserInfoFormVisible = true;
+    },
+    getUserRole(userRole) {
+      switch (userRole) {
+        case roleType.VISITOR:
+          return "访客";
+        case roleType.SYSTEM_ADMIN:
+          return "系统管理员";
+        case roleType.SUPER_ADMIN:
+          return "超级管理员";
+        default:
+          return "普通用户";
+      }
     },
     changeUserStatus(userStatus) {
       this.$httpUtil.urlEncoderPut('/linker-server/api/v1/user/update-status', {
@@ -116,7 +139,7 @@ export default {
             phoneNumberPrefix: this.updateUserInfoForm.phoneNumberPrefix,
             phoneNumber: this.updateUserInfoForm.phoneNumber,
             email: this.updateUserInfoForm.email,
-            relationId: this.updateUserInfoForm.relationId,
+            roleType: this.updateUserInfoForm.roleType,
             status: this.updateUserInfoForm.status
           }).then(res => {
             if (res.status === 2000) {

@@ -67,6 +67,13 @@
         <el-form-item label="邮箱" label-width="120px" prop="email">
           <el-input v-model="addUserForm.email" autocomplete="off"></el-input>
         </el-form-item>
+        <el-form-item label="角色类型" label-width="120px" prop="roleType">
+          <el-radio-group v-model="addUserForm.roleType">
+            <el-radio :label="2">普通用户</el-radio>
+            <el-radio :label="4">系统管理员</el-radio>
+            <el-radio :label="8">超级管理员</el-radio>
+          </el-radio-group>
+        </el-form-item>
       </el-form>
       <template #footer>
       <span class="dialog-footer">
@@ -93,7 +100,8 @@ export default {
         userPassword: '',
         phoneNumberPrefix: '86',
         phoneNumber: '',
-        email: ''
+        email: '',
+        roleType: 2
       },
       addUserFormRules: {
         userName: [{required: true, message: '请输入用户名，可以是中文或者英文', trigger: 'blur'}],

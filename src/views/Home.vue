@@ -48,7 +48,7 @@
               <el-button size="small" type="warning" @click="handleLogout">退出登录</el-button>
             </div>
             <div style="margin-top: 2px">
-              <el-button size="small" type="info" @click="handleGotoAdmin">管理后台</el-button>
+              <el-button size="small" type="info" @click="handleGotoAdmin" v-show="isAdmin()">管理后台</el-button>
             </div>
           </div>
           <template #reference>
@@ -69,6 +69,8 @@
 
 <script>
 import {useStore} from 'vuex'
+import {isAdmin} from '@/common/roleTypeAuth'
+
 
 export default {
   name: "AircraftCarrier",
@@ -110,6 +112,9 @@ export default {
     }
   },
   methods: {
+    isAdmin() {
+      return isAdmin();
+    },
     handleSelect(key, keyPath) {
       let refreshingInterval = this.store.getters['refreshingInterval'];
       if (refreshingInterval) {
