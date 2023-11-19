@@ -42,9 +42,14 @@
         </el-menu-item>
 
 
-        <el-popover trigger="hover" placement="bottom" :width="120" :hide-after="300">
-          <div style="display: flex;flex-direction: row;justify-content: center;align-items: center;">
-            <el-button size="small" type="warning" @click="handleLogout">退出登录</el-button>
+        <el-popover trigger="hover" placement="bottom" :hide-after="300">
+          <div class="userOpsBoard">
+            <div>
+              <el-button size="small" type="warning" @click="handleLogout">退出登录</el-button>
+            </div>
+            <div style="margin-top: 2px">
+              <el-button size="small" type="info" @click="handleGotoAdmin">管理后台</el-button>
+            </div>
           </div>
           <template #reference>
             <el-button type="primary" @click="gotoUserCenter">{{ userInfo.nickName }}</el-button>
@@ -168,6 +173,11 @@ export default {
           path: '/home/boarding',
         })
       }, 1000);
+    },
+    handleGotoAdmin() {
+      this.$router.push({
+        path: '/admin/dashboard',
+      })
     }
   }
 }
@@ -180,6 +190,13 @@ export default {
 
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+
+.userOpsBoard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 #container {
@@ -207,6 +224,7 @@ export default {
       align-items: center;
     }
   }
+
 
   #main {
     padding: 8px;

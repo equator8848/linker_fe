@@ -64,6 +64,26 @@ const serverDomain = {
     BACKUP3: 'backup_domain3',
 }
 
+const roleType = {
+    VISITOR: 1,
+    USER: 2,
+    SYSTEM_ADMIN: 4,
+    SUPER_ADMIN: 8,
+}
+
+const userStatus = {
+    DISABLE: 0,
+    NORMAL: 1,
+}
+
+const loginStatus = {
+    SUCCESS: 0,
+    USER_NOT_FOUND: 1,
+    PASSWORD_NOT_MATCH: 2,
+    FORBIDDEN: 3,
+    NEED_SET_PASSWORD: 4
+}
+
 export {
     responseCode,
     operationStatusStr,
@@ -73,6 +93,9 @@ export {
     instanceStatus,
     planing,
     instanceVolumeStatus,
-    serverDomain
+    serverDomain,
+    roleType,
+    loginStatus,
+    userStatus
 }
 

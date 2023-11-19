@@ -67,6 +67,9 @@ export default createStore({
         }
     },
     mutations: {
+        setUserInfo(state, userInfo) {
+            state.userInfo = userInfo;
+        },
         setLoginInfo(state, loginResponseData) {
             state.userInfo = loginResponseData.loginUser;
             state.token = loginResponseData.token;

@@ -13,16 +13,16 @@
             </div>
           </template>
           <template #extra>
-            <el-button type="success"
-                       @click="handleClickCreateInstance()">创建实例
-            </el-button>
             <el-button type="danger"
                        v-show="currentProjectDetails.isOwner"
                        @click="handleClickDeleteProject(currentProjectDetails.id)">删除
             </el-button>
             <el-button type="info"
                        v-show="currentProjectDetails.isOwner"
-                       @click="handleClickUpdateProject()">编辑项目
+                       @click="handleClickUpdateProject()">编辑
+            </el-button>
+            <el-button type="success"
+                       @click="handleClickCreateInstance()">创建实例
             </el-button>
           </template>
 
@@ -152,14 +152,14 @@
           <template #extra>
             <el-button type="info"
                        v-show="instance.isOwner"
-                       @click="handleClickUpdateInstance(instance)">编辑实例
+                       @click="handleClickUpdateInstance(instance)">编辑
             </el-button>
             <el-button type="danger"
                        v-show="instance.isOwner"
                        @click="handleClickDeleteInstance(instance.id)">删除
             </el-button>
             <el-button type="success"
-                       @click="handleClickBuildInstance(instance)">实例构建
+                       @click="handleClickBuildInstance(instance)">触发构建
             </el-button>
           </template>
 

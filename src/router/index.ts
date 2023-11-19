@@ -7,14 +7,19 @@ import WorkOrder from '@/views/WorkOrder.vue'
 import Intro from '@/views/Intro.vue'
 import Home from '@/views/Home.vue'
 import ImageMarket from '@/views/ImageMarket.vue'
-import InstanceList from '@/views/InstanceList.vue'
+import InstanceList from '@/views/admin/InstanceList.vue'
 import InstanceVolumeList from '@/views/InstanceVolumeList.vue'
 import InstanceCreate from '@/views/InstanceCreate.vue'
 import ProjectOps from '@/views/ProjectOps.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import OperationHistory from '@/views/OperationHistory.vue'
 import Me from '@/views/Me.vue'
-import LoginByToken from '@/views/LoginByToken.vue'
+import AdminHome from '@/views/admin/AdminHome'
+import DashboardStatistics from '@/views/admin/DashboardStatistics'
+import AppSetting from '@/views/admin/AppSetting'
+import LoginLogList from '@/views/admin/LoginLogList'
+import UserList from '@/views/admin/UserList'
+import UserDetails from '@/views/admin/UserDetails'
 
 import store from '../store/index'
 
@@ -39,11 +44,6 @@ const routes: Array<RouteRecordRaw> = [
                 path: '/boarding',
                 name: 'Boarding',
                 component: Boarding
-            },
-            {
-                path: '/loginByToken/:token',
-                name: 'LoginByToken',
-                component: LoginByToken
             },
         ]
     },
@@ -103,6 +103,39 @@ const routes: Array<RouteRecordRaw> = [
                 name: 'Me',
                 component: Me
             }
+        ]
+    },
+    {
+        path: '/admin',
+        name: 'AdminHome',
+        component: AdminHome,
+        redirect: '/admin/dashboard',
+        children: [
+            {
+                path: '/admin/dashboard',
+                name: 'DashboardStatistics',
+                component: DashboardStatistics
+            },
+            {
+                path: '/admin/userList',
+                name: 'UserList',
+                component: UserList
+            },
+            {
+                path: '/admin/userDetails/:uid',
+                name: 'UserDetails',
+                component: UserDetails
+            },
+            {
+                path: '/admin/appSetting',
+                name: 'AppSetting',
+                component: AppSetting
+            },
+            {
+                path: '/admin/loginLogList',
+                name: 'LoginLogList',
+                component: LoginLogList
+            },
         ]
     },
     {
