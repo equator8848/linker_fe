@@ -42,6 +42,7 @@
           </div>
         </template>
         <template #default="scope">
+          <el-button size="small" type="danger" @click="handleDeleteSettings(scope.$index, scope.row)">删除</el-button>
           <el-button size="small" @click="handleUpdateSettings(scope.$index, scope.row)">修改</el-button>
         </template>
       </el-table-column>
@@ -124,6 +125,33 @@ export default {
     },
     handleClickAddButton() {
       this.dialogFormVisible = true;
+    },
+    handleDeleteSettings(idx, item) {
+      this.$confirm('正在删除条目，是否继续？', '确认是否删除配置条目', {
+        confirmButtonText: '确认删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$httpUtil.urlEncoderDelete('/linker-server/api/v1/app-settings/delete', {
+          id: item.id
+        }).then(res => {
+          if (res) {
+            this.$notify.success({
+              title: '成功',
+              message: '配置删除成功'
+            });
+            this.refresh();
+          }
+        }, res => {
+          console.log(res);
+        }).finally(() => {
+          setTimeout(() => {
+            this.reload();
+          }, 1000);
+        });
+      }).catch(() => {
+        //
+      });
     },
     handleUpdateSettings(idx, item) {
       this.$prompt('请输入新的值', '提示', {
