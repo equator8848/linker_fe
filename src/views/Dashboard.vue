@@ -265,7 +265,7 @@
       </div>
     </div>
 
-    <el-dialog :title="getInstanceOpsName(this.instanceOpsForm.id)" v-model="instanceOpsDialogVisible">
+    <el-dialog :title="getInstanceOpsName(this.instanceOpsForm.id)" v-model="instanceOpsDialogVisible" width="80%">
       <el-form ref="instanceOpsForm" :model="instanceOpsForm" label-position="top"
                :rules="instanceOpsFormRules">
         <el-form-item label="实例名称" prop="name">
@@ -301,14 +301,22 @@
           <el-table :data="instanceOpsForm.proxyConfig.proxyPassConfigs" style="width: 100%" max-height="250">
             <el-table-column prop="location" label="匹配模式（nginx的location）"/>
             <el-table-column prop="proxyPass" label="API代理（nginx的proxy_pass）"/>
+            <el-table-column prop="rewriteConfig" label="重写配置（nginx的rewrite）"/>
             <el-table-column fixed="right" label="操作" width="120">
               <template #default="scope">
                 <el-button
                     link
-                    type="primary"
+                    type="danger"
                     size="small"
                     @click.prevent="removeProxyPassConfig(scope.$index)">
                   移除
+                </el-button>
+                <el-button
+                    link
+                    type="primary"
+                    size="small"
+                    @click.prevent="copyProxyPassConfig(scope.$index)">
+                  复制
                 </el-button>
               </template>
             </el-table-column>
@@ -316,6 +324,7 @@
           <div id="proxyPassConfigBoard">
             <el-input label="匹配模式" ref="locationInput" v-model="locationInput"></el-input>
             <el-input label="API代理" ref="proxyPassInput" v-model="proxyPassInput"></el-input>
+            <el-input label="重写配置" ref="rewriteConfig" v-model="rewriteConfigInput"></el-input>
             <el-button type="success" style="width: 20%" @click="addProxyPassConfig">新增配置</el-button>
           </div>
         </el-form-item>
@@ -372,6 +381,7 @@ export default {
 
       locationInput: null,
       proxyPassInput: null,
+      rewriteConfigInput: null,
       instanceOpsForm: {
         projectId: null,
         id: null,
@@ -544,19 +554,27 @@ export default {
     },
 
     addProxyPassConfig() {
-      if (!this.locationInput || !this.proxyPassInput) {
+      if (!this.locationInput) {
         return;
       }
       const proxyPassConfig = {
         location: this.locationInput,
-        proxyPass: this.proxyPassInput
+        proxyPass: this.proxyPassInput,
+        rewriteConfig: this.rewriteConfigInput
       }
       this.instanceOpsForm.proxyConfig.proxyPassConfigs.push(proxyPassConfig);
       this.proxyPassInput = null;
       this.locationInput = null;
+      this.rewriteConfigInput = null;
     },
     removeProxyPassConfig(idx) {
       this.instanceOpsForm.proxyConfig.proxyPassConfigs.splice(idx, 1);
+    },
+    copyProxyPassConfig(idx) {
+      const proxyPassConfig = this.instanceOpsForm.proxyConfig.proxyPassConfigs[idx];
+      this.locationInput = proxyPassConfig.location;
+      this.proxyPassInput = proxyPassConfig.proxyPass;
+      this.rewriteConfigInput = proxyPassConfig.rewriteConfig;
     },
     refresh() {
       this.reload();

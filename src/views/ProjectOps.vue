@@ -57,6 +57,10 @@
           <el-input v-model="projectOpsForm.packageOutputDir"></el-input>
         </el-form-item>
 
+        <el-form-item label="二级部署目录" prop="deployFolder">
+          <el-input v-model="projectOpsForm.deployFolder"></el-input>
+        </el-form-item>
+
         <el-form-item label="入口相对路径" prop="accessEntrance">
           <el-input v-model="projectOpsForm.accessEntrance"></el-input>
         </el-form-item>
@@ -73,14 +77,22 @@
           <el-table :data="projectOpsForm.proxyConfig.proxyPassConfigs" style="width: 100%" max-height="250">
             <el-table-column prop="location" label="匹配模式（nginx的location）"/>
             <el-table-column prop="proxyPass" label="API代理（nginx的proxy_pass）"/>
+            <el-table-column prop="rewriteConfig" label="重写配置（nginx的rewrite）"/>
             <el-table-column fixed="right" label="操作" width="120">
               <template #default="scope">
                 <el-button
                     link
-                    type="primary"
+                    type="danger"
                     size="small"
                     @click.prevent="removeProxyPassConfig(scope.$index)">
                   移除
+                </el-button>
+                <el-button
+                    link
+                    type="primary"
+                    size="small"
+                    @click.prevent="copyProxyPassConfig(scope.$index)">
+                  复制
                 </el-button>
               </template>
             </el-table-column>
@@ -88,6 +100,7 @@
           <div id="proxyPassConfigBoard">
             <el-input label="匹配模式" ref="locationInput" v-model="locationInput"></el-input>
             <el-input label="API代理" ref="proxyPassInput" v-model="proxyPassInput"></el-input>
+            <el-input label="重写配置" ref="rewriteConfig" v-model="rewriteConfigInput"></el-input>
             <el-button type="success" style="width: 20%" @click="addProxyPassConfig">新增配置</el-button>
           </div>
         </el-form-item>
@@ -135,6 +148,7 @@ export default {
 
       locationInput: null,
       proxyPassInput: null,
+      rewriteConfigInput: null,
       projectOpsForm: {
         id: null,
         name: null,
@@ -152,6 +166,7 @@ export default {
         packageImage: null,
         packageScript: null,
         packageOutputDir: 'dist',
+        deployFolder: '',
         accessEntrance: "/",
         accessLevel: 'PUBLIC'
       },
@@ -287,19 +302,27 @@ export default {
       this.$router.back();
     },
     addProxyPassConfig() {
-      if (!this.locationInput || !this.proxyPassInput) {
+      if (!this.locationInput) {
         return;
       }
       const proxyPassConfig = {
         location: this.locationInput,
-        proxyPass: this.proxyPassInput
+        proxyPass: this.proxyPassInput,
+        rewriteConfig: this.rewriteConfigInput
       }
       this.projectOpsForm.proxyConfig.proxyPassConfigs.push(proxyPassConfig);
       this.proxyPassInput = null;
       this.locationInput = null;
+      this.rewriteConfigInput = null;
     },
     removeProxyPassConfig(idx) {
       this.projectOpsForm.proxyConfig.proxyPassConfigs.splice(idx, 1);
+    },
+    copyProxyPassConfig(idx) {
+      const proxyPassConfig = this.projectOpsForm.proxyConfig.proxyPassConfigs[idx];
+      this.locationInput = proxyPassConfig.location;
+      this.proxyPassInput = proxyPassConfig.proxyPass;
+      this.rewriteConfigInput = proxyPassConfig.rewriteConfig;
     },
     getImageLabel(item) {
       return `${item.imageName}(${item.description})`;

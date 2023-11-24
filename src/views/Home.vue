@@ -12,7 +12,7 @@
           @select="handleSelect"
           @open="handleOpen"
           @close="handleClose">
-        <div id="logo">
+        <div id="logo" style="width: 48px;height: 48px">
           <router-link to="/boarding"><img src="../assets/logo.png"></router-link>
         </div>
 
