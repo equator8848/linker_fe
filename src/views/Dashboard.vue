@@ -260,6 +260,7 @@
           <el-table :data="instance.proxyConfig.proxyPassConfigs" style="width: 100%" max-height="250">
             <el-table-column prop="location" label="匹配模式（nginx的location）"/>
             <el-table-column prop="proxyPass" label="API代理（nginx的proxy_pass）"/>
+            <el-table-column prop="rewriteConfig" label="重写配置（nginx的rewrite）"/>
           </el-table>
         </div>
       </div>

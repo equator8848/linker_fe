@@ -61,6 +61,13 @@
           <el-input v-model="projectOpsForm.deployFolder"></el-input>
         </el-form-item>
 
+        <el-form-item label="路由模式" prop="routeMode">
+          <el-radio-group v-model="projectOpsForm.routeMode">
+            <el-radio :label="0">hash</el-radio>
+            <el-radio :label="1">history</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
         <el-form-item label="入口相对路径" prop="accessEntrance">
           <el-input v-model="projectOpsForm.accessEntrance"></el-input>
         </el-form-item>
@@ -167,6 +174,7 @@ export default {
         packageScript: null,
         packageOutputDir: 'dist',
         deployFolder: '',
+        routeMode: 0,
         accessEntrance: "/",
         accessLevel: 'PUBLIC'
       },
