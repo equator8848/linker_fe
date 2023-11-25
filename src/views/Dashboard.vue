@@ -221,7 +221,7 @@
                 更新时间-更新人
               </div>
             </template>
-            {{ instance.updateTime }} @  {{ instance.updateUserName }}
+            {{ instance.updateTime }} @ {{ instance.updateUserName }}
           </el-descriptions-item>
 
 
@@ -260,8 +260,12 @@
                 构建信息
               </div>
             </template>
-            <a target="_blank"
-               :href="buildInstancePipelineBuildInfoUrl(instance)">{{ buildInstancePipelineBuildInfo(instance) }}</a>
+            <div style="display: flex;align-items: center">
+              <el-tag :type="getBuildTagStatus(instance)">{{ buildInstancePipelineBuildInfo(instance) }}</el-tag>
+              <el-button type="primary" size="small" @click="getPipelineBuildLog(instance)" style="margin-left: 4px">
+                查看构建日志
+              </el-button>
+            </div>
           </el-descriptions-item>
 
         </el-descriptions>
@@ -344,6 +348,20 @@
         </el-button>
       </el-form>
     </el-dialog>
+
+    <el-dialog id="pipelineLogDialog" title="流水线构建日志" v-model="pipelineBuildLog.visible" width="80%">
+      <div id="logBoard">
+        {{ pipelineBuildLog.text }}
+      </div>
+      <div id="opsBoard">
+        <el-button type="info" @click="jumpToNewTab(buildInstancePipelineBuildInfoUrl(this.pipelineBuildLog.instance))">
+          跳转Jenkins
+        </el-button>
+        <el-button type="primary" :disabled="!pipelineBuildLog.hasMoreData"
+                   @click="getPipelineBuildLog(this.pipelineBuildLog.instance)">刷新
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -389,6 +407,13 @@ export default {
 
       refreshInstanceListFlag: false,
       refreshInstanceListInterval: null,
+
+      pipelineBuildLog: {
+        instance: null,
+        visible: false,
+        hasMoreData: false,
+        text: ""
+      },
 
       branchOptions: [
         {
@@ -503,6 +528,18 @@ export default {
       return `流水线序号：${instancePipelineBuildResult.id}，提交时间：${instancePipelineBuildResult.submitTimeStr}前，
       耗时：${instancePipelineBuildResult.durationStr}，构建状态：${instancePipelineBuildResult.pipelineResultStr}`;
     },
+    getBuildTagStatus(instance) {
+      switch (instance.instancePipelineBuildResult.pipelineResultStr) {
+        case "成功":
+          return "success";
+        case "构建中":
+          return "";
+        case "失败":
+          return "danger"
+        default:
+          return "info";
+      }
+    },
     buildInstancePipelineBuildInfoUrl(instance) {
       if (!instance || !instance.instancePipelineBuildResult) {
         return "";
@@ -567,6 +604,28 @@ export default {
     onlyStarInstanceFlagChange(projectId) {
       this.getInstanceList(projectId, false);
       localStorage.setItem("instanceListOnlyStar", this.instanceListOnlyStar);
+    },
+    getPipelineBuildLog(instance) {
+      this.$httpUtil.get('/linker-server/api/v1/instance/pipeline-build-log', {
+        instanceId: instance.id
+      }).then(res => {
+        if (res && res.data) {
+          const buildLogData = res.data;
+          this.pipelineBuildLog.instance = instance;
+          this.pipelineBuildLog.text = buildLogData.text;
+          this.pipelineBuildLog.hasMoreData = buildLogData.hasMoreData;
+          this.pipelineBuildLog.visible = true;
+        } else {
+          this.$message({
+            message: '获取构建日志失败，请稍后重试',
+            duration: 2000
+          });
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
     },
     getInstanceList(projectId, autoFresh = false) {
       if (!projectId) {
@@ -810,6 +869,22 @@ export default {
     flex-direction: row;
     width: 100%;
     align-content: space-between;
+  }
+
+  #pipelineLogDialog {
+    #opsBoard {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    #logBoard {
+      background-color: black;
+      color: white;
+      padding: 4px;
+      border-radius: 4px;
+      width: 100%;
+      white-space: pre-wrap;
+    }
   }
 }
 </style>

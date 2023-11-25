@@ -61,7 +61,13 @@ export default {
       userLoginFormRules: {
         userIdentificationType: {required: true, message: '请选择登录方式', trigger: 'blur'},
         userIdentification: {required: true, message: '请输入账号', trigger: 'blur'},
-        userPassword: {required: true, message: '请输入密码', trigger: 'blur'},
+        userPassword: [
+          {required: true, message: '请输入密码', trigger: 'blur'},
+          {
+            pattern: "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[.#?!@$%^&*-]).{10,20}$",
+            message: '密码强度不符合要求，必须包含至少1位大写字母，1位小写字母，1位数字，1位特殊字符(.#?!@$%^&*-)，长度在10-20之间',
+            trigger: 'blur'
+          }],
         identifyCodeInput: {required: true, message: '请输入验证码', trigger: 'blur'},
       },
       isLogin: false,

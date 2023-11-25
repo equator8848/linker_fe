@@ -105,7 +105,7 @@ export default {
       },
       addUserFormRules: {
         userName: [{required: true, message: '请输入用户名，可以是中文或者英文', trigger: 'blur'}],
-        userPassword: [{required: true, message: '请输入实例密码', trigger: 'blur'},
+        userPassword: [{required: true, message: '请输入用户密码', trigger: 'blur'},
           {
             pattern: "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[.#?!@$%^&*-]).{10,20}$",
             message: '密码强度不符合要求，必须包含至少1位大写字母，1位小写字母，1位数字，1位特殊字符(.#?!@$%^&*-)，长度在10-20之间',

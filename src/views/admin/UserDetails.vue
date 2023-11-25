@@ -193,6 +193,12 @@ export default {
       updateUserInfoFormRules: {
         userName: [{required: true, message: '请输入用户名，可以是中文或者英文', trigger: 'blur'}],
         status: [{required: true, message: '请输入用户账号状态', trigger: 'blur'}],
+        userPassword: [
+          {
+            pattern: "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[.#?!@$%^&*-]).{10,20}$",
+            message: '密码强度不符合要求，必须包含至少1位大写字母，1位小写字母，1位数字，1位特殊字符(.#?!@$%^&*-)，长度在10-20之间',
+            trigger: 'blur'
+          }],
       }
     }
   }
