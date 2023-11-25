@@ -61,23 +61,23 @@
                 <el-icon>
                   <Clock/>
                 </el-icon>
-                创建时间
+                创建时间-创建人
               </div>
             </template>
-            {{ currentProjectDetails.createTime }}
+            {{ currentProjectDetails.createTime }} @ {{ currentProjectDetails.createUserName }}
           </el-descriptions-item>
+
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
                 <el-icon>
                   <Clock/>
                 </el-icon>
-                更新时间
+                更新时间-更新人
               </div>
             </template>
-            {{ currentProjectDetails.updateTime }}
+            {{ currentProjectDetails.updateTime }} @ {{ currentProjectDetails.updateUserName }}
           </el-descriptions-item>
-
 
           <el-descriptions-item>
             <template #label>
@@ -207,10 +207,10 @@
                 <el-icon>
                   <Clock/>
                 </el-icon>
-                创建时间
+                创建时间-创建人
               </div>
             </template>
-            {{ instance.createTime }}
+            {{ instance.createTime }} @ {{ instance.createUserName }}
           </el-descriptions-item>
           <el-descriptions-item>
             <template #label>
@@ -218,10 +218,10 @@
                 <el-icon>
                   <Clock/>
                 </el-icon>
-                更新时间
+                更新时间-更新人
               </div>
             </template>
-            {{ instance.updateTime }}
+            {{ instance.updateTime }} @  {{ instance.updateUserName }}
           </el-descriptions-item>
 
 
