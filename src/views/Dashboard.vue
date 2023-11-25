@@ -128,7 +128,11 @@
     </el-divider>
 
     <div id="instance-list">
-      <div>
+      <div style="display: flex">
+        <el-checkbox v-model="instanceListOnlyStar" @change="onlyStarInstanceFlagChange(this.currentProject.id)"
+                     style="margin-right: 8px">
+          只看收藏
+        </el-checkbox>
         <el-input
             placeholder="请输入内容后键入回车键进行搜索"
             @keydown.enter="getInstanceList(this.currentProject.id)"
@@ -154,12 +158,17 @@
                        v-show="instance.isOwner"
                        @click="handleClickUpdateInstance(instance)">编辑
             </el-button>
+            <el-button type="primary"
+                       @click="handleClickStarAction(instance)">
+              {{ instance.stared ? "取消收藏" : "收藏" }}
+            </el-button>
             <el-button type="danger"
                        v-show="instance.isOwner"
                        @click="handleClickDeleteInstance(instance.id)">删除
             </el-button>
             <el-button type="success"
-                       @click="handleClickBuildInstance(instance)">触发构建
+                       :loading="instance.buildingFlag"
+                       @click="handleClickBuildInstance(instance)">构建
             </el-button>
           </template>
 
@@ -282,7 +291,7 @@
                      filterable
                      allow-create>
             <el-option
-                v-for="item in defaultBranchOptions"
+                v-for="item in branchOptions"
                 :key="item.value"
                 :label="item.name"
                 :value="item.value">
@@ -342,6 +351,7 @@
 import {getPlaningStrList, nodeIdMask} from '@/common/format'
 import * as echarts from "echarts/core";
 import {useStore} from "vuex";
+import Throttle from "@/common/throttle";
 
 export default {
   name: "DashBoard",
@@ -350,6 +360,17 @@ export default {
     this.store = useStore();
     this.getProjectDetails(this.currentProject.id);
     this.getInstanceList(this.currentProject.id);
+    this.getProjectBranchList(this.currentProject.id);
+
+    this.throttler = new Throttle(32, () => {
+      this.getInstanceList(this.currentProject.id, this.refreshInstanceListFlag);
+      console.log("获取实例列表-节流器执行");
+    }, () => {
+      console.log("获取实例列表-节流器节流，不执行");
+    });
+    this.refreshInstanceListInterval = setInterval(() => {
+      this.throttler.tryExec(this.hasBuildingInstance);
+    }, 10000);
   },
   computed: {
     currentProject() {
@@ -363,9 +384,13 @@ export default {
       instanceOpsDialogVisible: false,
 
       instanceListSearch: null,
+      instanceListOnlyStar: localStorage.getItem("instanceListOnlyStar") === "true",
       instanceList: [],
 
-      defaultBranchOptions: [
+      refreshInstanceListFlag: false,
+      refreshInstanceListInterval: null,
+
+      branchOptions: [
         {
           name: "master",
           value: "master"
@@ -536,16 +561,41 @@ export default {
         //
       });
     },
-    getInstanceList(projectId) {
+    hasBuildingInstance() {
+      return this.instanceList.find(x => x.buildingFlag);
+    },
+    onlyStarInstanceFlagChange(projectId) {
+      this.getInstanceList(projectId, false);
+      localStorage.setItem("instanceListOnlyStar", this.instanceListOnlyStar);
+    },
+    getInstanceList(projectId, autoFresh = false) {
       if (!projectId) {
         return;
       }
       this.$httpUtil.jsonPost('/linker-server/api/v1/instance/list', {
         projectId,
-        searchKeyword: this.instanceListSearch
+        searchKeyword: this.instanceListSearch,
+        onlyStar: this.instanceListOnlyStar
       }).then(res => {
         if (res) {
           this.instanceList = res.data;
+          if (autoFresh) {
+            this.$message({
+              message: '存在构建中的实例，自动刷新实例列表....',
+              duration: 2000
+            });
+          }
+
+          const firstBuildingInstance = this.instanceList.find(x => x.buildingFlag);
+          if (firstBuildingInstance) {
+            this.refreshInstanceListFlag = true;
+          } else {
+            this.refreshInstanceListFlag = false;
+            if (this.refreshInstanceListInterval) {
+              console.log("清理自动刷新实例列表执行器 >>>");
+              clearInterval(this.refreshInstanceListInterval);
+            }
+          }
         }
       }, res => {
         console.log(res);
@@ -553,7 +603,22 @@ export default {
         //
       });
     },
-
+    getProjectBranchList(projectId) {
+      this.$httpUtil.get('/linker-server/api/v1/project/branches', {projectId}).then(res => {
+        if (res) {
+          this.branchOptions = res.data.map(x => {
+            return {
+              name: `分支名：${x.name}，commit标题：${x.latestCommitTitle}，commitId：${x.latestCommitId}`,
+              value: x.name
+            }
+          });
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
     addProxyPassConfig() {
       if (!this.locationInput) {
         return;
@@ -655,6 +720,27 @@ export default {
     handleClickUpdateInstance(instance) {
       this.instanceOpsDialogVisible = true;
       this.instanceOpsForm = instance;
+    },
+    handleClickStarAction(instance, starAction) {
+      this.$httpUtil.jsonPost('/linker-server/api/v1/instance/star',
+          {
+            projectId: instance.projectId,
+            instanceId: instance.id,
+            starAction: !instance.stared
+          }).then(res => {
+        if (res) {
+          this.$notify({
+            title: '成功',
+            message: '操作成功',
+            type: 'success'
+          });
+          this.getInstanceList(instance.projectId);
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
     },
     handleClickBuildInstance(instance) {
       this.$httpUtil.urlEncoderPut('/linker-server/api/v1/instance/build-pipeline', {

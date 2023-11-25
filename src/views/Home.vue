@@ -96,7 +96,7 @@ export default {
 
     const currentProjectJson = this.store.getters['currentProject'];
     if (currentProjectJson) {
-      console.log("set current project in mounted method");
+     //  console.log("set current project in mounted method");
       this.currentProject = currentProjectJson;
       this.store.commit("setCurrentProject", this.currentProject);
     }
