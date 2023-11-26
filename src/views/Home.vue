@@ -123,7 +123,7 @@ export default {
       }
     },
     getProjectList() {
-      this.$httpUtil.get('/linker-server/api/v1/project/all', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/project/list', {}).then(res => {
         if (res) {
           this.store.commit("setProjectList", res.data);
           if (this.currentProject.id === 0) {

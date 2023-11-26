@@ -22,6 +22,7 @@
           router
           @open="handleOpen"
           @close="handleClose">
+
         <el-sub-menu index="dashboard">
           <template #title>
             <el-icon>
@@ -30,6 +31,16 @@
             <span>仪表盘</span>
           </template>
           <el-menu-item index="/admin/dashboard">业务统计</el-menu-item>
+        </el-sub-menu>
+
+        <el-sub-menu index="project-instance">
+          <template #title>
+            <el-icon>
+              <MostlyCloudy/>
+            </el-icon>
+            <span>业务管理</span>
+          </template>
+          <el-menu-item index="/admin/projectList">项目与实例</el-menu-item>
         </el-sub-menu>
 
         <el-sub-menu index="admin">

@@ -10,6 +10,10 @@
           prop="userName">
       </el-table-column>
       <el-table-column
+          label="账号"
+          prop="email">
+      </el-table-column>
+      <el-table-column
           label="用户状态"
           prop="statusStr">
       </el-table-column>

@@ -13,6 +13,8 @@ import AppSetting from '@/views/admin/AppSetting'
 import LoginLogList from '@/views/admin/LoginLogList'
 import UserList from '@/views/admin/UserList'
 import UserDetails from '@/views/admin/UserDetails'
+import ProjectList from '@/views/admin/ProjectList'
+import ProjectDetails from '@/views/admin/ProjectDetails'
 
 import store from '../store/index'
 
@@ -93,6 +95,16 @@ const routes: Array<RouteRecordRaw> = [
                 path: '/admin/loginLogList',
                 name: 'LoginLogList',
                 component: LoginLogList
+            },
+            {
+                path: '/admin/projectList',
+                name: 'ProjectList',
+                component: ProjectList
+            },
+            {
+                path: '/admin/projectDetails/:projectId',
+                name: 'projectDetails',
+                component: ProjectDetails
             },
         ]
     },

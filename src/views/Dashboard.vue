@@ -477,7 +477,7 @@ export default {
       })
     },
     updateProjectList() {
-      this.$httpUtil.get('/linker-server/api/v1/project/all', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/project/list', {}).then(res => {
         if (res) {
           const newProjectList = res.data;
           this.$store.commit("setProjectList", newProjectList);
@@ -663,6 +663,9 @@ export default {
       });
     },
     getProjectBranchList(projectId) {
+      if (!projectId) {
+        return;
+      }
       this.$httpUtil.get('/linker-server/api/v1/project/branches', {projectId}).then(res => {
         if (res) {
           this.branchOptions = res.data.map(x => {
