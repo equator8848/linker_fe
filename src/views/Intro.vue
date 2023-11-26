@@ -9,18 +9,18 @@
     </el-carousel>
     <div id="exhibition">
       <div id="exhibition-show">
-        <h1>欢迎使用 Linker——前后端联调平台</h1>
-        <h2>本系统基于Jenkins、Docker实现前端项目容器化部署，按照配置将请求转化到对应的地址</h2>
+        <h1>欢迎使用 Linker——Web研发联调平台</h1>
+        <h2>本系统基于Jenkins与容器化技术实现前端项目容器化部署，按照配置将请求转化到对应的后端地址，提高开发效率</h2>
         <h3>应用场景1：前端研发人员部署前端某个分支的代码，模拟线上环境构建</h3>
         <h3>应用场景2：尝鲜体验前端未发布的某个分支的代码（如：后端想要使用CodeReview中的前端代码来联调）</h3>
-        <h3>应用场景3：后端研发部署前端某个分支的代码，请求自己本地的服务，实现自测或者后端重构代码后回归测试</h3>
+        <h3>应用场景3：后端研发部署前端某个分支的代码，请求自己本地的服务，实现打断点debug或者后端重构代码后自行回归测试</h3>
       </div>
     </div>
     <div id="usage-step">
-      <h2>简单几步即可使用</h2>
+      <h2>简单几步即可使用Linker</h2>
       <el-steps :active="3" finish-status="success" align-center>
         <el-step title="进入项目" description="创建或加入项目，一般由项目负责人创建一个项目即可"></el-step>
-        <el-step title="配置实例" description="配置前端API代理地址"></el-step>
+        <el-step title="配置实例" description="人手一个实例，互不干扰"></el-step>
         <el-step title="使用" description="开始联调之旅"></el-step>
       </el-steps>
     </div>
@@ -34,7 +34,7 @@ export default {
     return {
       introTexts: [
         "痛点一：研发本地环境与线上环境有差异，同样的代码，本地线上表现不一致",
-        "痛点二：前端开发了一部分的代码，其它人需要使用这些未合并到主干分支或者未发布到测试服的代码",
+        "痛点二：前后端开发完毕联调的时候，需要发布到测试服才能联调，服务容易相互干扰",
         "痛点三：后端做了大量重构，而项目本身没有写单元测试，不知道重构是否影响正常功能，使用postman调接口太麻烦",
       ],
     };
