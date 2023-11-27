@@ -80,26 +80,44 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="代理配置" prop="proxyConfig">
+        <el-form-item label="代理配置（将指定请求转发到对应的地址）"
+                      prop="proxyConfig">
           <el-table :data="projectOpsForm.proxyConfig.proxyPassConfigs" style="width: 100%" max-height="250">
-            <el-table-column prop="location" label="匹配模式（nginx的location）"/>
-            <el-table-column prop="proxyPass" label="API代理（nginx的proxy_pass）"/>
-            <el-table-column prop="rewriteConfig" label="重写配置（nginx的rewrite）"/>
-            <el-table-column fixed="right" label="操作" width="120">
+
+            <el-table-column prop="location" label="匹配模式（nginx的location）">
               <template #default="scope">
-                <el-button
-                    link
-                    type="danger"
-                    size="small"
-                    @click.prevent="removeProxyPassConfig(scope.$index)">
+                <el-input label="匹配模式" v-model="scope.row.location" v-show="scope.row.isEditing"></el-input>
+                <span v-show="!scope.row.isEditing">{{ scope.row.location }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column prop="proxyPass" label="API代理（nginx的proxy_pass）">
+              <template #default="scope">
+                <el-input label="API代理" v-model="scope.row.proxyPass" v-show="scope.row.isEditing"></el-input>
+                <span v-show="!scope.row.isEditing">{{ scope.row.proxyPass }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column prop="rewriteConfig" label="重写配置（nginx的rewrite）">
+              <template #default="scope">
+                <el-input label="API代理" v-model="scope.row.rewriteConfig" v-show="scope.row.isEditing"></el-input>
+                <span v-show="!scope.row.isEditing">{{ scope.row.rewriteConfig }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column fixed="right" label="操作" width="256px">
+              <template #default="scope">
+                <el-button link type="danger" size="small" @click.prevent="removeProxyPassConfig(scope.$index)">
                   移除
                 </el-button>
-                <el-button
-                    link
-                    type="primary"
-                    size="small"
-                    @click.prevent="copyProxyPassConfig(scope.$index)">
+                <el-button link type="info" size="small" @click.prevent="copyProxyPassConfig(scope.$index)">
                   复制
+                </el-button>
+                <el-button link type="warning" size="small" @click="editProxyConfig(scope.row, scope)">
+                  编辑
+                </el-button>
+                <el-button link type="primary" size="small" @click="saveProxyConfig(scope.row)">
+                  保存
                 </el-button>
               </template>
             </el-table-column>
@@ -111,6 +129,7 @@
             <el-button type="success" style="width: 20%" @click="addProxyPassConfig">新增配置</el-button>
           </div>
         </el-form-item>
+
 
         <el-button type="primary" @click="handleOpsProject" style="width: 100%">{{ this.getOpsName() }}</el-button>
       </el-form>
@@ -260,7 +279,7 @@ export default {
         if (res) {
           this.$notify({
             title: '成功',
-            message: '项目创建成功，即将返回首页',
+            message: '项目创建成功，即将返回',
             type: 'success'
           });
           this.updateProjectList();
@@ -281,7 +300,7 @@ export default {
         if (res) {
           this.$notify({
             title: '成功',
-            message: '项目更新成功，即将返回首页',
+            message: '项目更新成功，即将返回',
             type: 'success'
           });
           this.updateProjectList();
@@ -298,7 +317,7 @@ export default {
       });
     },
     updateProjectList() {
-      this.$httpUtil.get('/linker-server/api/v1/project/all', {}).then(res => {
+      this.$httpUtil.jsonPost('/linker-server/api/v1/project/all', {}).then(res => {
         if (res) {
           this.$store.commit("setProjectList", res.data);
         }
@@ -313,6 +332,17 @@ export default {
       if (!this.locationInput) {
         return;
       }
+      if (this.proxyPassInput) {
+        if (!this.$httpUtil.isValidHttpUrl(this.proxyPassInput)) {
+          this.$message({
+            showClose: true,
+            message: 'API代理不合法，请检查',
+            type: 'error'
+          });
+          return;
+        }
+      }
+
       const proxyPassConfig = {
         location: this.locationInput,
         proxyPass: this.proxyPassInput,
@@ -332,19 +362,12 @@ export default {
       this.proxyPassInput = proxyPassConfig.proxyPass;
       this.rewriteConfigInput = proxyPassConfig.rewriteConfig;
     },
-    getImageLabel(item) {
-      return `${item.imageName}(${item.description})`;
+    editProxyConfig(row, index) {
+      row.isEditing = true;
     },
-    getImageList() {
-      this.$httpUtil.get('/linker-server/api/v1/image/list', {}).then(res => {
-        if (res) {
-          this.images = res.data.data;
-          this.handleImageChange(this.createInstanceForm.selectImageId);
-        }
-      }, res => {
-        console.log(res);
-      });
-    },
+    saveProxyConfig(row, index) {
+      row.isEditing = false;
+    }
   }
 }
 </script>

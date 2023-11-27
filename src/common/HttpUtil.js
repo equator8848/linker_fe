@@ -256,6 +256,17 @@ function httpDelete(url, parameters) {
     )
 }
 
+// const httpRegex = /^(http|https):\/\/([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(:[0-9]+)?(\/[^\s]*)?$/;
+// return httpRegex.test(address);
+function isValidHttpUrl(address) {
+    try {
+        new URL(address);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
+
 export default {
     get(url, parameters) {
         return get(getBaseUrl() + url, parameters)
@@ -283,5 +294,8 @@ export default {
     },
     formDataPost(url, formData) {
         return jsonPost(getBaseUrl() + url, formData);
+    },
+    isValidHttpUrl(url) {
+        return isValidHttpUrl(url);
     }
 }

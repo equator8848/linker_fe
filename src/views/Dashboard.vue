@@ -167,6 +167,7 @@
                        @click="handleClickDeleteInstance(instance.id)">删除
             </el-button>
             <el-button type="success"
+                       v-show="instance.isOwner"
                        :loading="instance.buildingFlag"
                        @click="handleClickBuildInstance(instance)">构建
             </el-button>
@@ -311,26 +312,44 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="代理配置（如果不配置，则沿用项目配置）" prop="proxyConfig">
+        <el-form-item label="代理配置（此处配置从项目中复制出来，可以自行调整；如果不配置，则沿用项目配置）"
+                      prop="proxyConfig">
           <el-table :data="instanceOpsForm.proxyConfig.proxyPassConfigs" style="width: 100%" max-height="250">
-            <el-table-column prop="location" label="匹配模式（nginx的location）"/>
-            <el-table-column prop="proxyPass" label="API代理（nginx的proxy_pass）"/>
-            <el-table-column prop="rewriteConfig" label="重写配置（nginx的rewrite）"/>
-            <el-table-column fixed="right" label="操作" width="120">
+
+            <el-table-column prop="location" label="匹配模式（nginx的location）">
               <template #default="scope">
-                <el-button
-                    link
-                    type="danger"
-                    size="small"
-                    @click.prevent="removeProxyPassConfig(scope.$index)">
+                <el-input label="匹配模式" v-model="scope.row.location" v-show="scope.row.isEditing"></el-input>
+                <span v-show="!scope.row.isEditing">{{ scope.row.location }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column prop="proxyPass" label="API代理（nginx的proxy_pass）">
+              <template #default="scope">
+                <el-input label="API代理" v-model="scope.row.proxyPass" v-show="scope.row.isEditing"></el-input>
+                <span v-show="!scope.row.isEditing">{{ scope.row.proxyPass }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column prop="rewriteConfig" label="重写配置（nginx的rewrite）">
+              <template #default="scope">
+                <el-input label="API代理" v-model="scope.row.rewriteConfig" v-show="scope.row.isEditing"></el-input>
+                <span v-show="!scope.row.isEditing">{{ scope.row.rewriteConfig }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column fixed="right" label="操作" width="256px">
+              <template #default="scope">
+                <el-button link type="danger" size="small" @click.prevent="removeProxyPassConfig(scope.$index)">
                   移除
                 </el-button>
-                <el-button
-                    link
-                    type="primary"
-                    size="small"
-                    @click.prevent="copyProxyPassConfig(scope.$index)">
+                <el-button link type="info" size="small" @click.prevent="copyProxyPassConfig(scope.$index)">
                   复制
+                </el-button>
+                <el-button link type="warning" size="small" @click="editProxyConfig(scope.row, scope)">
+                  编辑
+                </el-button>
+                <el-button link type="primary" size="small" @click="saveProxyConfig(scope.row)">
+                  保存
                 </el-button>
               </template>
             </el-table-column>
@@ -470,6 +489,9 @@ export default {
     },
     handleClickCreateInstance() {
       this.instanceOpsDialogVisible = true;
+      if (this.currentProjectDetails) {
+        this.instanceOpsForm.proxyConfig = this.currentProjectDetails.proxyConfig;
+      }
     },
     handleClickUpdateProject() {
       this.$router.push({
@@ -670,7 +692,7 @@ export default {
         if (res) {
           this.branchOptions = res.data.map(x => {
             return {
-              name: `分支名：${x.name}，commit标题：${x.latestCommitTitle}，commitId：${x.latestCommitId}`,
+              name: `分支名：${x.name}，commit标题：${x.latestCommitTitle}，commitId：${x.latestCommitId}，时间：${x.latestCommitTime}`,
               value: x.name
             }
           });
@@ -684,6 +706,16 @@ export default {
     addProxyPassConfig() {
       if (!this.locationInput) {
         return;
+      }
+      if (this.proxyPassInput) {
+        if (!this.$httpUtil.isValidHttpUrl(this.proxyPassInput)) {
+          this.$message({
+            showClose: true,
+            message: 'API代理不合法，请检查',
+            type: 'error'
+          });
+          return;
+        }
       }
       const proxyPassConfig = {
         location: this.locationInput,
@@ -821,6 +853,12 @@ export default {
       }).finally(() => {
         //
       });
+    },
+    editProxyConfig(row, index) {
+      row.isEditing = true;
+    },
+    saveProxyConfig(row, index) {
+      row.isEditing = false;
     }
   }
 }
