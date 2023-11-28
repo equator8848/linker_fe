@@ -167,7 +167,6 @@
                        @click="handleClickDeleteInstance(instance.id)">删除
             </el-button>
             <el-button type="success"
-                       v-show="instance.isOwner"
                        :loading="getPipelineBuildLoadingStatus(instance)"
                        @click="handleClickBuildInstance(instance)">构建
             </el-button>
@@ -238,18 +237,17 @@
             {{ instance.scmBranch }}
           </el-descriptions-item>
 
+
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
                 <el-icon>
-                  <TopRight/>
+                  <Camera/>
                 </el-icon>
-                访问地址
+                流水线模板信息
               </div>
             </template>
-            <el-button @click="jumpToNewTab(instance.accessUrl)" size="small" type="primary">新窗口打开
-              {{ instance.accessUrl }}
-            </el-button>
+            {{ instance.pipelineTemplateIntro }}（{{ instance.pipelineTemplateId }}）
           </el-descriptions-item>
 
           <el-descriptions-item>
@@ -274,6 +272,20 @@
                 查看构建日志
               </el-button>
             </div>
+          </el-descriptions-item>
+
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <TopRight/>
+                </el-icon>
+                访问地址
+              </div>
+            </template>
+            <el-button @click="jumpToNewTab(instance.accessUrl)" size="small" type="primary">新窗口打开
+              {{ instance.accessUrl }}
+            </el-button>
           </el-descriptions-item>
 
         </el-descriptions>
