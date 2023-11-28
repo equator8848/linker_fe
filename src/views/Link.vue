@@ -167,7 +167,6 @@
                        @click="handleClickDeleteInstance(instance.id)">删除
             </el-button>
             <el-button type="success"
-                       v-show="instance.isOwner"
                        :loading="getPipelineBuildLoadingStatus(instance)"
                        @click="handleClickBuildInstance(instance)">构建
             </el-button>
@@ -236,6 +235,19 @@
               </div>
             </template>
             {{ instance.scmBranch }}
+          </el-descriptions-item>
+
+
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <Camera/>
+                </el-icon>
+                流水线模板信息
+              </div>
+            </template>
+            {{ instance.pipelineTemplateIntro }}（{{ instance.pipelineTemplateId }}）
           </el-descriptions-item>
 
           <el-descriptions-item>
