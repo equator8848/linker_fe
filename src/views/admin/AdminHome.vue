@@ -55,7 +55,7 @@
           <el-menu-item index="/admin/appSetting">系统动态配置</el-menu-item>
         </el-sub-menu>
 
-        <el-menu-item index="/home/dashboard">
+        <el-menu-item index="/home/link">
           <el-icon>
             <Back/>
           </el-icon>

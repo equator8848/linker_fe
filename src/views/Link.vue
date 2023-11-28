@@ -168,7 +168,7 @@
             </el-button>
             <el-button type="success"
                        v-show="instance.isOwner"
-                       :loading="instance.buildingFlag"
+                       :loading="getPipelineBuildLoadingStatus(instance)"
                        @click="handleClickBuildInstance(instance)">构建
             </el-button>
           </template>
@@ -263,6 +263,13 @@
             </template>
             <div style="display: flex;align-items: center">
               <el-tag :type="getBuildTagStatus(instance)">{{ buildInstancePipelineBuildInfo(instance) }}</el-tag>
+              <el-button type="info"
+                         size="small"
+                         style="margin-left: 4px"
+                         v-show="instance.imageArchiveUrl"
+                         @click="jumpToNewTab(instance.imageArchiveUrl)">
+                下载归档文件
+              </el-button>
               <el-button type="primary" size="small" @click="getPipelineBuildLog(instance)" style="margin-left: 4px">
                 查看构建日志
               </el-button>
@@ -362,6 +369,22 @@
           </div>
         </el-form-item>
 
+        <el-form-item label="是否归档镜像（生产环境打包时勾选是，将导出相关镜像归档以供下载）" prop="imageArchiveFlag">
+          <el-radio-group v-model="instanceOpsForm.imageArchiveFlag">
+            <el-radio :label="false">否，普通联调</el-radio>
+            <el-radio :label="true">是，生产打包</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="自定义镜像仓库前缀" prop="imageRepositoryPrefix" v-show="instanceOpsForm.imageArchiveFlag">
+          <el-input v-model="instanceOpsForm.imageRepositoryPrefix"></el-input>
+        </el-form-item>
+        <el-form-item label="自定义镜像名称" prop="imageName" v-show="instanceOpsForm.imageArchiveFlag">
+          <el-input v-model="instanceOpsForm.imageName"></el-input>
+        </el-form-item>
+        <el-form-item label="自定义镜像版本" prop="imageVersion" v-show="instanceOpsForm.imageArchiveFlag">
+          <el-input v-model="instanceOpsForm.imageVersion"></el-input>
+        </el-form-item>
+
         <el-button type="primary" @click="handleOpsInstance" style="width: 100%">
           {{ getInstanceOpsName(this.instanceOpsForm.id) }}
         </el-button>
@@ -373,6 +396,11 @@
         {{ pipelineBuildLog.text }}
       </div>
       <div id="opsBoard">
+        <el-button type="info"
+                   v-show="this.pipelineBuildLog.imageArchiveUrl"
+                   @click="jumpToNewTab(this.pipelineBuildLog.imageArchiveUrl)">
+          下载归档文件
+        </el-button>
         <el-button type="info" @click="jumpToNewTab(buildInstancePipelineBuildInfoUrl(this.pipelineBuildLog.instance))">
           跳转Jenkins
         </el-button>
@@ -391,7 +419,7 @@ import {useStore} from "vuex";
 import Throttle from "@/common/throttle";
 
 export default {
-  name: "DashBoard",
+  name: "Link",
   inject: ['reload'],
   mounted() {
     this.store = useStore();
@@ -461,7 +489,11 @@ export default {
         proxyConfig: {
           proxyPassConfigs: []
         },
-        accessLevel: 'PUBLIC'
+        accessLevel: 'PUBLIC',
+        imageArchiveFlag: false,
+        imageRepositoryPrefix: null,
+        imageName: null,
+        imageVersion: 'latest'
       },
       instanceOpsFormRules: {
         "name": [
@@ -568,6 +600,12 @@ export default {
       }
       return instance.instancePipelineBuildResult.pipelineUrl;
     },
+    getPipelineBuildLoadingStatus(instance) {
+      if (instance.instancePipelineBuildResult.canReBuildFlag) {
+        return false;
+      }
+      return instance.buildingFlag;
+    },
     handleClickDeleteInstance(instanceId) {
       this.$confirm('正在删除实例，是否继续？', '确认是否删除实例', {
         confirmButtonText: '确认删除',
@@ -636,6 +674,7 @@ export default {
           this.pipelineBuildLog.instance = instance;
           this.pipelineBuildLog.text = buildLogData.text;
           this.pipelineBuildLog.hasMoreData = buildLogData.hasMoreData;
+          this.pipelineBuildLog.imageArchiveUrl = buildLogData.imageArchiveUrl;
           this.pipelineBuildLog.visible = true;
         } else {
           this.$message({

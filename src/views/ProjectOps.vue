@@ -13,6 +13,12 @@
         <el-form-item label="项目描述" prop="intro">
           <el-input v-model="projectOpsForm.intro" type="textarea" rows="2" maxlength="255"></el-input>
         </el-form-item>
+        <el-form-item label="SCM类型" prop="scmConfig.scmType">
+          <el-radio-group v-model="projectOpsForm.scmConfig.scmType">
+            <el-radio label="GITLAB">GITLAB</el-radio>
+            <el-radio label="GITHUB" disabled>GITHUB</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="SCM用户名" prop="scmConfig.username">
           <el-input v-model="projectOpsForm.scmConfig.username"></el-input>
         </el-form-item>
@@ -78,6 +84,17 @@
             <el-radio label="PROTECTED">邀请访问</el-radio>
             <el-radio label="PUBLIC">公开访问</el-radio>
           </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="模板配置" prop="pipelineTemplateId">
+          <el-select v-model="projectOpsForm.pipelineTemplateId" placeholder="请选择模板" filterable>
+            <el-option
+                v-for="item in projectTemplateList"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="代理配置（将指定请求转发到对应的地址）"
@@ -148,6 +165,7 @@ export default {
       this.projectOpsForm.id = parseInt(projectId);
       this.getProjectDetails(projectId);
     }
+    this.getProjectTemplateList();
   },
   data() {
     return {
@@ -171,6 +189,7 @@ export default {
           value: "dev"
         }
       ],
+      projectTemplateList: [],
 
       locationInput: null,
       proxyPassInput: null,
@@ -190,6 +209,7 @@ export default {
           proxyPassConfigs: []
         },
         packageImage: null,
+        pipelineTemplateId: null,
         packageScript: null,
         packageOutputDir: 'dist',
         deployFolder: '',
@@ -203,6 +223,9 @@ export default {
         ],
         "intro": [
           {required: true, message: '请输入介绍', trigger: 'blur'}
+        ],
+        "scmConfig.scmType": [
+          {required: true, message: '请选择SCM仓库类型', trigger: 'blur'}
         ],
         "scmConfig.username": [
           {required: true, message: '请输入SCM用户名', trigger: 'blur'}
@@ -230,6 +253,9 @@ export default {
         ],
         "accessLevel": [
           {required: true, message: '请选择权限控制等级', trigger: 'blur'}
+        ],
+        "pipelineTemplateId": [
+          {required: true, message: '请选择流水线模板', trigger: 'blur'}
         ],
       }
     }
@@ -285,7 +311,7 @@ export default {
           this.updateProjectList();
           setTimeout(() => {
             this.$router.push({
-              path: '/home/dashboard',
+              path: '/home/link',
             }, 1500)
           })
         }
@@ -306,7 +332,7 @@ export default {
           this.updateProjectList();
           setTimeout(() => {
             this.$router.push({
-              path: '/home/dashboard',
+              path: '/home/link',
             }, 1500)
           })
         }
@@ -367,7 +393,23 @@ export default {
     },
     saveProxyConfig(row, index) {
       row.isEditing = false;
-    }
+    },
+    getProjectTemplateList() {
+      this.$httpUtil.get('/linker-server/api/v1/project/templates').then(res => {
+        if (res) {
+          this.projectTemplateList = res.data.map(x => {
+            return {
+              name: `${x.intro} （模板ID：${x.templateVersionId}）`,
+              value: x.templateVersionId
+            }
+          });
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
   }
 }
 </script>

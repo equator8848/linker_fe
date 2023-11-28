@@ -5,7 +5,7 @@ import Help from '@/views/Help.vue'
 import Intro from '@/views/Intro.vue'
 import Home from '@/views/Home.vue'
 import ProjectOps from '@/views/ProjectOps.vue'
-import Dashboard from '@/views/Dashboard.vue'
+import Link from '@/views/Link.vue'
 import Me from '@/views/Me.vue'
 import AdminHome from '@/views/admin/AdminHome'
 import DashboardStatistics from '@/views/admin/DashboardStatistics'
@@ -46,12 +46,12 @@ const routes: Array<RouteRecordRaw> = [
         path: '/home',
         name: 'Home',
         component: Home,
-        redirect: '/home/dashboard',
+        redirect: '/home/link',
         children: [
             {
-                path: '/home/dashboard',
-                name: 'Dashboard',
-                component: Dashboard
+                path: '/home/link',
+                name: 'Link',
+                component: Link
             },
             {
                 path: '/home/projectOps/:projectId?',

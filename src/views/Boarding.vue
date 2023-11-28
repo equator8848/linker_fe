@@ -155,7 +155,7 @@ export default {
           });
           setTimeout(() => {
             this.$router.push({
-              path: '/home/dashboard',
+              path: '/home/link',
             })
           }, 1500)
         }
@@ -171,7 +171,7 @@ export default {
     },
     enterConsole() {
       this.$router.push({
-        path: '/home/dashboard',
+        path: '/home/link',
       })
     },
   }

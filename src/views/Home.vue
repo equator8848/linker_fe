@@ -34,7 +34,7 @@
           </template>
         </el-dropdown>
 
-        <el-menu-item index="/home/dashboard">
+        <el-menu-item index="/home/link">
           <el-icon>
             <Odometer/>
           </el-icon>
