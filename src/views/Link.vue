@@ -108,7 +108,7 @@
             <template #label>
               <div class="cell-item">
                 <el-icon>
-                  <Star/>
+                  <EditPen/>
                 </el-icon>
                 项目打包脚本
               </div>
@@ -288,6 +288,20 @@
             </el-button>
           </el-descriptions-item>
 
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <EditPen/>
+                </el-icon>
+                实例打包脚本
+              </div>
+            </template>
+            <span style="white-space: pre-wrap;">
+              {{ instance.packageScript }}
+            </span>
+          </el-descriptions-item>
+
         </el-descriptions>
         <div class="instance-proxy-config">
           <el-table :data="instance.proxyConfig.proxyPassConfigs" style="width: 100%" max-height="250">
@@ -321,6 +335,17 @@
                 :value="item.value">
             </el-option>
           </el-select>
+        </el-form-item>
+
+        <el-form-item label="打包脚本配置" prop="packageScriptOverrideFlag">
+          <el-radio-group v-model="instanceOpsForm.packageScriptOverrideFlag">
+            <el-radio :label="false">使用项目打包脚本配置</el-radio>
+            <el-radio :label="true">覆盖项目打包脚本</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="打包脚本" prop="packageScript" v-show="instanceOpsForm.packageScriptOverrideFlag">
+          <el-input v-model="instanceOpsForm.packageScript" type="textarea" rows="5" maxlength="1024"></el-input>
         </el-form-item>
 
         <el-form-item label="权限控制" prop="accessLevel">
@@ -498,6 +523,8 @@ export default {
         name: null,
         intro: null,
         scmBranch: '',
+        packageScriptOverrideFlag: false,
+        packageScript: null,
         proxyConfig: {
           proxyPassConfigs: []
         },
