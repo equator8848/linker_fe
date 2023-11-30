@@ -261,6 +261,9 @@
             </template>
             <div style="display: flex;align-items: center">
               <el-tag :type="getBuildTagStatus(instance)">{{ buildInstancePipelineBuildInfo(instance) }}</el-tag>
+
+              <el-tag style="margin-left: 4px">镜像版本：{{ instance.imageVersion }}</el-tag>
+
               <el-button type="info"
                          size="small"
                          style="margin-left: 4px"
@@ -418,6 +421,13 @@
         <el-form-item label="自定义镜像名称" prop="imageName" v-show="instanceOpsForm.imageArchiveFlag">
           <el-input v-model="instanceOpsForm.imageName"></el-input>
         </el-form-item>
+        <el-form-item label="自定义镜像版本类型" prop="imageVersionType" v-show="instanceOpsForm.imageArchiveFlag">
+          <el-radio-group v-model="instanceOpsForm.imageVersionType">
+            <el-radio :label="0">自定义</el-radio>
+            <el-radio :label="1">版本递增，格式为1.0.0，最大版本为999</el-radio>
+            <el-radio :label="2">时间作为版本，格式形如202311302145</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="自定义镜像版本" prop="imageVersion" v-show="instanceOpsForm.imageArchiveFlag">
           <el-input v-model="instanceOpsForm.imageVersion"></el-input>
         </el-form-item>
@@ -532,6 +542,7 @@ export default {
         imageArchiveFlag: false,
         imageRepositoryPrefix: null,
         imageName: null,
+        imageVersionType: 0,
         imageVersion: 'latest'
       },
       instanceOpsFormRules: {
