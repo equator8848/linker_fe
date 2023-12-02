@@ -1,5 +1,6 @@
 <template>
   <div id="container">
+    <span style="text-align: center;color: dimgray">这里的公开入口所有人可见，无需登录本系统</span>
     <div v-for="publicEntrance in publicEntranceList" :key="publicEntrance.projectId" class="publicEntranceBoard">
       <el-divider content-position="center">{{ publicEntrance.projectName }}</el-divider>
       <el-table :data="publicEntrance.publicEntranceListInfos" stripe style="width: 100%">
@@ -58,10 +59,11 @@ export default {
   display: flex;
   min-height: 768px;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: flex-start;
   align-items: center;
 
   .publicEntranceBoard {
+    margin-top: 32px;
     height: 100%;
     width: 99%;
     .card-item();

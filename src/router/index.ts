@@ -129,7 +129,7 @@ const router = createRouter({
     routes
 })
 
-const anonymousPages = new Set(["Boarding", "Help", "Intro", "StatusCheck", "LoginByToken"])
+const anonymousPages = new Set(["Boarding", "Help", "Intro", "StatusCheck", "PublicEntrance"])
 
 // 全局路由守卫
 router.beforeEach((to, from, next) => {
