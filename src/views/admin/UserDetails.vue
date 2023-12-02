@@ -108,7 +108,7 @@ export default {
         userId: this.userInfo.id,
         userStatus: userStatus
       }).then(res => {
-        if (res.status === 2000) {
+        if (res) {
           this.$notify.success({
             title: '成功',
             message: '成功修改用户状态信息'
@@ -142,7 +142,7 @@ export default {
             roleType: this.updateUserInfoForm.roleType,
             status: this.updateUserInfoForm.status
           }).then(res => {
-            if (res.status === 2000) {
+            if (res) {
               this.$notify.success({
                 title: '成功',
                 message: '成功修改用户信息'

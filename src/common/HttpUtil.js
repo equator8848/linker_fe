@@ -3,6 +3,7 @@ import qs from 'qs'
 import {ElNotification} from 'element-plus'
 import {responseCode} from '@/common/constant'
 import store from '../store/index'
+import route from '../router/index'
 
 const instance = axios.create({
     timeout: 1000 * 300
@@ -17,26 +18,41 @@ function getBaseUrl() {
     return store.getters['baseUrl'];
 }
 
+function handleResponse(response, resolve, reject) {
+    const responseData = response.data;
+    if (responseData.status === responseCode.SUCCESS) {
+        resolve(responseData);
+    } else if (responseData.status === responseCode.ASYNC) {
+        ElNotification.info({
+            title: '查询超时（非报错）',
+            message: responseData.msg
+        });
+        resolve(null);
+    } else if (responseData.status === responseCode.UNAUTHORIZED) {
+        ElNotification.error({
+            title: '错误',
+            message: '登录已失效，请重新登录'
+        });
+        reject(responseData);
+        setTimeout(() => {
+            route.push({
+                path: '/boarding',
+            })
+        }, 1000)
+    } else {
+        ElNotification.error({
+            title: '错误',
+            message: responseData.data ? responseData.msg + "，" + responseData.data : responseData.msg
+        });
+        reject(responseData);
+    }
+}
+
 function urlEncoderPost(url, dataObject) {
     return new Promise((resolve, reject) => {
         instance.post(url, qs.stringify(dataObject))
             .then(response => {
-                const responseData = response.data;
-                if (responseData.status === responseCode.SUCCESS) {
-                    resolve(responseData);
-                } else if (responseData.status === responseCode.ASYNC) {
-                    ElNotification.info({
-                        title: '查询超时（非报错）',
-                        message: responseData.msg
-                    });
-                    resolve(null);
-                } else {
-                    ElNotification.error({
-                        title: '错误',
-                        message: responseData.data ? responseData.msg + "，" + responseData.data : responseData.msg
-                    });
-                    reject(responseData);
-                }
+                handleResponse(response, resolve, reject);
             }).catch(error => {
             ElNotification.error({
                 title: '网络错误',
@@ -50,22 +66,7 @@ function urlEncoderPut(url, dataObject) {
     return new Promise((resolve, reject) => {
         instance.put(url, qs.stringify(dataObject))
             .then(response => {
-                const responseData = response.data;
-                if (responseData.status === responseCode.SUCCESS) {
-                    resolve(responseData);
-                } else if (responseData.status === responseCode.ASYNC) {
-                    ElNotification.info({
-                        title: '查询超时（非报错）',
-                        message: responseData.msg
-                    });
-                    resolve(null);
-                } else {
-                    ElNotification.error({
-                        title: '错误',
-                        message: responseData.data ? responseData.msg + "，" + responseData.data : responseData.msg
-                    });
-                    reject(responseData);
-                }
+                handleResponse(response, resolve, reject);
             }).catch(error => {
             ElNotification.error({
                 title: '网络错误',
@@ -82,22 +83,7 @@ function formDataPost(url, formDataObject) {
                 'Content-Type': 'multipart/form-data'
             }
         }).then(response => {
-            const responseData = response.data;
-            if (responseData.status === responseCode.SUCCESS) {
-                resolve(responseData);
-            } else if (responseData.status === responseCode.ASYNC) {
-                ElNotification.info({
-                    title: '查询超时（非报错）',
-                    message: responseData.msg
-                });
-                resolve(null);
-            } else {
-                ElNotification.error({
-                    title: '错误',
-                    message: responseData.data ? responseData.msg + "，" + responseData.data : responseData.msg
-                });
-                reject(responseData);
-            }
+            handleResponse(response, resolve, reject);
         }).catch(error => {
             ElNotification.error({
                 title: '网络错误',
@@ -114,22 +100,7 @@ function jsonPost(url, formDataObject) {
                 'Content-Type': 'application/json'
             }
         }).then(response => {
-            const responseData = response.data;
-            if (responseData.status === responseCode.SUCCESS) {
-                resolve(responseData);
-            } else if (responseData.status === responseCode.ASYNC) {
-                ElNotification.info({
-                    title: '查询超时（非报错）',
-                    message: responseData.msg
-                });
-                resolve(null);
-            } else {
-                ElNotification.error({
-                    title: '错误',
-                    message: responseData.data ? responseData.msg + "，" + responseData.data : responseData.msg
-                });
-                reject(responseData);
-            }
+            handleResponse(response, resolve, reject);
         }).catch(error => {
             ElNotification.error({
                 title: '网络错误',
@@ -146,22 +117,7 @@ function jsonPut(url, formDataObject) {
                 'Content-Type': 'application/json'
             }
         }).then(response => {
-            const responseData = response.data;
-            if (responseData.status === responseCode.SUCCESS) {
-                resolve(responseData);
-            } else if (responseData.status === responseCode.ASYNC) {
-                ElNotification.info({
-                    title: '查询超时（非报错）',
-                    message: responseData.msg
-                });
-                resolve(null);
-            } else {
-                ElNotification.error({
-                    title: '错误',
-                    message: responseData.data ? responseData.msg + "，" + responseData.data : responseData.msg
-                });
-                reject(responseData);
-            }
+            handleResponse(response, resolve, reject);
         }).catch(error => {
             ElNotification.error({
                 title: '网络错误',
@@ -177,22 +133,7 @@ function get(url, parameters) {
             instance.get(url, {
                 params: {...parameters}
             }).then(response => {
-                const responseData = response.data;
-                if (responseData.status === responseCode.SUCCESS) {
-                    resolve(responseData);
-                } else if (responseData.status === responseCode.ASYNC) {
-                    ElNotification.info({
-                        title: '查询超时（非报错）',
-                        message: responseData.msg
-                    });
-                    resolve(null);
-                } else {
-                    ElNotification.error({
-                        title: '错误',
-                        message: responseData.data ? responseData.msg + "，" + responseData.data : responseData.msg
-                    });
-                    reject(responseData);
-                }
+                handleResponse(response, resolve, reject);
             }).catch(error => {
                 ElNotification.error({
                     title: '网络错误',
@@ -208,15 +149,7 @@ function getSilently(url, parameters) {
             instance.get(url, {
                 params: {...parameters}
             }).then(response => {
-                const responseData = response.data;
-                if (responseData.status === responseCode.SUCCESS) {
-                    resolve(responseData);
-                } else if (responseData.status === responseCode.ASYNC) {
-                    resolve(null);
-                } else {
-                    console.log("request error" + JSON.stringify(responseData));
-                    reject(responseData);
-                }
+                handleResponse(response, resolve, reject);
             }).catch(error => {
                 console.log("request error" + error);
                 reject(null);
@@ -230,22 +163,7 @@ function httpDelete(url, parameters) {
             instance.delete(url, {
                 params: {...parameters}
             }).then(response => {
-                const responseData = response.data;
-                if (responseData.status === responseCode.SUCCESS) {
-                    resolve(responseData);
-                } else if (responseData.status === responseCode.ASYNC) {
-                    ElNotification.info({
-                        title: '查询超时（非报错）',
-                        message: responseData.msg
-                    });
-                    resolve(null);
-                } else {
-                    ElNotification.error({
-                        title: '错误',
-                        message: responseData.data ? responseData.msg + "，" + responseData.data : responseData.msg
-                    });
-                    reject(responseData);
-                }
+                handleResponse(response, resolve, reject);
             }).catch(error => {
                 ElNotification.error({
                     title: '网络错误',

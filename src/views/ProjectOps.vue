@@ -8,10 +8,10 @@
       <el-form ref="projectOpsForm" :model="projectOpsForm" label-position="top"
                :rules="projectOpsFormRules">
         <el-form-item label="项目名称" prop="name">
-          <el-input v-model="projectOpsForm.name"></el-input>
+          <el-input v-model="projectOpsForm.name" show-word-limit maxlength="250"></el-input>
         </el-form-item>
         <el-form-item label="项目描述" prop="intro">
-          <el-input v-model="projectOpsForm.intro" type="textarea" rows="2" maxlength="255"></el-input>
+          <el-input v-model="projectOpsForm.intro" type="textarea" rows="2" show-word-limit maxlength="250"></el-input>
         </el-form-item>
         <el-form-item label="SCM类型" prop="scmConfig.scmType">
           <el-radio-group v-model="projectOpsForm.scmConfig.scmType">
@@ -56,7 +56,7 @@
         </el-form-item>
 
         <el-form-item label="打包脚本" prop="packageScript">
-          <el-input v-model="projectOpsForm.packageScript" type="textarea" rows="5" maxlength="1024"></el-input>
+          <el-input v-model="projectOpsForm.packageScript" type="textarea" rows="5" show-word-limit maxlength="1000"></el-input>
         </el-form-item>
 
         <el-form-item label="打包输出目录" prop="packageOutputDir">

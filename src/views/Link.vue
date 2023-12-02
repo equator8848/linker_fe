@@ -14,14 +14,17 @@
           </template>
           <template #extra>
             <el-button type="danger"
+                       size="small"
                        v-show="currentProjectDetails.isOwner"
                        @click="handleClickDeleteProject(currentProjectDetails.id)">删除
             </el-button>
             <el-button type="info"
+                       size="small"
                        v-show="currentProjectDetails.isOwner"
                        @click="handleClickUpdateProject()">编辑
             </el-button>
             <el-button type="success"
+                       size="small"
                        @click="handleClickCreateInstance()">创建实例
             </el-button>
           </template>
@@ -155,18 +158,27 @@
           </template>
           <template #extra>
             <el-button type="info"
+                       size="small"
                        v-show="instance.isOwner"
                        @click="handleClickUpdateInstance(instance)">编辑
             </el-button>
+            <el-button type="info"
+                       size="small"
+                       v-show="instance.isOwner"
+                       @click="handleSetPublicEntrance(instance)">开放入口配置
+            </el-button>
             <el-button type="primary"
+                       size="small"
                        @click="handleClickStarAction(instance)">
               {{ instance.stared ? "取消收藏" : "收藏" }}
             </el-button>
             <el-button type="danger"
+                       size="small"
                        v-show="instance.isOwner"
                        @click="handleClickDeleteInstance(instance.id)">删除
             </el-button>
             <el-button type="success"
+                       size="small"
                        :loading="getPipelineBuildLoadingStatus(instance)"
                        @click="handleClickBuildInstance(instance)">构建
             </el-button>
@@ -320,10 +332,10 @@
       <el-form ref="instanceOpsForm" :model="instanceOpsForm" label-position="top"
                :rules="instanceOpsFormRules">
         <el-form-item label="实例名称" prop="name">
-          <el-input v-model="instanceOpsForm.name"></el-input>
+          <el-input v-model="instanceOpsForm.name" show-word-limit maxlength="250"></el-input>
         </el-form-item>
         <el-form-item label="实例描述" prop="intro">
-          <el-input v-model="instanceOpsForm.intro" type="textarea" rows="2" maxlength="255"></el-input>
+          <el-input v-model="instanceOpsForm.intro" type="textarea" rows="2" show-word-limit maxlength="250"></el-input>
         </el-form-item>
         <el-form-item label="选择或输入默认分支（默认沿用项目配置）" prop="scmConfig.defaultBranch">
           <el-select v-model="instanceOpsForm.scmBranch"
@@ -438,6 +450,33 @@
       </el-form>
     </el-dialog>
 
+
+    <el-dialog title="公开入口设置" v-model="publicEntranceOpsDialogueVisible" width="80%">
+      <el-form label-position="top">
+        <el-form-item label="温馨提示：" label-width="150px">
+          <div class="warn-tips">
+            设置为公开入口后，用户可以不登录系统即可看到相关的入口配置
+          </div>
+        </el-form-item>
+        <el-form-item label="是否启用公开入口" label-width="150px">
+          <el-switch v-model="publicEntranceOpsForm.enabledFlag"/>
+        </el-form-item>
+        <el-form-item label="入口名称" prop="name">
+          <el-input v-model="publicEntranceOpsForm.name" show-word-limit maxlength="250"></el-input>
+        </el-form-item>
+        <el-form-item label="入口描述，可以填写相关测试账号" prop="intro">
+          <el-input v-model="publicEntranceOpsForm.intro" type="textarea" rows="3" show-word-limit maxlength="500"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+      <span class="dialog-footer">
+        <el-button type="warning" @click="doSetPublicEntrance">
+          确定
+        </el-button>
+      </span>
+      </template>
+    </el-dialog>
+
     <el-dialog id="pipelineLogDialog" title="流水线构建日志" v-model="pipelineBuildLog.visible" width="80%">
       <div id="logBoard">
         {{ pipelineBuildLog.text }}
@@ -523,6 +562,14 @@ export default {
           value: "dev"
         }
       ],
+
+      publicEntranceOpsDialogueVisible: false,
+      publicEntranceOpsForm: {
+        instanceId: null,
+        enabledFlag: false,
+        name: null,
+        intro: null
+      },
 
       locationInput: null,
       proxyPassInput: null,
@@ -904,6 +951,44 @@ export default {
       this.instanceOpsDialogVisible = true;
       this.instanceOpsForm = instance;
     },
+    handleSetPublicEntrance(instance) {
+      this.publicEntranceOpsForm.instanceId = instance.id;
+      this.getPublicEntranceDetails(instance.id);
+    },
+    getPublicEntranceDetails(instanceId) {
+      this.$httpUtil.get('/linker-server/api/v1/instance/public-entrance-details', {instanceId}).then(res => {
+        if (res) {
+          this.publicEntranceOpsForm = res.data;
+          this.publicEntranceOpsDialogueVisible = true;
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
+    doSetPublicEntrance() {
+      this.$httpUtil.jsonPost('/linker-server/api/v1/instance/update-public-entrance',
+          {
+            instanceId: this.publicEntranceOpsForm.instanceId,
+            enabledFlag: this.publicEntranceOpsForm.enabledFlag,
+            name: this.publicEntranceOpsForm.name,
+            intro: this.publicEntranceOpsForm.intro
+          }).then(res => {
+        if (res) {
+          this.$notify({
+            title: '成功',
+            message: '操作成功',
+            type: 'success'
+          });
+          this.publicEntranceOpsDialogueVisible = false;
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
     handleClickStarAction(instance, starAction) {
       this.$httpUtil.jsonPost('/linker-server/api/v1/instance/star',
           {
@@ -999,6 +1084,13 @@ export default {
     flex-direction: row;
     width: 100%;
     align-content: space-between;
+  }
+
+  .warn-tips {
+    color: white;
+    background-color: #E6A23C;
+    padding: 4px;
+    border-radius: 4px;
   }
 
   #pipelineLogDialog {
