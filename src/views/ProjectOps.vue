@@ -345,7 +345,7 @@ export default {
     updateProjectList() {
       this.$httpUtil.jsonPost('/linker-server/api/v1/project/all', {}).then(res => {
         if (res) {
-          this.$store.commit("setProjectList", res.data);
+          this.$store.commit("setProjectList", res.data.data);
         }
       }, (res) => {
         console.log(res);

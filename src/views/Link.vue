@@ -283,6 +283,14 @@
                          @click="jumpToNewTab(instance.imageArchiveUrl)">
                 下载归档文件
               </el-button>
+              <el-button type="success"
+                         size="small"
+                         style="margin-left: 4px"
+                         v-show="instance.imageArchiveUrl"
+                         v-clipboard:copy="instance.imageArchiveUrl" v-clipboard:success="copySuccess"
+                         v-clipboard:error="copyFail">
+                复制归档文件链接
+              </el-button>
               <el-button type="primary" size="small" @click="getPipelineBuildLog(instance)" style="margin-left: 4px">
                 查看构建日志
               </el-button>
@@ -485,7 +493,7 @@
         <el-button type="info"
                    v-show="this.pipelineBuildLog.imageArchiveUrl"
                    @click="jumpToNewTab(this.pipelineBuildLog.imageArchiveUrl)">
-          下载归档文件
+          下载归档文件Jenkins归档文件
         </el-button>
         <el-button type="info" @click="jumpToNewTab(buildInstancePipelineBuildInfoUrl(this.pipelineBuildLog.instance))">
           跳转Jenkins

@@ -96,7 +96,7 @@ export default {
 
     const currentProjectJson = this.store.getters['currentProject'];
     if (currentProjectJson) {
-     //  console.log("set current project in mounted method");
+      //  console.log("set current project in mounted method");
       this.currentProject = currentProjectJson;
       this.store.commit("setCurrentProject", this.currentProject);
     }
@@ -107,6 +107,9 @@ export default {
       return projectList ? projectList : [];
     },
     currentProjectName() {
+      if (!this.projectList) {
+        return;
+      }
       const currentPjo = this.projectList.find(x => x.id === this.currentProject.id);
       return currentPjo ? currentPjo.name : "无";
     }
