@@ -291,7 +291,7 @@
                          v-clipboard:error="copyFail">
                 复制归档文件链接
               </el-button>
-              <el-button type="primary" size="small" @click="getPipelineBuildLog(instance)" style="margin-left: 4px">
+              <el-button type="primary" size="small" @click="clickGetPipelineLog(instance)" style="margin-left: 4px">
                 查看构建日志
               </el-button>
             </div>
@@ -473,7 +473,8 @@
           <el-input v-model="publicEntranceOpsForm.name" show-word-limit maxlength="250"></el-input>
         </el-form-item>
         <el-form-item label="入口描述，可以填写相关测试账号" prop="intro">
-          <el-input v-model="publicEntranceOpsForm.intro" type="textarea" rows="3" show-word-limit maxlength="500"></el-input>
+          <el-input v-model="publicEntranceOpsForm.intro" type="textarea" rows="3" show-word-limit
+                    maxlength="500"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -499,7 +500,7 @@
           跳转Jenkins
         </el-button>
         <el-button type="primary" :disabled="!pipelineBuildLog.hasMoreData"
-                   @click="getPipelineBuildLog(this.pipelineBuildLog.instance)">刷新
+                   @click="doGetPipelineBuildLog(this.pipelineBuildLog.instance)">刷新
         </el-button>
       </div>
     </el-dialog>
@@ -555,6 +556,7 @@ export default {
         hasMoreData: false,
         text: ""
       },
+      pipelineBuildLogRefreshInterval: null,
 
       branchOptions: [
         {
@@ -770,7 +772,10 @@ export default {
       this.getInstanceList(projectId, false);
       localStorage.setItem("instanceListOnlyStar", this.instanceListOnlyStar);
     },
-    getPipelineBuildLog(instance) {
+    clickGetPipelineLog(instance) {
+      this.doGetPipelineBuildLog(instance);
+    },
+    doGetPipelineBuildLog(instance) {
       this.$httpUtil.get('/linker-server/api/v1/instance/pipeline-build-log', {
         instanceId: instance.id
       }).then(res => {
@@ -1112,6 +1117,9 @@ export default {
       color: white;
       padding: 4px;
       border-radius: 4px;
+      height: 512px;
+      overflow-y: scroll;
+      overflow-x: hidden;
       width: 100%;
       white-space: pre-wrap;
     }
