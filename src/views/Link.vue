@@ -164,7 +164,7 @@
             </el-button>
             <el-button type="info"
                        size="small"
-                       v-show="instance.isOwner"
+                       v-show="isShowPublicEntranceConfigButton(instance)"
                        @click="handleSetPublicEntrance(instance)">开放入口配置
             </el-button>
             <el-button type="primary"
@@ -429,26 +429,26 @@
           </div>
         </el-form-item>
 
-        <el-form-item label="是否归档镜像（生产环境打包时勾选是，将导出相关镜像归档以供下载）" prop="imageArchiveFlag">
+        <el-form-item label="是否归档镜像（生产环境打包时勾选是，将导出相关镜像归档以供下载）" prop="imageArchiveFlag" v-show="isShowImageArchiveConfig()">
           <el-radio-group v-model="instanceOpsForm.imageArchiveFlag">
             <el-radio :label="false">否，普通联调</el-radio>
             <el-radio :label="true">是，生产打包</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="自定义镜像仓库前缀" prop="imageRepositoryPrefix" v-show="instanceOpsForm.imageArchiveFlag">
+        <el-form-item label="自定义镜像仓库前缀" prop="imageRepositoryPrefix" v-show="isShowImageArchiveConfig()">
           <el-input v-model="instanceOpsForm.imageRepositoryPrefix"></el-input>
         </el-form-item>
-        <el-form-item label="自定义镜像名称" prop="imageName" v-show="instanceOpsForm.imageArchiveFlag">
+        <el-form-item label="自定义镜像名称" prop="imageName" v-show="isShowImageArchiveConfig()">
           <el-input v-model="instanceOpsForm.imageName"></el-input>
         </el-form-item>
-        <el-form-item label="自定义镜像版本类型" prop="imageVersionType" v-show="instanceOpsForm.imageArchiveFlag">
+        <el-form-item label="自定义镜像版本类型" prop="imageVersionType" v-show="isShowImageArchiveConfig()">
           <el-radio-group v-model="instanceOpsForm.imageVersionType">
             <el-radio :label="0">自定义</el-radio>
             <el-radio :label="1">版本递增，格式为1.0.0，最大版本为999</el-radio>
             <el-radio :label="2">时间作为版本，格式形如202311302145</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="自定义镜像版本" prop="imageVersion" v-show="instanceOpsForm.imageArchiveFlag">
+        <el-form-item label="自定义镜像版本" prop="imageVersion" v-show="isShowImageArchiveConfig()">
           <el-input v-model="instanceOpsForm.imageVersion"></el-input>
         </el-form-item>
 
@@ -512,6 +512,8 @@ import {getPlaningStrList, nodeIdMask} from '@/common/format'
 import * as echarts from "echarts/core";
 import {useStore} from "vuex";
 import Throttle from "@/common/throttle";
+import {isHasPluginCode} from "@/common/pluginControl";
+import {pluginCode} from "@/common/constant";
 
 export default {
   name: "Link",
@@ -636,6 +638,9 @@ export default {
       this.$router.push({
         path: `/home/projectOps/${this.currentProject.id}`,
       })
+    },
+    isShowImageArchiveConfig() {
+      return isHasPluginCode(pluginCode.PROD_PACKAGE) && this.instanceOpsForm.imageArchiveFlag;
     },
     updateProjectList() {
       this.$httpUtil.get('/linker-server/api/v1/project/list', {}).then(res => {
@@ -963,6 +968,9 @@ export default {
     handleClickUpdateInstance(instance) {
       this.instanceOpsDialogVisible = true;
       this.instanceOpsForm = instance;
+    },
+    isShowPublicEntranceConfigButton(instance) {
+      return instance.isOwner && isHasPluginCode(pluginCode.PUBLIC_ENTRANCE);
     },
     handleSetPublicEntrance(instance) {
       this.publicEntranceOpsForm.instanceId = instance.id;

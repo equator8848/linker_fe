@@ -7,8 +7,8 @@
                @select="handleSelect">
         <el-menu-item index="/intro">首页</el-menu-item>
         <el-menu-item index="/help">帮助文档</el-menu-item>
-        <el-menu-item index="/publicEntrance">公开入口</el-menu-item>
-        <el-menu-item index="/boarding">用户中心</el-menu-item>
+        <el-menu-item index="/publicEntrance" v-show="showPublicEntrance()">公开入口</el-menu-item>
+        <el-menu-item index="/boarding">控制台</el-menu-item>
       </el-menu>
     </div>
     <div id="main">
@@ -34,6 +34,9 @@
 </template>
 
 <script>
+import {pluginCode} from "@/common/constant";
+import {isHasPluginCode} from "@/common/pluginControl";
+
 export default {
   name: "Index",
   data() {
@@ -49,6 +52,9 @@ export default {
   methods: {
     handleSelect(key, keyPath) {
       this.activeIndex = key;
+    },
+    showPublicEntrance() {
+      return isHasPluginCode(pluginCode.PUBLIC_ENTRANCE);
     }
   }
 }

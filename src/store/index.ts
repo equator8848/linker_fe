@@ -35,7 +35,8 @@ export default createStore({
         refreshingInterval: null,
         refreshSwitch: true,
         currentProject: cachedCurrentProject ? JSON.parse(cachedCurrentProject) : null,
-        projectList: []
+        projectList: [],
+        pluginCodeSet: new Set()
     },
     getters: {
         userInfo(state) {
@@ -64,6 +65,9 @@ export default createStore({
         },
         baseUrl(state) {
             return state.baseUrl;
+        },
+        pluginCodeSet(state) {
+            return state.pluginCodeSet;
         }
     },
     mutations: {
@@ -101,6 +105,9 @@ export default createStore({
         setBaseDomain(state, val) {
             state.baseDomain = val;
             localStorage.setItem('base_domain', val);
+        },
+        setPluginCodeSet(state, val) {
+            state.pluginCodeSet = val;
         }
     },
     actions: {},

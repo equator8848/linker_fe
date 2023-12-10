@@ -84,6 +84,13 @@ const loginStatus = {
     NEED_SET_PASSWORD: 4
 }
 
+const pluginCode = {
+    BASE_FEATURE: "base_feature",
+    PROD_PACKAGE: "prod_package",
+    BUILD_SCHEDULE: "build_schedule",
+    PUBLIC_ENTRANCE: "public_entrance"
+}
+
 export {
     responseCode,
     operationStatusStr,
@@ -96,6 +103,7 @@ export {
     serverDomain,
     roleType,
     loginStatus,
-    userStatus
+    userStatus,
+    pluginCode
 }
 

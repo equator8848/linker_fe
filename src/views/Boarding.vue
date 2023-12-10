@@ -4,7 +4,7 @@
       <h2>欢迎您，{{ userInfo.nickName }}</h2>
       <div class="operation-button">
         <el-button type="warning" @click="logout">退出登录</el-button>
-        <el-button type="primary" @click="enterConsole">进入控制台</el-button>
+        <el-button type="primary" @click="enterConsole">开始联调之旅</el-button>
       </div>
     </div>
     <div class="boarding" v-else>
@@ -62,12 +62,7 @@ export default {
         userIdentificationType: {required: true, message: '请选择登录方式', trigger: 'blur'},
         userIdentification: {required: true, message: '请输入账号', trigger: 'blur'},
         userPassword: [
-          {required: true, message: '请输入密码', trigger: 'blur'},
-          {
-            pattern: "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[.#?!@$%^&*-]).{10,20}$",
-            message: '密码强度不符合要求，必须包含至少1位大写字母，1位小写字母，1位数字，1位特殊字符(.#?!@$%^&*-)，长度在10-20之间',
-            trigger: 'blur'
-          }],
+          {required: true, message: '请输入密码', trigger: 'blur'}],
         identifyCodeInput: {required: true, message: '请输入验证码', trigger: 'blur'},
       },
       isLogin: false,

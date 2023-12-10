@@ -17,12 +17,30 @@ export default {
       isRouteAlive: true
     }
   },
+  mounted() {
+    this.getPluginMeta();
+  },
   methods: {
     reload() {
       this.isRouteAlive = false;
       this.$nextTick(function () {
         this.isRouteAlive = true;
       })
+    },
+    getPluginMeta() {
+      this.$httpUtil.get('/linker-server/api/v1/plugin/plugin-meta', {}).then(res => {
+        if (res) {
+          let codeSet = new Set();
+          res.data.map(pluginMeta => pluginMeta.code).forEach(code => {
+            codeSet.add(code);
+          })
+          this.$store.commit("setPluginCodeSet", codeSet);
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
     }
   }
 }
