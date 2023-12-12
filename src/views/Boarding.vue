@@ -93,10 +93,6 @@ export default {
           this.isLogin = true;
         }
       }, res => {
-        this.$notify.warning({
-          title: '登录凭证已失效',
-          message: '登录信息已失效，请重新登录'
-        });
         this.getCaptcha();
       });
     } else {

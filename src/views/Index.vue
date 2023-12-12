@@ -7,6 +7,7 @@
                @select="handleSelect">
         <el-menu-item index="/intro">首页</el-menu-item>
         <el-menu-item index="/help">帮助文档</el-menu-item>
+        <el-menu-item index="/publicEntrance">公开入口</el-menu-item>
         <el-menu-item index="/boarding">用户中心</el-menu-item>
       </el-menu>
     </div>

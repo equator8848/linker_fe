@@ -14,14 +14,17 @@
           </template>
           <template #extra>
             <el-button type="danger"
+                       size="small"
                        v-show="currentProjectDetails.isOwner"
                        @click="handleClickDeleteProject(currentProjectDetails.id)">删除
             </el-button>
             <el-button type="info"
+                       size="small"
                        v-show="currentProjectDetails.isOwner"
                        @click="handleClickUpdateProject()">编辑
             </el-button>
             <el-button type="success"
+                       size="small"
                        @click="handleClickCreateInstance()">创建实例
             </el-button>
           </template>
@@ -108,7 +111,7 @@
             <template #label>
               <div class="cell-item">
                 <el-icon>
-                  <Star/>
+                  <EditPen/>
                 </el-icon>
                 项目打包脚本
               </div>
@@ -155,18 +158,27 @@
           </template>
           <template #extra>
             <el-button type="info"
+                       size="small"
                        v-show="instance.isOwner"
                        @click="handleClickUpdateInstance(instance)">编辑
             </el-button>
+            <el-button type="info"
+                       size="small"
+                       v-show="instance.isOwner"
+                       @click="handleSetPublicEntrance(instance)">开放入口配置
+            </el-button>
             <el-button type="primary"
+                       size="small"
                        @click="handleClickStarAction(instance)">
               {{ instance.stared ? "取消收藏" : "收藏" }}
             </el-button>
             <el-button type="danger"
+                       size="small"
                        v-show="instance.isOwner"
                        @click="handleClickDeleteInstance(instance.id)">删除
             </el-button>
             <el-button type="success"
+                       size="small"
                        :loading="getPipelineBuildLoadingStatus(instance)"
                        @click="handleClickBuildInstance(instance)">构建
             </el-button>
@@ -254,6 +266,41 @@
             <template #label>
               <div class="cell-item">
                 <el-icon>
+                  <Setting/>
+                </el-icon>
+                构建信息
+              </div>
+            </template>
+            <div style="display: flex;align-items: center">
+              <el-tag :type="getBuildTagStatus(instance)">{{ buildInstancePipelineBuildInfo(instance) }}</el-tag>
+
+              <el-tag style="margin-left: 4px">镜像版本：{{ instance.imageVersion }}</el-tag>
+
+              <el-button type="info"
+                         size="small"
+                         style="margin-left: 4px"
+                         v-show="instance.imageArchiveUrl"
+                         @click="jumpToNewTab(instance.imageArchiveUrl)">
+                下载归档文件
+              </el-button>
+              <el-button type="success"
+                         size="small"
+                         style="margin-left: 4px"
+                         v-show="instance.imageArchiveUrl"
+                         v-clipboard:copy="instance.imageArchiveUrl" v-clipboard:success="copySuccess"
+                         v-clipboard:error="copyFail">
+                复制归档文件链接
+              </el-button>
+              <el-button type="primary" size="small" @click="clickGetPipelineLog(instance)" style="margin-left: 4px">
+                查看构建日志
+              </el-button>
+            </div>
+          </el-descriptions-item>
+
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
                   <TopRight/>
                 </el-icon>
                 访问地址
@@ -268,24 +315,14 @@
             <template #label>
               <div class="cell-item">
                 <el-icon>
-                  <Setting/>
+                  <EditPen/>
                 </el-icon>
-                构建信息
+                实例打包脚本
               </div>
             </template>
-            <div style="display: flex;align-items: center">
-              <el-tag :type="getBuildTagStatus(instance)">{{ buildInstancePipelineBuildInfo(instance) }}</el-tag>
-              <el-button type="info"
-                         size="small"
-                         style="margin-left: 4px"
-                         v-show="instance.imageArchiveUrl"
-                         @click="jumpToNewTab(instance.imageArchiveUrl)">
-                下载归档文件
-              </el-button>
-              <el-button type="primary" size="small" @click="getPipelineBuildLog(instance)" style="margin-left: 4px">
-                查看构建日志
-              </el-button>
-            </div>
+            <span style="white-space: pre-wrap;">
+              {{ instance.packageScript }}
+            </span>
           </el-descriptions-item>
 
         </el-descriptions>
@@ -303,10 +340,10 @@
       <el-form ref="instanceOpsForm" :model="instanceOpsForm" label-position="top"
                :rules="instanceOpsFormRules">
         <el-form-item label="实例名称" prop="name">
-          <el-input v-model="instanceOpsForm.name"></el-input>
+          <el-input v-model="instanceOpsForm.name" show-word-limit maxlength="250"></el-input>
         </el-form-item>
         <el-form-item label="实例描述" prop="intro">
-          <el-input v-model="instanceOpsForm.intro" type="textarea" rows="2" maxlength="255"></el-input>
+          <el-input v-model="instanceOpsForm.intro" type="textarea" rows="2" show-word-limit maxlength="250"></el-input>
         </el-form-item>
         <el-form-item label="选择或输入默认分支（默认沿用项目配置）" prop="scmConfig.defaultBranch">
           <el-select v-model="instanceOpsForm.scmBranch"
@@ -321,6 +358,17 @@
                 :value="item.value">
             </el-option>
           </el-select>
+        </el-form-item>
+
+        <el-form-item label="打包脚本配置" prop="packageScriptOverrideFlag">
+          <el-radio-group v-model="instanceOpsForm.packageScriptOverrideFlag">
+            <el-radio :label="false">使用项目打包脚本配置</el-radio>
+            <el-radio :label="true">覆盖项目打包脚本</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="打包脚本" prop="packageScript" v-show="instanceOpsForm.packageScriptOverrideFlag">
+          <el-input v-model="instanceOpsForm.packageScript" type="textarea" rows="5" maxlength="1024"></el-input>
         </el-form-item>
 
         <el-form-item label="权限控制" prop="accessLevel">
@@ -393,6 +441,13 @@
         <el-form-item label="自定义镜像名称" prop="imageName" v-show="instanceOpsForm.imageArchiveFlag">
           <el-input v-model="instanceOpsForm.imageName"></el-input>
         </el-form-item>
+        <el-form-item label="自定义镜像版本类型" prop="imageVersionType" v-show="instanceOpsForm.imageArchiveFlag">
+          <el-radio-group v-model="instanceOpsForm.imageVersionType">
+            <el-radio :label="0">自定义</el-radio>
+            <el-radio :label="1">版本递增，格式为1.0.0，最大版本为999</el-radio>
+            <el-radio :label="2">时间作为版本，格式形如202311302145</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="自定义镜像版本" prop="imageVersion" v-show="instanceOpsForm.imageArchiveFlag">
           <el-input v-model="instanceOpsForm.imageVersion"></el-input>
         </el-form-item>
@@ -403,6 +458,34 @@
       </el-form>
     </el-dialog>
 
+
+    <el-dialog title="公开入口设置" v-model="publicEntranceOpsDialogueVisible" width="80%">
+      <el-form label-position="top">
+        <el-form-item label="温馨提示：" label-width="150px">
+          <div class="warn-tips">
+            设置为公开入口后，用户可以不登录系统即可看到相关的入口配置
+          </div>
+        </el-form-item>
+        <el-form-item label="是否启用公开入口" label-width="150px">
+          <el-switch v-model="publicEntranceOpsForm.enabledFlag"/>
+        </el-form-item>
+        <el-form-item label="入口名称" prop="name">
+          <el-input v-model="publicEntranceOpsForm.name" show-word-limit maxlength="250"></el-input>
+        </el-form-item>
+        <el-form-item label="入口描述，可以填写相关测试账号" prop="intro">
+          <el-input v-model="publicEntranceOpsForm.intro" type="textarea" rows="3" show-word-limit
+                    maxlength="500"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+      <span class="dialog-footer">
+        <el-button type="warning" @click="doSetPublicEntrance">
+          确定
+        </el-button>
+      </span>
+      </template>
+    </el-dialog>
+
     <el-dialog id="pipelineLogDialog" title="流水线构建日志" v-model="pipelineBuildLog.visible" width="80%">
       <div id="logBoard">
         {{ pipelineBuildLog.text }}
@@ -411,13 +494,13 @@
         <el-button type="info"
                    v-show="this.pipelineBuildLog.imageArchiveUrl"
                    @click="jumpToNewTab(this.pipelineBuildLog.imageArchiveUrl)">
-          下载归档文件
+          下载归档文件Jenkins归档文件
         </el-button>
         <el-button type="info" @click="jumpToNewTab(buildInstancePipelineBuildInfoUrl(this.pipelineBuildLog.instance))">
           跳转Jenkins
         </el-button>
         <el-button type="primary" :disabled="!pipelineBuildLog.hasMoreData"
-                   @click="getPipelineBuildLog(this.pipelineBuildLog.instance)">刷新
+                   @click="doGetPipelineBuildLog(this.pipelineBuildLog.instance)">刷新
         </el-button>
       </div>
     </el-dialog>
@@ -473,6 +556,7 @@ export default {
         hasMoreData: false,
         text: ""
       },
+      pipelineBuildLogRefreshInterval: null,
 
       branchOptions: [
         {
@@ -489,6 +573,14 @@ export default {
         }
       ],
 
+      publicEntranceOpsDialogueVisible: false,
+      publicEntranceOpsForm: {
+        instanceId: null,
+        enabledFlag: false,
+        name: null,
+        intro: null
+      },
+
       locationInput: null,
       proxyPassInput: null,
       rewriteConfigInput: null,
@@ -498,6 +590,8 @@ export default {
         name: null,
         intro: null,
         scmBranch: '',
+        packageScriptOverrideFlag: false,
+        packageScript: null,
         proxyConfig: {
           proxyPassConfigs: []
         },
@@ -505,6 +599,7 @@ export default {
         imageArchiveFlag: false,
         imageRepositoryPrefix: null,
         imageName: null,
+        imageVersionType: 0,
         imageVersion: 'latest'
       },
       instanceOpsFormRules: {
@@ -677,7 +772,10 @@ export default {
       this.getInstanceList(projectId, false);
       localStorage.setItem("instanceListOnlyStar", this.instanceListOnlyStar);
     },
-    getPipelineBuildLog(instance) {
+    clickGetPipelineLog(instance) {
+      this.doGetPipelineBuildLog(instance);
+    },
+    doGetPipelineBuildLog(instance) {
       this.$httpUtil.get('/linker-server/api/v1/instance/pipeline-build-log', {
         instanceId: instance.id
       }).then(res => {
@@ -866,6 +964,44 @@ export default {
       this.instanceOpsDialogVisible = true;
       this.instanceOpsForm = instance;
     },
+    handleSetPublicEntrance(instance) {
+      this.publicEntranceOpsForm.instanceId = instance.id;
+      this.getPublicEntranceDetails(instance.id);
+    },
+    getPublicEntranceDetails(instanceId) {
+      this.$httpUtil.get('/linker-server/api/v1/instance/public-entrance-details', {instanceId}).then(res => {
+        if (res) {
+          this.publicEntranceOpsForm = res.data;
+          this.publicEntranceOpsDialogueVisible = true;
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
+    doSetPublicEntrance() {
+      this.$httpUtil.jsonPost('/linker-server/api/v1/instance/update-public-entrance',
+          {
+            instanceId: this.publicEntranceOpsForm.instanceId,
+            enabledFlag: this.publicEntranceOpsForm.enabledFlag,
+            name: this.publicEntranceOpsForm.name,
+            intro: this.publicEntranceOpsForm.intro
+          }).then(res => {
+        if (res) {
+          this.$notify({
+            title: '成功',
+            message: '操作成功',
+            type: 'success'
+          });
+          this.publicEntranceOpsDialogueVisible = false;
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
     handleClickStarAction(instance, starAction) {
       this.$httpUtil.jsonPost('/linker-server/api/v1/instance/star',
           {
@@ -963,6 +1099,13 @@ export default {
     align-content: space-between;
   }
 
+  .warn-tips {
+    color: white;
+    background-color: #E6A23C;
+    padding: 4px;
+    border-radius: 4px;
+  }
+
   #pipelineLogDialog {
     #opsBoard {
       display: flex;
@@ -974,6 +1117,9 @@ export default {
       color: white;
       padding: 4px;
       border-radius: 4px;
+      height: 512px;
+      overflow-y: scroll;
+      overflow-x: hidden;
       width: 100%;
       white-space: pre-wrap;
     }

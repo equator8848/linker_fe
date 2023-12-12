@@ -2,6 +2,7 @@ import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
 import Index from '@/views/Index.vue'
 import Boarding from '@/views/Boarding.vue'
 import Help from '@/views/Help.vue'
+import PublicEntrance from '@/views/PublicEntrance'
 import Intro from '@/views/Intro.vue'
 import Home from '@/views/Home.vue'
 import ProjectOps from '@/views/ProjectOps.vue'
@@ -34,6 +35,11 @@ const routes: Array<RouteRecordRaw> = [
                 path: '/help',
                 name: 'Help',
                 component: Help
+            },
+            {
+                path: '/publicEntrance',
+                name: 'PublicEntrance',
+                component: PublicEntrance
             },
             {
                 path: '/boarding',
@@ -123,7 +129,7 @@ const router = createRouter({
     routes
 })
 
-const anonymousPages = new Set(["Boarding", "Help", "Intro", "StatusCheck", "LoginByToken"])
+const anonymousPages = new Set(["Boarding", "Help", "Intro", "StatusCheck", "PublicEntrance"])
 
 // 全局路由守卫
 router.beforeEach((to, from, next) => {
