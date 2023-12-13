@@ -1,4 +1,4 @@
-# linker_fe
+# linker_fe Linker联调平台前端
 ## 依赖
 ### element-ui
 - https://element-plus.gitee.io/zh-CN/guide/installation.html
@@ -34,5 +34,5 @@ npm run build
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# 协议
+- GPL
