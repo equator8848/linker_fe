@@ -56,18 +56,19 @@
         </el-form-item>
 
         <el-form-item label="打包脚本" prop="packageScript">
-          <el-input v-model="projectOpsForm.packageScript" type="textarea" rows="5" show-word-limit maxlength="1000"></el-input>
+          <el-input v-model="projectOpsForm.packageScript" type="textarea" rows="5" show-word-limit
+                    maxlength="1000"></el-input>
         </el-form-item>
 
-        <el-form-item label="打包输出目录" prop="packageOutputDir">
+        <el-form-item label="打包输出目录（项目根目录到产物目录的路径）" prop="packageOutputDir">
           <el-input v-model="projectOpsForm.packageOutputDir"></el-input>
         </el-form-item>
 
-        <el-form-item label="二级部署目录" prop="deployFolder">
+        <el-form-item label="二级部署目录（为空则部署在nginx根目录）" prop="deployFolder">
           <el-input v-model="projectOpsForm.deployFolder"></el-input>
         </el-form-item>
 
-        <el-form-item label="路由模式" prop="routeMode">
+        <el-form-item label="路由模式（有#的是history，否则选hash）" prop="routeMode">
           <el-radio-group v-model="projectOpsForm.routeMode">
             <el-radio :label="0">hash</el-radio>
             <el-radio :label="1">history</el-radio>
