@@ -609,7 +609,9 @@ export default {
     currentProject() {
       const currentProjectInStore = this.$storage.getters['currentProject'];
       console.log("currentProject computed", currentProjectInStore)
-      this.getProjectBranchList(currentProjectInStore.id);
+      if (currentProjectInStore) {
+        this.getProjectBranchList(currentProjectInStore.id);
+      }
       return currentProjectInStore ? currentProjectInStore : {}
     },
   },

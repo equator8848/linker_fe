@@ -152,6 +152,7 @@ export default {
         captchaSecret: this.userLoginForm.captchaSecret
       }).then(res => {
         if (res) {
+          console.log(res);
           if (this.userLoginForm.rememberMe) {
             this.saveUserInfo(localStorage, res.data);
           } else {

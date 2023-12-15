@@ -68,7 +68,7 @@
           <el-input v-model="projectOpsForm.deployFolder"></el-input>
         </el-form-item>
 
-        <el-form-item label="路由模式（有#的是history，否则选hash）" prop="routeMode">
+        <el-form-item label="路由模式（有#的是hash，否则选history）" prop="routeMode">
           <el-radio-group v-model="projectOpsForm.routeMode">
             <el-radio :label="0">hash</el-radio>
             <el-radio :label="1">history</el-radio>
@@ -344,7 +344,7 @@ export default {
       });
     },
     updateProjectList() {
-      this.$httpUtil.jsonPost('/linker-server/api/v1/project/all', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/project/list', {}).then(res => {
         if (res) {
           this.$store.commit("setProjectList", res.data.data);
         }

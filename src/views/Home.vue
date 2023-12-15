@@ -100,6 +100,11 @@ export default {
       this.currentProject = currentProjectJson;
       this.store.commit("setCurrentProject", this.currentProject);
     }
+
+    let needUpdateUserNameFlag = this.store.getters['needUpdateUserName'];
+    if (needUpdateUserNameFlag) {
+      this.changeUsername();
+    }
   },
   computed: {
     projectList() {
@@ -115,6 +120,42 @@ export default {
     }
   },
   methods: {
+    changeUsername() {
+      this.$prompt('请修改用户名，让其他人可以识别你', '修改用户名', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+      }).then(({value}) => {
+        this.$httpUtil.urlEncoderPut('/linker-server/api/v1/user/change-username', {
+          newUsername: value
+        }).then(res => {
+          if (res) {
+            this.$notify.success({
+              title: '成功',
+              message: '成功修改用户名',
+              duration: 800
+            });
+            const newUserInfo = res.data;
+            localStorage.setItem('user_info', JSON.stringify(newUserInfo));
+            this.$store.commit("setUserInfo", newUserInfo);
+            this.$store.commit("setNeedUpdateUserNameFlag", false);
+            this.userInfo = newUserInfo;
+          }
+        }, (res) => {
+          console.log(res);
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消输入'
+        });
+      });
+    },
+    reload() {
+      this.isRouteAlive = false;
+      this.$nextTick(function () {
+        this.isRouteAlive = true;
+      })
+    },
     isAdmin() {
       return isAdmin();
     },

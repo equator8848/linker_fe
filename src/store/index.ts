@@ -32,6 +32,7 @@ export default createStore({
         baseUrl: cachedBaseUrl ? cachedBaseUrl : '',
         baseDomain: cachedBaseDomain ? cachedBaseDomain : null,
         expiredAt: cachedExpiredAt ? cachedExpiredAt : null,
+        needUpdateUserName: false,
         refreshingInterval: null,
         refreshSwitch: true,
         currentProject: cachedCurrentProject ? JSON.parse(cachedCurrentProject) : null,
@@ -40,6 +41,9 @@ export default createStore({
     getters: {
         userInfo(state) {
             return state.userInfo;
+        },
+        needUpdateUserName(state) {
+            return state.needUpdateUserName;
         },
         token(state) {
             return state.token;
@@ -74,6 +78,10 @@ export default createStore({
             state.userInfo = loginResponseData.loginUser;
             state.token = loginResponseData.token;
             state.expiredAt = loginResponseData.tokenExpiredAt;
+            state.needUpdateUserName = loginResponseData.needUpdateUserName;
+        },
+        setNeedUpdateUserNameFlag(state, needUpdateUserNameFlag) {
+            state.needUpdateUserName = needUpdateUserNameFlag;
         },
         clearLoginInfo(state) {
             state.userInfo = null;
