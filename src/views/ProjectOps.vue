@@ -56,6 +56,11 @@
         </el-form-item>
 
         <el-form-item label="打包脚本" prop="packageScript">
+          <template #label>
+            <span>输入打包脚本
+              <el-button size="small" type="primary" link @click="setPackageScriptTemplate">填充基础模板</el-button>
+            </span>
+          </template>
           <el-input v-model="projectOpsForm.packageScript" type="textarea" rows="5" show-word-limit
                     maxlength="1000"></el-input>
         </el-form-item>
@@ -388,6 +393,10 @@ export default {
       this.locationInput = proxyPassConfig.location;
       this.proxyPassInput = proxyPassConfig.proxyPass;
       this.rewriteConfigInput = proxyPassConfig.rewriteConfig;
+    },
+    setPackageScriptTemplate() {
+      this.projectOpsForm.packageScript = "pnpm --registry https://registry.npmmirror.com install\n" +
+          "pnpm run build:pc";
     },
     editProxyConfig(row, index) {
       row.isEditing = true;

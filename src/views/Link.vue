@@ -406,6 +406,11 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="打包脚本" prop="packageScript" v-show="instanceOpsForm.packageScriptOverrideFlag">
+          <template #label>
+            <span>输入打包脚本
+              <el-button size="small" type="primary" link @click="setPackageScriptTemplate">填充基础模板</el-button>
+            </span>
+          </template>
           <el-input v-model="instanceOpsForm.packageScript" type="textarea" rows="5" maxlength="1024"></el-input>
         </el-form-item>
 
@@ -1178,7 +1183,11 @@ export default {
     },
     saveProxyConfig(row, index) {
       row.isEditing = false;
-    }
+    },
+    setPackageScriptTemplate() {
+      this.instanceOpsForm.packageScript = "pnpm --registry https://registry.npmmirror.com install\n" +
+          "pnpm run build:pc";
+    },
   }
 }
 </script>
