@@ -100,10 +100,39 @@
                 <el-icon>
                   <Camera/>
                 </el-icon>
-                项目打包分支
+                默认项目打包分支
               </div>
             </template>
-            {{ currentProjectDetails.scmConfig ? currentProjectDetails.scmConfig.defaultBranch : '' }}
+            <a v-show="currentProjectDetails && currentProjectDetails.scmConfig"
+               :href="getScmRepositoryUrl()" target="_blank">
+              仓库：{{ getScmRepositoryUrl() }}，
+              分支： {{ currentProjectDetails.scmConfig ? currentProjectDetails.scmConfig.defaultBranch : '' }}
+            </a>
+          </el-descriptions-item>
+
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <Camera/>
+                </el-icon>
+                打包配置
+              </div>
+            </template>
+            打包输出目录：{{ currentProjectDetails ? currentProjectDetails.packageOutputDir : '' }}，
+            二级部署目录：{{ currentProjectDetails ? currentProjectDetails.deployFolder : '' }}
+          </el-descriptions-item>
+
+          <el-descriptions-item>
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <Camera/>
+                </el-icon>
+                访问入口
+              </div>
+            </template>
+            {{ currentProjectDetails ? currentProjectDetails.accessEntrance : '' }}
           </el-descriptions-item>
 
 
@@ -142,6 +171,9 @@
             v-model="instanceListSearch"
             clearable>
         </el-input>
+        <el-button type="primary" @click="getInstanceList(this.currentProject.id)" style="margin-left: 2px"
+                   :loading="instanceListLoading">刷新
+        </el-button>
       </div>
 
       <el-empty description="空空如也" v-show="instanceList.length===0"></el-empty>
@@ -345,10 +377,17 @@
         <el-form-item label="实例描述" prop="intro">
           <el-input v-model="instanceOpsForm.intro" type="textarea" rows="2" show-word-limit maxlength="250"></el-input>
         </el-form-item>
-        <el-form-item label="选择或输入默认分支（默认沿用项目配置）" prop="scmConfig.defaultBranch">
+        <el-form-item prop="scmConfig.defaultBranch">
+          <template #label>
+            <span>选择或输入默认分支（为空则默认沿用项目配置）
+              <el-tag :type="this.branchIsDefaultData?'danger':'success'">{{
+                  this.branchIsDefaultData ? "无法获取git分支数据，降级使用默认配置，请稍后重试" : "已从git获取相关分支数据"
+                }}</el-tag>
+            </span>
+          </template>
           <el-select v-model="instanceOpsForm.scmBranch"
                      style="width: 100%"
-                     placeholder="选择或输入默认分支，默认拉取该分支代码进行打包"
+                     placeholder="选择或输入默认分支，拉取该分支代码进行打包"
                      filterable
                      allow-create>
             <el-option
@@ -366,10 +405,48 @@
             <el-radio :label="true">覆盖项目打包脚本</el-radio>
           </el-radio-group>
         </el-form-item>
-
         <el-form-item label="打包脚本" prop="packageScript" v-show="instanceOpsForm.packageScriptOverrideFlag">
+          <template #label>
+            <span>输入打包脚本
+              <el-button size="small" type="primary" link @click="setPackageScriptTemplate">填充基础模板</el-button>
+            </span>
+          </template>
           <el-input v-model="instanceOpsForm.packageScript" type="textarea" rows="5" maxlength="1024"></el-input>
         </el-form-item>
+
+
+        <el-form-item label="打包输出目录配置" prop="packageScriptOverrideFlag">
+          <el-radio-group v-model="instanceOpsForm.packageOutputDirOverrideFlag">
+            <el-radio :label="false">使用项目打包输出目录配置</el-radio>
+            <el-radio :label="true">覆盖项目打包输出目录配置</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="打包输出目录（项目根目录到产物目录的路径）" prop="packageOutputDir"
+                      v-show="instanceOpsForm.packageOutputDirOverrideFlag">
+          <el-input v-model="instanceOpsForm.packageOutputDir"></el-input>
+        </el-form-item>
+
+        <el-form-item label="二级部署目录配置" prop="packageScriptOverrideFlag">
+          <el-radio-group v-model="instanceOpsForm.deployFolderOverrideFlag">
+            <el-radio :label="false">使用项目二级部署目录配置</el-radio>
+            <el-radio :label="true">覆盖项目二级部署目录配置</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="二级部署目录（为空则部署在nginx根目录）" prop="deployFolder"
+                      v-show="instanceOpsForm.deployFolderOverrideFlag">
+          <el-input v-model="instanceOpsForm.deployFolder"></el-input>
+        </el-form-item>
+
+        <el-form-item label="入口相对路径配置" prop="accessEntranceOverrideFlag">
+          <el-radio-group v-model="instanceOpsForm.accessEntranceOverrideFlag">
+            <el-radio :label="false">使用项目入口相对路径配置</el-radio>
+            <el-radio :label="true">覆盖项目入口相对路径配置</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="入口相对路径" prop="accessEntrance" v-show="instanceOpsForm.accessEntranceOverrideFlag">
+          <el-input v-model="instanceOpsForm.accessEntrance"></el-input>
+        </el-form-item>
+
 
         <el-form-item label="权限控制" prop="accessLevel">
           <el-radio-group v-model="instanceOpsForm.accessLevel">
@@ -406,17 +483,17 @@
 
             <el-table-column fixed="right" label="操作" width="256px">
               <template #default="scope">
+                <el-button link type="primary" size="small" @click="saveProxyConfig(scope.row)">
+                  保存
+                </el-button>
+                <el-button link type="warning" size="small" @click="editProxyConfig(scope.row, scope)">
+                  编辑
+                </el-button>
                 <el-button link type="danger" size="small" @click.prevent="removeProxyPassConfig(scope.$index)">
                   移除
                 </el-button>
                 <el-button link type="info" size="small" @click.prevent="copyProxyPassConfig(scope.$index)">
                   复制
-                </el-button>
-                <el-button link type="warning" size="small" @click="editProxyConfig(scope.row, scope)">
-                  编辑
-                </el-button>
-                <el-button link type="primary" size="small" @click="saveProxyConfig(scope.row)">
-                  保存
                 </el-button>
               </template>
             </el-table-column>
@@ -512,6 +589,7 @@ import {getPlaningStrList, nodeIdMask} from '@/common/format'
 import * as echarts from "echarts/core";
 import {useStore} from "vuex";
 import Throttle from "@/common/throttle";
+import {deepCopy} from "@/common/clone";
 
 export default {
   name: "Link",
@@ -535,6 +613,10 @@ export default {
   computed: {
     currentProject() {
       const currentProjectInStore = this.$storage.getters['currentProject'];
+      console.log("currentProject computed", currentProjectInStore)
+      if (currentProjectInStore) {
+        this.getProjectBranchList(currentProjectInStore.id);
+      }
       return currentProjectInStore ? currentProjectInStore : {}
     },
   },
@@ -545,6 +627,7 @@ export default {
 
       instanceListSearch: null,
       instanceListOnlyStar: localStorage.getItem("instanceListOnlyStar") === "true",
+      instanceListLoading: false,
       instanceList: [],
 
       refreshInstanceListFlag: false,
@@ -558,6 +641,7 @@ export default {
       },
       pipelineBuildLogRefreshInterval: null,
 
+      branchIsDefaultData: false,
       branchOptions: [
         {
           name: "master",
@@ -584,14 +668,56 @@ export default {
       locationInput: null,
       proxyPassInput: null,
       rewriteConfigInput: null,
+      emptyInstanceOpsForm: {
+        projectId: null,
+        id: null,
+        name: null,
+        intro: null,
+        scmBranch: '',
+
+        packageScriptOverrideFlag: false,
+        packageScript: null,
+
+
+        packageOutputDirOverrideFlag: false,
+        packageOutputDir: null,
+
+        deployFolderOverrideFlag: false,
+        deployFolder: null,
+
+        accessEntranceOverrideFlag: false,
+        accessEntrance: null,
+
+        proxyConfig: {
+          proxyPassConfigs: []
+        },
+        accessLevel: 'PUBLIC',
+        imageArchiveFlag: false,
+        imageRepositoryPrefix: null,
+        imageName: null,
+        imageVersionType: 0,
+        imageVersion: 'latest'
+      },
       instanceOpsForm: {
         projectId: null,
         id: null,
         name: null,
         intro: null,
         scmBranch: '',
+
         packageScriptOverrideFlag: false,
         packageScript: null,
+
+
+        packageOutputDirOverrideFlag: false,
+        packageOutputDir: null,
+
+        deployFolderOverrideFlag: false,
+        deployFolder: null,
+
+        accessEntranceOverrideFlag: false,
+        accessEntrance: null,
+
         proxyConfig: {
           proxyPassConfigs: []
         },
@@ -628,6 +754,8 @@ export default {
     },
     handleClickCreateInstance() {
       this.instanceOpsDialogVisible = true;
+      this.instanceOpsForm = {}
+      deepCopy(this.instanceOpsForm, this.emptyInstanceOpsForm);
       if (this.currentProjectDetails) {
         this.instanceOpsForm.proxyConfig = this.currentProjectDetails.proxyConfig;
       }
@@ -802,6 +930,7 @@ export default {
       if (!projectId) {
         return;
       }
+      this.instanceListLoading = true;
       this.$httpUtil.jsonPost('/linker-server/api/v1/instance/list', {
         projectId,
         searchKeyword: this.instanceListSearch,
@@ -830,16 +959,18 @@ export default {
       }, res => {
         console.log(res);
       }).finally(() => {
-        //
+        this.instanceListLoading = false;
       });
     },
     getProjectBranchList(projectId) {
       if (!projectId) {
         return;
       }
-      this.$httpUtil.get('/linker-server/api/v1/project/branches', {projectId}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/project/branches-with-tips', {projectId}).then(res => {
         if (res) {
-          this.branchOptions = res.data.map(x => {
+          let branches = res.data.projectBranchInfos;
+          this.branchIsDefaultData = res.data.isDefaultData;
+          this.branchOptions = branches.map(x => {
             return {
               name: `分支名：${x.name}，commit标题：${x.latestCommitTitle}，commitId：${x.latestCommitId}，时间：${x.latestCommitTime}`,
               value: x.name
@@ -885,7 +1016,7 @@ export default {
       this.proxyPassInput = proxyPassConfig.proxyPass;
       this.rewriteConfigInput = proxyPassConfig.rewriteConfig;
     },
-    refresh() {
+    refreshPage() {
       this.reload();
     },
     handleOpsInstance() {
@@ -945,7 +1076,7 @@ export default {
             this.instanceOpsForm.proxyConfig.proxyPassConfigs = [];
             this.instanceOpsForm.accessLevel = 'PUBLIC'
             this.instanceOpsDialogVisible = false;
-            this.refresh();
+            this.refreshPage();
           }, 1000)
         }
       }, res => {
@@ -967,6 +1098,12 @@ export default {
     handleSetPublicEntrance(instance) {
       this.publicEntranceOpsForm.instanceId = instance.id;
       this.getPublicEntranceDetails(instance.id);
+    },
+    getScmRepositoryUrl() {
+      if (!this.currentProjectDetails || !this.currentProjectDetails.scmConfig) {
+        return ""
+      }
+      return this.currentProjectDetails.scmConfig.repositoryUrl;
     },
     getPublicEntranceDetails(instanceId) {
       this.$httpUtil.get('/linker-server/api/v1/instance/public-entrance-details', {instanceId}).then(res => {
@@ -1033,7 +1170,7 @@ export default {
             message: '成功触发构建',
             type: 'success'
           });
-          this.refresh();
+          this.refreshPage();
         }
       }, res => {
         console.log(res);
@@ -1046,7 +1183,11 @@ export default {
     },
     saveProxyConfig(row, index) {
       row.isEditing = false;
-    }
+    },
+    setPackageScriptTemplate() {
+      this.instanceOpsForm.packageScript = "pnpm --registry https://registry.npmmirror.com install\n" +
+          "pnpm run build:pc";
+    },
   }
 }
 </script>

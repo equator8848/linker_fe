@@ -56,18 +56,24 @@
         </el-form-item>
 
         <el-form-item label="打包脚本" prop="packageScript">
-          <el-input v-model="projectOpsForm.packageScript" type="textarea" rows="5" show-word-limit maxlength="1000"></el-input>
+          <template #label>
+            <span>输入打包脚本
+              <el-button size="small" type="primary" link @click="setPackageScriptTemplate">填充基础模板</el-button>
+            </span>
+          </template>
+          <el-input v-model="projectOpsForm.packageScript" type="textarea" rows="5" show-word-limit
+                    maxlength="1000"></el-input>
         </el-form-item>
 
-        <el-form-item label="打包输出目录" prop="packageOutputDir">
+        <el-form-item label="打包输出目录（项目根目录到产物目录的路径）" prop="packageOutputDir">
           <el-input v-model="projectOpsForm.packageOutputDir"></el-input>
         </el-form-item>
 
-        <el-form-item label="二级部署目录" prop="deployFolder">
+        <el-form-item label="二级部署目录（为空则部署在nginx根目录）" prop="deployFolder">
           <el-input v-model="projectOpsForm.deployFolder"></el-input>
         </el-form-item>
 
-        <el-form-item label="路由模式" prop="routeMode">
+        <el-form-item label="路由模式（有#的是hash，否则选history）" prop="routeMode">
           <el-radio-group v-model="projectOpsForm.routeMode">
             <el-radio :label="0">hash</el-radio>
             <el-radio :label="1">history</el-radio>
@@ -343,7 +349,7 @@ export default {
       });
     },
     updateProjectList() {
-      this.$httpUtil.jsonPost('/linker-server/api/v1/project/all', {}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/project/list', {}).then(res => {
         if (res) {
           this.$store.commit("setProjectList", res.data.data);
         }
@@ -387,6 +393,10 @@ export default {
       this.locationInput = proxyPassConfig.location;
       this.proxyPassInput = proxyPassConfig.proxyPass;
       this.rewriteConfigInput = proxyPassConfig.rewriteConfig;
+    },
+    setPackageScriptTemplate() {
+      this.projectOpsForm.packageScript = "pnpm --registry https://registry.npmmirror.com install\n" +
+          "pnpm run build:pc";
     },
     editProxyConfig(row, index) {
       row.isEditing = true;

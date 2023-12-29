@@ -23,7 +23,7 @@
           <el-input v-model="userLoginForm.userPassword" show-password></el-input>
         </el-form-item>
         <div id="identify-code">
-          <el-form-item label="验证码" prop="identifyCodeInput">
+          <el-form-item label="验证码（忽略大小写）" prop="identifyCodeInput">
             <el-input v-model="userLoginForm.identifyCodeInput"></el-input>
           </el-form-item>
           <img alt="这里是验证码" :src="userLoginForm.captchaUrl" id="captcha-image" @click="getCaptcha">
@@ -46,28 +46,42 @@ export default {
   name: "Boarding",
   components: {},
   data() {
+    const checkEmailValidator = (rule, value, callback) => {
+      const mailReg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/
+      if (!value) {
+        return callback(new Error('邮箱不能为空'))
+      }
+      setTimeout(() => {
+        if (mailReg.test(value)) {
+          callback()
+        } else {
+          callback(new Error('请输入正确的邮箱格式'))
+        }
+      }, 100)
+    }
+
     return {
       userLoginForm: {
         userIdentificationType: "email",
         userIdentification: '',
         userPassword: '',
         userInfo: null,
-        rememberMe: false,
+        rememberMe: true,
         captchaUrl: "", //密码登录图形验证码
         captchaId: "",
         captchaSecret: "",
         identifyCodeInput: null,
       },
+
       userLoginFormRules: {
         userIdentificationType: {required: true, message: '请选择登录方式', trigger: 'blur'},
-        userIdentification: {required: true, message: '请输入账号', trigger: 'blur'},
+        userIdentification: [
+          {required: true, message: '请输入账号', trigger: 'blur'},
+          {validator: checkEmailValidator, trigger: 'blur'}
+        ],
         userPassword: [
           {required: true, message: '请输入密码', trigger: 'blur'},
-          {
-            pattern: "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[.#?!@$%^&*-]).{10,20}$",
-            message: '密码强度不符合要求，必须包含至少1位大写字母，1位小写字母，1位数字，1位特殊字符(.#?!@$%^&*-)，长度在10-20之间',
-            trigger: 'blur'
-          }],
+        ],
         identifyCodeInput: {required: true, message: '请输入验证码', trigger: 'blur'},
       },
       isLogin: false,
@@ -138,6 +152,7 @@ export default {
         captchaSecret: this.userLoginForm.captchaSecret
       }).then(res => {
         if (res) {
+          console.log(res);
           if (this.userLoginForm.rememberMe) {
             this.saveUserInfo(localStorage, res.data);
           } else {
@@ -218,7 +233,7 @@ export default {
     }
 
     #user-agreement {
-      color: gray;
+      color: red;
       margin-top: 4px;
       max-width: 384px;
 
