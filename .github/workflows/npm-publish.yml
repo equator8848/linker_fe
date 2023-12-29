@@ -16,16 +16,10 @@ jobs:
       contents: write
       packages: write
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup node env
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          registry-url: https://npm.pkg.github.com
-          scope: '@reminia'
-          always-auth: true
       - name: Build
+        uses: actions/checkout@v4
         run: |
+         npm install
          npm run build
          zip -r linker_fe.zip dist/
       - name: Release
