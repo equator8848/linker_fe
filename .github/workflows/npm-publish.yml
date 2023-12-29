@@ -16,17 +16,14 @@ jobs:
       contents: write
       packages: write
     steps:
+      - uses: actions/checkout@v4
       - name: Build
-        uses: actions/checkout@v4
         run: |
          npm install
          npm run build
          zip -r linker_fe.zip dist/
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+      - uses: actions/upload-artifact@v3
         with:
-          files: linker_fe.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: webpack artifacts
+          path: dist/
 
