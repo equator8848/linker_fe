@@ -26,8 +26,8 @@
       </div>
       <div id="foot-right">
         <h4>相关链接</h4>
-        <h5><a target="_blank" href="https://github.com/libinkai/linker_fe">GitHub前端项目地址（404即未开源）</a></h5>
-        <h5><a target="_blank" href="https://github.com/libinkai/linker_be">GitHub后端项目地址（404即未开源）</a></h5>
+        <h5><a target="_blank" href="https://github.com/libinkai/linker_fe">GitHub前端项目地址</a></h5>
+        <h5><a target="_blank" href="https://github.com/libinkai/linker_be">GitHub后端项目地址</a></h5>
       </div>
     </div>
   </div>

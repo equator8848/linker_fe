@@ -1,5 +1,5 @@
 <template>
-  <iframe src="https://m1lifwiv5r.feishu.cn/wiki/DM17wIbbViXsOWk9EMwcYApfn7c?from=from_copylink"></iframe>
+  <iframe src="https://m1lifwiv5r.feishu.cn/wiki/G96mwEUH0ig1pfkxEfrcGFBbnZf?from=from_copylink"></iframe>
 </template>
 
 <script>
