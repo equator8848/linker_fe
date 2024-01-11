@@ -456,6 +456,17 @@
           </el-radio-group>
         </el-form-item>
 
+        <el-form-item label="打包模板配置（为空则使用项目配置）" prop="pipelineTemplateId">
+          <el-select v-model="instanceOpsForm.pipelineTemplateId" placeholder="请选择模板" filterable style="width: 100%">
+            <el-option
+                v-for="item in projectTemplateList"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
         <el-form-item label="代理配置（此处配置从项目中复制出来，可以自行调整；如果不配置，则沿用项目配置）"
                       prop="proxyConfig">
           <el-table :data="instanceOpsForm.proxyConfig.proxyPassConfigs" style="width: 100%" max-height="250">
@@ -609,6 +620,8 @@ export default {
     this.refreshInstanceListInterval = setInterval(() => {
       this.throttler.tryExec(this.hasBuildingInstance);
     }, 10000);
+
+    this.getProjectTemplateList();
   },
   computed: {
     currentProject() {
@@ -624,6 +637,8 @@ export default {
     return {
       currentProjectDetails: {},
       instanceOpsDialogVisible: false,
+
+      projectTemplateList: [],
 
       instanceListSearch: null,
       instanceListOnlyStar: localStorage.getItem("instanceListOnlyStar") === "true",
@@ -1188,6 +1203,22 @@ export default {
       this.instanceOpsForm.packageScript = "pnpm --registry https://registry.npmmirror.com install\n" +
           "pnpm run build:pc";
     },
+    getProjectTemplateList() {
+      this.$httpUtil.get('/linker-server/api/v1/project/templates').then(res => {
+        if (res) {
+          this.projectTemplateList = res.data.map(x => {
+            return {
+              name: `${x.intro} （模板ID：${x.templateVersionId}）`,
+              value: x.templateVersionId
+            }
+          });
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    }
   }
 }
 </script>

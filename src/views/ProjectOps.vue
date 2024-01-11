@@ -277,14 +277,6 @@ export default {
     handleOpsProject() {
       this.$refs['projectOpsForm'].validate((valid) => {
         if (valid) {
-          if (this.projectOpsForm.proxyConfig.proxyPassConfigs.length === 0) {
-            this.$message({
-              showClose: true,
-              message: '至少配置一个API代理',
-              type: 'error'
-            });
-            return;
-          }
           if (this.projectOpsForm.id) {
             this.doUpdateProject();
           } else {
@@ -351,7 +343,7 @@ export default {
     updateProjectList() {
       this.$httpUtil.get('/linker-server/api/v1/project/list', {}).then(res => {
         if (res) {
-          this.$store.commit("setProjectList", res.data.data);
+          this.$store.commit("setProjectList", res.data);
         }
       }, (res) => {
         console.log(res);
