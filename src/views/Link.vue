@@ -178,7 +178,7 @@
 
       <el-empty description="空空如也" v-show="instanceList.length===0"></el-empty>
       <div class="instance-details" v-for="instance in instanceList" :key="instance.id">
-        <el-descriptions class="margin-top" :column="2" border>
+        <el-descriptions class="margin-top" :column="2" border direction="vertical">
           <template #title>
             <div style="display: flex;align-items: center">
               <span style="margin: 2px">{{ instance.name }}</span>
@@ -191,7 +191,7 @@
           <template #extra>
             <el-button type="info"
                        size="small"
-                       v-show="instance.isOwner"
+                       v-show="instance.isOwner || instance.editable"
                        @click="handleClickUpdateInstance(instance)">编辑
             </el-button>
             <el-button type="info"
@@ -341,6 +341,9 @@
             <el-button @click="jumpToNewTab(instance.accessUrl)" size="small" type="primary">新窗口打开
               {{ instance.accessUrl }}
             </el-button>
+            <el-button v-clipboard:copy="instance.accessUrl" v-clipboard:success="copySuccess"
+                     v-clipboard:error="copyFail" size="small" type="success">复制访问地址到粘贴板
+            </el-button>
           </el-descriptions-item>
 
           <el-descriptions-item>
@@ -453,6 +456,7 @@
             <el-radio label="PRIVATE">私有访问</el-radio>
             <el-radio label="PROTECTED">邀请访问</el-radio>
             <el-radio label="PUBLIC">公开访问</el-radio>
+            <el-radio label="PUBLIC_WRITE">公开编辑<span style="color: red;">（生产打包实例建议勾选）</span></el-radio>
           </el-radio-group>
         </el-form-item>
 

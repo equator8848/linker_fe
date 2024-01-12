@@ -1,9 +1,8 @@
 import store from '@/store'
 import {roleType} from '@/common/constant'
 
-const userInfo = store.getters['userInfo'];
-
 function isSuperAdmin() {
+    const userInfo = store.getters['userInfo'];
     if (!userInfo) {
         return false;
     }
@@ -12,6 +11,7 @@ function isSuperAdmin() {
 }
 
 function isAdmin() {
+    const userInfo = store.getters['userInfo'];
     if (!userInfo) {
         return false;
     }
