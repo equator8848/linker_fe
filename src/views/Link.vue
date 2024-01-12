@@ -268,17 +268,16 @@
             {{ instance.updateTime }} @ {{ instance.updateUserName }}
           </el-descriptions-item>
 
-
           <el-descriptions-item>
             <template #label>
               <div class="cell-item">
                 <el-icon>
                   <Camera/>
                 </el-icon>
-                实例打包分支
+                打包配置
               </div>
             </template>
-            {{ instance.scmBranch }}
+            {{ getPackageConfig(currentProjectDetails, instance) }}
           </el-descriptions-item>
 
 
@@ -944,6 +943,13 @@ export default {
       }).finally(() => {
         //
       });
+    },
+    getPackageConfig(currentProjectDetails, instance) {
+      // instance.scmBranch 必定不为空
+      const scmBranch = instance.scmBranch;
+      const packageOutputDir = instance.packageOutputDir ? instance.packageOutputDir : currentProjectDetails.packageOutputDir + "（继承自项目）";
+      const deployFolder = instance.deployFolder ? instance.deployFolder: currentProjectDetails.deployFolder + "（继承自项目）";
+      return `打包分支：${scmBranch}，打包输出目录：${packageOutputDir}，二级部署目录：${deployFolder}`;
     },
     getInstanceList(projectId, autoFresh = false) {
       if (!projectId) {

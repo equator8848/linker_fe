@@ -22,7 +22,7 @@
         <el-form-item label="SCM用户名" prop="scmConfig.username">
           <el-input v-model="projectOpsForm.scmConfig.username"></el-input>
         </el-form-item>
-        <el-form-item label="SCM仓库地址" prop="scmConfig.repositoryUrl">
+        <el-form-item label="SCM仓库地址（最后是.git结尾的，不要直接复制地址栏的地址）" prop="scmConfig.repositoryUrl">
           <el-input v-model="projectOpsForm.scmConfig.repositoryUrl"></el-input>
         </el-form-item>
         <el-form-item label="选择或输入默认分支" prop="scmConfig.defaultBranch">
@@ -38,7 +38,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="SCM AccessKey" prop="scmConfig.accessToken">
+        <el-form-item label="SCM AccessKey（如果你看不到项目设置中的AccessToken，说明你不是项目的管理员，叫对应管理员发你）" prop="scmConfig.accessToken">
           <el-input v-model="projectOpsForm.scmConfig.accessToken" show-password></el-input>
         </el-form-item>
 
@@ -65,11 +65,11 @@
                     maxlength="1000"></el-input>
         </el-form-item>
 
-        <el-form-item label="打包输出目录（项目根目录到产物目录的路径）" prop="packageOutputDir">
+        <el-form-item label="打包输出目录（项目根目录到产物目录的路径，前后不包含/），用于将静态资源拷贝到nginx中" prop="packageOutputDir">
           <el-input v-model="projectOpsForm.packageOutputDir"></el-input>
         </el-form-item>
 
-        <el-form-item label="二级部署目录（为空则部署在nginx根目录）" prop="deployFolder">
+        <el-form-item label="二级部署目录（为空则部署在nginx根目录），一般不为空，作为前端项目的匹配关键字" prop="deployFolder">
           <el-input v-model="projectOpsForm.deployFolder"></el-input>
         </el-form-item>
 
@@ -80,7 +80,7 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="入口相对路径" prop="accessEntrance">
+        <el-form-item label="入口相对路径，非必填，用于测试环境拼接指定入口，如/login?login=4" prop="accessEntrance">
           <el-input v-model="projectOpsForm.accessEntrance"></el-input>
         </el-form-item>
 
