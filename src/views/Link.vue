@@ -5,6 +5,7 @@
         <el-descriptions class="margin-top" :column="2" border>
           <template #title>
             <div style="display: flex;align-items: center">
+              <el-tag>{{ currentProjectDetails.accessLevelCn }}</el-tag>
               <span style="margin: 2px">当前项目：{{ currentProjectDetails.name }}</span>
               <el-icon v-clipboard:copy="currentProjectDetails.name" v-clipboard:success="copySuccess"
                        v-clipboard:error="copyFail">
@@ -181,6 +182,7 @@
         <el-descriptions class="margin-top" :column="2" border direction="vertical">
           <template #title>
             <div style="display: flex;align-items: center">
+              <el-tag>{{ instance.accessLevelCn }}</el-tag>
               <span style="margin: 2px">{{ instance.name }}</span>
               <el-icon v-clipboard:copy="instance.name" v-clipboard:success="copySuccess"
                        v-clipboard:error="copyFail">
@@ -341,7 +343,7 @@
               {{ instance.accessUrl }}
             </el-button>
             <el-button v-clipboard:copy="instance.accessUrl" v-clipboard:success="copySuccess"
-                     v-clipboard:error="copyFail" size="small" type="success">复制访问地址到粘贴板
+                       v-clipboard:error="copyFail" size="small" type="success">复制访问地址
             </el-button>
           </el-descriptions-item>
 
@@ -460,7 +462,8 @@
         </el-form-item>
 
         <el-form-item label="打包模板配置（为空则使用项目配置）" prop="pipelineTemplateId">
-          <el-select v-model="instanceOpsForm.pipelineTemplateId" placeholder="请选择模板" filterable style="width: 100%">
+          <el-select v-model="instanceOpsForm.pipelineTemplateId" placeholder="请选择模板" filterable
+                     style="width: 100%">
             <el-option
                 v-for="item in projectTemplateList"
                 :key="item.value"
@@ -948,7 +951,7 @@ export default {
       // instance.scmBranch 必定不为空
       const scmBranch = instance.scmBranch;
       const packageOutputDir = instance.packageOutputDir ? instance.packageOutputDir : currentProjectDetails.packageOutputDir + "（继承自项目）";
-      const deployFolder = instance.deployFolder ? instance.deployFolder: currentProjectDetails.deployFolder + "（继承自项目）";
+      const deployFolder = instance.deployFolder ? instance.deployFolder : currentProjectDetails.deployFolder + "（继承自项目）";
       return `打包分支：${scmBranch}，打包输出目录：${packageOutputDir}，二级部署目录：${deployFolder}`;
     },
     getInstanceList(projectId, autoFresh = false) {

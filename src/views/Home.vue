@@ -203,6 +203,10 @@ export default {
     changeProject(project) {
       this.currentProject = project;
       this.store.commit("setCurrentProject", this.currentProject);
+
+      this.$router.push({
+        path: '/home/link',
+      })
     },
     getProjectStyle(project) {
       if (this.currentProject.id === project.id) {
