@@ -69,7 +69,7 @@
           <el-input v-model="projectOpsForm.packageOutputDir"></el-input>
         </el-form-item>
 
-        <el-form-item label="二级部署目录（为空则部署在nginx根目录），一般不为空，作为前端项目的匹配关键字" prop="deployFolder">
+        <el-form-item label="部署目录（为空则部署在nginx根目录），一般不为空，作为前端路由的匹配关键字" prop="deployFolder">
           <el-input v-model="projectOpsForm.deployFolder"></el-input>
         </el-form-item>
 
@@ -80,7 +80,7 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="入口相对路径，非必填，用于测试环境拼接指定入口，如/login?login=4" prop="accessEntrance">
+        <el-form-item label="入口相对路径，用于测试环境拼接指定入口，如/login?login=4" prop="accessEntrance">
           <el-input v-model="projectOpsForm.accessEntrance"></el-input>
         </el-form-item>
 

@@ -30,7 +30,7 @@
             </el-button>
           </template>
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -46,7 +46,7 @@
             </el-icon>
           </el-descriptions-item>
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -59,7 +59,7 @@
           </el-descriptions-item>
 
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -71,7 +71,7 @@
             {{ currentProjectDetails.createTime }} @ {{ currentProjectDetails.createUserName }}
           </el-descriptions-item>
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -83,7 +83,7 @@
             {{ currentProjectDetails.updateTime }} @ {{ currentProjectDetails.updateUserName }}
           </el-descriptions-item>
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -95,7 +95,7 @@
             {{ currentProjectDetails.packageImage }}
           </el-descriptions-item>
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -111,7 +111,7 @@
             </a>
           </el-descriptions-item>
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -121,10 +121,10 @@
               </div>
             </template>
             打包输出目录：{{ currentProjectDetails ? currentProjectDetails.packageOutputDir : '' }}，
-            二级部署目录：{{ currentProjectDetails ? currentProjectDetails.deployFolder : '' }}
+            部署目录：{{ currentProjectDetails ? currentProjectDetails.deployFolder : '' }}
           </el-descriptions-item>
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -137,7 +137,7 @@
           </el-descriptions-item>
 
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -218,7 +218,7 @@
             </el-button>
           </template>
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -234,7 +234,7 @@
             </el-icon>
           </el-descriptions-item>
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -247,7 +247,7 @@
           </el-descriptions-item>
 
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -258,7 +258,7 @@
             </template>
             {{ instance.createTime }} @ {{ instance.createUserName }}
           </el-descriptions-item>
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -270,7 +270,7 @@
             {{ instance.updateTime }} @ {{ instance.updateUserName }}
           </el-descriptions-item>
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -283,7 +283,7 @@
           </el-descriptions-item>
 
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -295,7 +295,7 @@
             {{ instance.pipelineTemplateIntro }}（{{ instance.pipelineTemplateId }}）
           </el-descriptions-item>
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -330,7 +330,7 @@
             </div>
           </el-descriptions-item>
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -347,7 +347,7 @@
             </el-button>
           </el-descriptions-item>
 
-          <el-descriptions-item>
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -383,7 +383,7 @@
         </el-form-item>
         <el-form-item prop="scmConfig.defaultBranch">
           <template #label>
-            <span>选择或输入默认分支（为空则默认沿用项目配置）
+            <span>选择或输入默认分支【为空则默认沿用项目配置】
               <el-tag :type="this.branchIsDefaultData?'danger':'success'">{{
                   this.branchIsDefaultData ? "无法获取git分支数据，降级使用默认配置，请稍后重试" : "已从git获取相关分支数据"
                 }}</el-tag>
@@ -419,29 +419,29 @@
         </el-form-item>
 
 
-        <el-form-item label="打包输出目录配置" prop="packageScriptOverrideFlag">
+        <el-form-item label="打包输出目录配置【项目根目录到产物目录的路径，前后不包含/，用于将静态资源拷贝到nginx中】" prop="packageScriptOverrideFlag">
           <el-radio-group v-model="instanceOpsForm.packageOutputDirOverrideFlag">
             <el-radio :label="false">使用项目打包输出目录配置</el-radio>
             <el-radio :label="true">覆盖项目打包输出目录配置</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="打包输出目录（项目根目录到产物目录的路径）" prop="packageOutputDir"
+        <el-form-item label="打包输出目录" prop="packageOutputDir"
                       v-show="instanceOpsForm.packageOutputDirOverrideFlag">
           <el-input v-model="instanceOpsForm.packageOutputDir"></el-input>
         </el-form-item>
 
-        <el-form-item label="二级部署目录配置" prop="packageScriptOverrideFlag">
+        <el-form-item label="部署目录配置【为空则部署在nginx根目录，一般不为空，作为前端路由的匹配关键字】" prop="packageScriptOverrideFlag">
           <el-radio-group v-model="instanceOpsForm.deployFolderOverrideFlag">
-            <el-radio :label="false">使用项目二级部署目录配置</el-radio>
-            <el-radio :label="true">覆盖项目二级部署目录配置</el-radio>
+            <el-radio :label="false">使用项目部署目录配置</el-radio>
+            <el-radio :label="true">覆盖项目部署目录配置</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="二级部署目录（为空则部署在nginx根目录）" prop="deployFolder"
+        <el-form-item label="部署目录" prop="deployFolder"
                       v-show="instanceOpsForm.deployFolderOverrideFlag">
           <el-input v-model="instanceOpsForm.deployFolder"></el-input>
         </el-form-item>
 
-        <el-form-item label="入口相对路径配置" prop="accessEntranceOverrideFlag">
+        <el-form-item label="入口相对路径配置【用于测试环境拼接指定入口，如/login?login=4】" prop="accessEntranceOverrideFlag">
           <el-radio-group v-model="instanceOpsForm.accessEntranceOverrideFlag">
             <el-radio :label="false">使用项目入口相对路径配置</el-radio>
             <el-radio :label="true">覆盖项目入口相对路径配置</el-radio>
@@ -461,7 +461,7 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="打包模板配置（为空则使用项目配置）" prop="pipelineTemplateId">
+        <el-form-item label="打包模板配置【为空则使用项目配置】" prop="pipelineTemplateId">
           <el-select v-model="instanceOpsForm.pipelineTemplateId" placeholder="请选择模板" filterable
                      style="width: 100%">
             <el-option
@@ -473,7 +473,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="代理配置（此处配置从项目中复制出来，可以自行调整；如果不配置，则沿用项目配置）"
+        <el-form-item label="代理配置【此处配置从项目中复制出来，可以自行调整；如果不配置，则沿用项目配置】"
                       prop="proxyConfig">
           <el-table :data="instanceOpsForm.proxyConfig.proxyPassConfigs" style="width: 100%" max-height="250">
 
@@ -523,7 +523,7 @@
           </div>
         </el-form-item>
 
-        <el-form-item label="是否归档镜像（生产环境打包时勾选是，将导出相关镜像归档以供下载）" prop="imageArchiveFlag">
+        <el-form-item label="是否归档镜像【生产环境打包时勾选是，将导出相关镜像归档以供下载】" prop="imageArchiveFlag">
           <el-radio-group v-model="instanceOpsForm.imageArchiveFlag">
             <el-radio :label="false">否，普通联调</el-radio>
             <el-radio :label="true">是，生产打包</el-radio>
@@ -952,7 +952,7 @@ export default {
       const scmBranch = instance.scmBranch;
       const packageOutputDir = instance.packageOutputDir ? instance.packageOutputDir : currentProjectDetails.packageOutputDir + "（继承自项目）";
       const deployFolder = instance.deployFolder ? instance.deployFolder : currentProjectDetails.deployFolder + "（继承自项目）";
-      return `打包分支：${scmBranch}，打包输出目录：${packageOutputDir}，二级部署目录：${deployFolder}`;
+      return `打包分支：${scmBranch}，打包输出目录：${packageOutputDir}，部署目录：${deployFolder}`;
     },
     getInstanceList(projectId, autoFresh = false) {
       if (!projectId) {
@@ -1308,6 +1308,19 @@ export default {
       width: 100%;
       white-space: pre-wrap;
     }
+  }
+
+  :deep(.elDescriptionsItemContentStyle) {
+    max-width: 512px;
+    word-break: break-all;
+  }
+
+  :deep(.elDescriptionsItemLabelStyle) {
+    color: #000;
+    font-weight: 600;
+    height: 40px;
+    min-width: 128px;
+    word-break: keep-all;
   }
 }
 </style>
