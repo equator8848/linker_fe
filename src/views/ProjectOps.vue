@@ -93,6 +93,12 @@
         </el-form-item>
 
         <el-form-item label="模板配置" prop="pipelineTemplateId">
+          <template #label>
+            <span>
+              模板配置（不知道选择哪个模板请参考<a
+                href="https://m1lifwiv5r.feishu.cn/wiki/UjZSwhC8Si0veSkj0VZcz1QcnIc?from=from_copylink" target="_blank">模板配置说明文档</a>）
+            </span>
+          </template>
           <el-select v-model="projectOpsForm.pipelineTemplateId" placeholder="请选择模板" filterable>
             <el-option
                 v-for="item in projectTemplateList"

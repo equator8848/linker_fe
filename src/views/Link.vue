@@ -30,7 +30,8 @@
             </el-button>
           </template>
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -46,7 +47,8 @@
             </el-icon>
           </el-descriptions-item>
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -59,7 +61,8 @@
           </el-descriptions-item>
 
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -71,7 +74,8 @@
             {{ currentProjectDetails.createTime }} @ {{ currentProjectDetails.createUserName }}
           </el-descriptions-item>
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -83,7 +87,8 @@
             {{ currentProjectDetails.updateTime }} @ {{ currentProjectDetails.updateUserName }}
           </el-descriptions-item>
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -95,7 +100,8 @@
             {{ currentProjectDetails.packageImage }}
           </el-descriptions-item>
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -111,7 +117,8 @@
             </a>
           </el-descriptions-item>
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -124,7 +131,8 @@
             部署目录：{{ currentProjectDetails ? currentProjectDetails.deployFolder : '' }}
           </el-descriptions-item>
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -137,7 +145,8 @@
           </el-descriptions-item>
 
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -218,7 +227,8 @@
             </el-button>
           </template>
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -234,7 +244,8 @@
             </el-icon>
           </el-descriptions-item>
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -247,7 +258,8 @@
           </el-descriptions-item>
 
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -258,7 +270,8 @@
             </template>
             {{ instance.createTime }} @ {{ instance.createUserName }}
           </el-descriptions-item>
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -270,7 +283,8 @@
             {{ instance.updateTime }} @ {{ instance.updateUserName }}
           </el-descriptions-item>
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -283,7 +297,8 @@
           </el-descriptions-item>
 
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -295,7 +310,8 @@
             {{ instance.pipelineTemplateIntro }}（{{ instance.pipelineTemplateId }}）
           </el-descriptions-item>
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -330,7 +346,8 @@
             </div>
           </el-descriptions-item>
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -347,7 +364,8 @@
             </el-button>
           </el-descriptions-item>
 
-          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle" class-name="elDescriptionsItemContentStyle">
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -419,7 +437,8 @@
         </el-form-item>
 
 
-        <el-form-item label="打包输出目录配置【项目根目录到产物目录的路径，前后不包含/，用于将静态资源拷贝到nginx中】" prop="packageScriptOverrideFlag">
+        <el-form-item label="打包输出目录配置【项目根目录到产物目录的路径，前后不包含/，用于将静态资源拷贝到nginx中】"
+                      prop="packageScriptOverrideFlag">
           <el-radio-group v-model="instanceOpsForm.packageOutputDirOverrideFlag">
             <el-radio :label="false">使用项目打包输出目录配置</el-radio>
             <el-radio :label="true">覆盖项目打包输出目录配置</el-radio>
@@ -430,7 +449,8 @@
           <el-input v-model="instanceOpsForm.packageOutputDir"></el-input>
         </el-form-item>
 
-        <el-form-item label="部署目录配置【为空则部署在nginx根目录，一般不为空，作为前端路由的匹配关键字】" prop="packageScriptOverrideFlag">
+        <el-form-item label="部署目录配置【为空则部署在nginx根目录，一般不为空，作为前端路由的匹配关键字】"
+                      prop="packageScriptOverrideFlag">
           <el-radio-group v-model="instanceOpsForm.deployFolderOverrideFlag">
             <el-radio :label="false">使用项目部署目录配置</el-radio>
             <el-radio :label="true">覆盖项目部署目录配置</el-radio>
@@ -441,7 +461,8 @@
           <el-input v-model="instanceOpsForm.deployFolder"></el-input>
         </el-form-item>
 
-        <el-form-item label="入口相对路径配置【用于测试环境拼接指定入口，如/login?login=4】" prop="accessEntranceOverrideFlag">
+        <el-form-item label="入口相对路径配置【用于测试环境拼接指定入口，如/login?login=4】"
+                      prop="accessEntranceOverrideFlag">
           <el-radio-group v-model="instanceOpsForm.accessEntranceOverrideFlag">
             <el-radio :label="false">使用项目入口相对路径配置</el-radio>
             <el-radio :label="true">覆盖项目入口相对路径配置</el-radio>
@@ -462,6 +483,12 @@
         </el-form-item>
 
         <el-form-item label="打包模板配置【为空则使用项目配置】" prop="pipelineTemplateId">
+          <template #label>
+            <span>
+              模板配置（不知道选择哪个模板请参考<a
+                href="https://m1lifwiv5r.feishu.cn/wiki/UjZSwhC8Si0veSkj0VZcz1QcnIc?from=from_copylink" target="_blank">模板配置说明文档</a>）
+            </span>
+          </template>
           <el-select v-model="instanceOpsForm.pipelineTemplateId" placeholder="请选择模板" filterable
                      style="width: 100%">
             <el-option
