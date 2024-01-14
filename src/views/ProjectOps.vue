@@ -23,23 +23,34 @@
           <el-input v-model="projectOpsForm.scmConfig.username"></el-input>
         </el-form-item>
         <el-form-item label="SCM仓库地址（最后是.git结尾的，不要直接复制地址栏的地址）" prop="scmConfig.repositoryUrl">
-          <el-input v-model="projectOpsForm.scmConfig.repositoryUrl"></el-input>
+          <el-input v-model="projectOpsForm.scmConfig.repositoryUrl" @change="tryGetProjectBranchList"></el-input>
         </el-form-item>
+        <el-form-item label="SCM AccessKey（如果你看不到项目设置中的AccessToken，说明你不是项目的管理员，叫对应管理员发你）"
+                      prop="scmConfig.accessToken">
+          <el-input v-model="projectOpsForm.scmConfig.accessToken" show-password
+                    @change="tryGetProjectBranchList" @blur="tryGetProjectBranchList"></el-input>
+        </el-form-item>
+
         <el-form-item label="选择或输入默认分支" prop="scmConfig.defaultBranch">
+          <template #label>
+            <span>选择或输入默认分支【为空则默认沿用项目配置】
+              <el-tag :type="this.branchIsDefaultData?'danger':'success'">{{
+                  this.branchIsDefaultData ? "无法获取git分支数据，请检查参考地址以及密钥是否配置正确" : "已从git获取相关分支数据"
+                }}</el-tag>
+            </span>
+          </template>
           <el-select v-model="projectOpsForm.scmConfig.defaultBranch"
+                     style="width: 100%"
                      placeholder="选择或输入默认分支，默认拉取该分支代码进行打包"
                      filterable
                      allow-create>
             <el-option
-                v-for="item in defaultBranchOptions"
+                v-for="item in branchOptions"
                 :key="item.value"
                 :label="item.name"
                 :value="item.value">
             </el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item label="SCM AccessKey（如果你看不到项目设置中的AccessToken，说明你不是项目的管理员，叫对应管理员发你）" prop="scmConfig.accessToken">
-          <el-input v-model="projectOpsForm.scmConfig.accessToken" show-password></el-input>
         </el-form-item>
 
 
@@ -65,7 +76,8 @@
                     maxlength="1000"></el-input>
         </el-form-item>
 
-        <el-form-item label="打包输出目录（项目根目录到产物目录的路径，前后不包含/），用于将静态资源拷贝到nginx中" prop="packageOutputDir">
+        <el-form-item label="打包输出目录（项目根目录到产物目录的路径，前后不包含/），用于将静态资源拷贝到nginx中"
+                      prop="packageOutputDir">
           <el-input v-model="projectOpsForm.packageOutputDir"></el-input>
         </el-form-item>
 
@@ -187,20 +199,6 @@ export default {
           value: "lsage/pnpm-circleci-node:16.13.1-pnpm7.5.1"
         }
       ],
-      defaultBranchOptions: [
-        {
-          name: "master",
-          value: "master"
-        },
-        {
-          name: "main",
-          value: "main"
-        },
-        {
-          name: "dev",
-          value: "dev"
-        }
-      ],
       projectTemplateList: [],
 
       locationInput: null,
@@ -269,7 +267,9 @@ export default {
         "pipelineTemplateId": [
           {required: true, message: '请选择流水线模板', trigger: 'blur'}
         ],
-      }
+      },
+      branchIsDefaultData: true,
+      branchOptions: []
     }
   },
   methods: {
@@ -297,6 +297,7 @@ export default {
       this.$httpUtil.get('/linker-server/api/v1/project/details', {projectId}).then(res => {
         if (res) {
           this.projectOpsForm = res.data;
+          this.tryGetProjectBranchList();
         }
       }, res => {
         console.log(res);
@@ -409,6 +410,35 @@ export default {
             return {
               name: `${x.intro} （模板ID：${x.templateVersionId}）`,
               value: x.templateVersionId
+            }
+          });
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
+    tryGetProjectBranchList() {
+      const scmConfig = this.projectOpsForm.scmConfig;
+      if (scmConfig.repositoryUrl && scmConfig.accessToken) {
+        this.getProjectBranchList();
+      }
+    },
+    getProjectBranchList() {
+      const scmConfig = this.projectOpsForm.scmConfig;
+      this.$httpUtil.jsonPost('/linker-server/api/v1/project/peek-branches-with-tips', {
+        scmType: scmConfig.scmType,
+        repositoryUrl: scmConfig.repositoryUrl,
+        accessToken: scmConfig.accessToken
+      }).then(res => {
+        if (res) {
+          let branches = res.data.projectBranchInfos;
+          this.branchIsDefaultData = res.data.isDefaultData;
+          this.branchOptions = branches.map(x => {
+            return {
+              name: `分支名：${x.name}，commit标题：${x.latestCommitTitle}，commitId：${x.latestCommitId}，时间：${x.latestCommitTime}`,
+              value: x.name
             }
           });
         }
