@@ -1233,6 +1233,24 @@ export default {
         //
       });
     },
+    handleClickStopInstance(instance) {
+      this.$httpUtil.urlEncoderPut('/linker-server/api/v1/instance/stop-pipeline', {
+        instanceId: instance.id
+      }).then(res => {
+        if (res) {
+          this.$notify({
+            title: '成功',
+            message: '成功终止构建',
+            type: 'success'
+          });
+          this.refreshPage();
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
     editProxyConfig(row, index) {
       row.isEditing = true;
     },
