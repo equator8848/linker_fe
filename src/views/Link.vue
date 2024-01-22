@@ -317,7 +317,7 @@
                 <el-icon>
                   <Setting/>
                 </el-icon>
-                构建信息
+                构建信息（构建时间超过10分钟后，可重新构建，丢弃上一次构建）
               </div>
             </template>
             <div style="display: flex;align-items: center">
