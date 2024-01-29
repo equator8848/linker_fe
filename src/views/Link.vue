@@ -401,7 +401,7 @@
         </el-form-item>
         <el-form-item prop="scmConfig.defaultBranch">
           <template #label>
-            <span>选择或输入默认分支【为空则默认沿用项目配置】
+            <span>选择或输入默认分支（支持搜索或自行输入）
               <el-tag :type="this.branchIsDefaultData?'danger':'success'">{{
                   this.branchIsDefaultData ? "无法获取git分支数据，降级使用默认配置，请稍后重试" : "已从git获取相关分支数据"
                 }}</el-tag>
