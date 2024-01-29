@@ -42,6 +42,8 @@
           <el-select v-model="projectOpsForm.scmConfig.defaultBranch"
                      style="width: 100%"
                      placeholder="选择或输入默认分支，默认拉取该分支代码进行打包"
+                     :remote-method="searchBranch"
+                     remote
                      filterable
                      allow-create>
             <el-option
@@ -213,6 +215,7 @@ export default {
           username: null,
           repositoryUrl: null,
           defaultBranch: 'master',
+          defaultBranchSearch: null,
           accessToken: null
         },
         proxyConfig: {
@@ -419,18 +422,23 @@ export default {
         //
       });
     },
-    tryGetProjectBranchList() {
+    searchBranch(searchKeyword) {
+      console.log("searchBranch on remote");
+      this.tryGetProjectBranchList(searchKeyword);
+    },
+    tryGetProjectBranchList(searchKeyword) {
       const scmConfig = this.projectOpsForm.scmConfig;
       if (scmConfig.repositoryUrl && scmConfig.accessToken) {
-        this.getProjectBranchList();
+        this.getProjectBranchList(searchKeyword);
       }
     },
-    getProjectBranchList() {
+    getProjectBranchList(defaultBranchSearchKeyword) {
       const scmConfig = this.projectOpsForm.scmConfig;
       this.$httpUtil.jsonPost('/linker-server/api/v1/project/peek-branches-with-tips', {
         scmType: scmConfig.scmType,
         repositoryUrl: scmConfig.repositoryUrl,
-        accessToken: scmConfig.accessToken
+        accessToken: scmConfig.accessToken,
+        searchKeyword: defaultBranchSearchKeyword
       }).then(res => {
         if (res) {
           let branches = res.data.projectBranchInfos;

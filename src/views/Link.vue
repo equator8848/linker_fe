@@ -411,6 +411,8 @@
                      style="width: 100%"
                      placeholder="选择或输入默认分支，拉取该分支代码进行打包"
                      filterable
+                     remote
+                     :remote-method="searchBranch"
                      allow-create>
             <el-option
                 v-for="item in branchOptions"
@@ -642,7 +644,7 @@ export default {
     this.store = useStore();
     this.getProjectDetails(this.currentProject.id);
     this.getInstanceList(this.currentProject.id);
-    this.getProjectBranchList(this.currentProject.id);
+    this.getProjectBranchList(this.currentProject.id, null);
 
     this.throttler = new Throttle(32, () => {
       this.getInstanceList(this.currentProject.id, this.refreshInstanceListFlag);
@@ -661,7 +663,7 @@ export default {
       const currentProjectInStore = this.$storage.getters['currentProject'];
       console.log("currentProject computed", currentProjectInStore)
       if (currentProjectInStore) {
-        this.getProjectBranchList(currentProjectInStore.id);
+        this.getProjectBranchList(currentProjectInStore.id, null);
       }
       return currentProjectInStore ? currentProjectInStore : {}
     },
@@ -1017,11 +1019,18 @@ export default {
         this.instanceListLoading = false;
       });
     },
-    getProjectBranchList(projectId) {
+    searchBranch(searchKeyword) {
+      console.log("searchBranch on remote");
+      this.getProjectBranchList(this.currentProject.id, searchKeyword);
+    },
+    getProjectBranchList(projectId, searchKeyword) {
       if (!projectId) {
         return;
       }
-      this.$httpUtil.get('/linker-server/api/v1/project/branches-with-tips', {projectId}).then(res => {
+      this.$httpUtil.get('/linker-server/api/v1/project/branches-with-tips', {
+        projectId,
+        searchKeyword
+      }).then(res => {
         if (res) {
           let branches = res.data.projectBranchInfos;
           this.branchIsDefaultData = res.data.isDefaultData;
