@@ -70,6 +70,8 @@
 <script>
 import {useStore} from 'vuex'
 import {isAdmin} from '@/common/roleTypeAuth'
+import eventbus from 'vue3-eventbus'
+import {eventType} from "@/common/constant";
 
 
 export default {
@@ -206,6 +208,10 @@ export default {
 
       this.$router.push({
         path: '/home/link',
+      });
+
+      eventbus.emit(eventType.CHANGE_PROJECT, {
+        project
       })
     },
     getProjectStyle(project) {

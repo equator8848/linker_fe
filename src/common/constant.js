@@ -84,6 +84,10 @@ const loginStatus = {
     NEED_SET_PASSWORD: 4
 }
 
+const eventType = {
+    CHANGE_PROJECT: "CHANGE_PROJECT"
+}
+
 export {
     responseCode,
     operationStatusStr,
@@ -96,6 +100,7 @@ export {
     serverDomain,
     roleType,
     loginStatus,
-    userStatus
+    userStatus,
+    eventType
 }
 

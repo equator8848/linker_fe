@@ -17,6 +17,7 @@
     "qs": "^6.11.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
+    "vue3-eventbus": "^2.0.0",
     "vuex": "^4.0.0"
   },
   "devDependencies": {

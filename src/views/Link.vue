@@ -1,5 +1,10 @@
 <template>
   <div id="container">
+    <div id="build-statistical-show">
+      Linker已累计构建<span style="color: dodgerblue">{{ buildStatisticalResult.instanceBuildTimes }}</span>次，当前项目累计构建<span
+        style="color: dodgerblue">{{ buildStatisticalResult.projectInstanceBuildTimes }}</span>次
+    </div>
+
     <div id="current-project-details" v-show="currentProject.id">
       <div>
         <el-descriptions class="margin-top" :column="2" border>
@@ -636,6 +641,9 @@ import * as echarts from "echarts/core";
 import {useStore} from "vuex";
 import Throttle from "@/common/throttle";
 import {deepCopy} from "@/common/clone";
+import eventbus from 'vue3-eventbus'
+import {eventType} from "@/common/constant";
+
 
 export default {
   name: "Link",
@@ -657,16 +665,26 @@ export default {
     }, 10000);
 
     this.getProjectTemplateList();
+
+    this.getBuildStatisticalResult(this.currentProject.id);
+
+    eventbus.on(eventType.CHANGE_PROJECT, data => {
+      const project = data.project;
+      console.log(eventType.CHANGE_PROJECT, project);
+      if (project.id) {
+        this.getBuildStatisticalResult(project.id);
+      }
+    });
   },
   computed: {
     currentProject() {
       const currentProjectInStore = this.$storage.getters['currentProject'];
-      console.log("currentProject computed", currentProjectInStore)
+      // console.log("currentProject computed", currentProjectInStore)
       if (currentProjectInStore) {
         this.getProjectBranchList(currentProjectInStore.id, null);
       }
       return currentProjectInStore ? currentProjectInStore : {}
-    },
+    }
   },
   data() {
     return {
@@ -788,6 +806,10 @@ export default {
         "accessLevel": [
           {required: true, message: '请选择权限控制等级', trigger: 'blur'}
         ],
+      },
+      buildStatisticalResult: {
+        instanceBuildTimes: 0,
+        projectInstanceBuildTimes: 0
       }
     }
   },
@@ -1033,6 +1055,9 @@ export default {
       }).then(res => {
         if (res) {
           let branches = res.data.projectBranchInfos;
+          if (!branches) {
+            return;
+          }
           this.branchIsDefaultData = res.data.isDefaultData;
           this.branchOptions = branches.map(x => {
             return {
@@ -1285,7 +1310,20 @@ export default {
       }).finally(() => {
         //
       });
-    }
+    },
+    getBuildStatisticalResult(projectId) {
+      this.$httpUtil.get('/linker-server/api/v1/anonymous/build-statistical-result', {
+        projectId
+      }).then(res => {
+        if (res) {
+          this.buildStatisticalResult = res.data;
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
   }
 }
 </script>
@@ -1312,6 +1350,11 @@ export default {
 #container {
   display: flex;
   flex-direction: column;
+
+  #build-statistical-show {
+    color: grey;
+    text-align: center;
+  }
 
   #current-project-details {
     .card-item();

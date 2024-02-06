@@ -14,6 +14,11 @@ npm install axios -S
 npm install qs -S
 ```
 
+### event-bus
+```shell
+npm install --save vue3-eventbus
+```
+
 ## Project setup
 ```
 npm install --registry https://registry.npmmirror.com
