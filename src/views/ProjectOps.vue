@@ -6,7 +6,7 @@
     </div>
     <div id="main">
       <el-form ref="projectOpsForm" :model="projectOpsForm" label-position="top"
-               :rules="projectOpsFormRules">
+               :rules="projectOpsFormRules" class="projectOpsForm">
         <el-form-item label="项目名称" prop="name">
           <el-input v-model="projectOpsForm.name" show-word-limit maxlength="250"></el-input>
         </el-form-item>
@@ -485,8 +485,10 @@ export default {
       width: 100%;
     }
 
-    .el-form-item {
-      margin-top: 16px;
+    .projectOpsForm {
+      .el-form-item:not(:first-child) {
+        margin-top: 32px;
+      }
     }
   }
 

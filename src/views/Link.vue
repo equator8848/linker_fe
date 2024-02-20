@@ -397,7 +397,7 @@
 
     <el-dialog :title="getInstanceOpsName(this.instanceOpsForm.id)" v-model="instanceOpsDialogVisible" width="80%">
       <el-form ref="instanceOpsForm" :model="instanceOpsForm" label-position="top"
-               :rules="instanceOpsFormRules">
+               :rules="instanceOpsFormRules" class="instanceOpsForm">
         <el-form-item label="实例名称" prop="name">
           <el-input v-model="instanceOpsForm.name" show-word-limit maxlength="250"></el-input>
         </el-form-item>
@@ -1404,6 +1404,12 @@ export default {
       overflow-x: hidden;
       width: 100%;
       white-space: pre-wrap;
+    }
+  }
+
+  .instanceOpsForm {
+    .el-form-item:not(:first-child) {
+      margin-top: 32px;
     }
   }
 

@@ -14,7 +14,9 @@
         </el-table-column>
         <el-table-column prop="accessUrl" label="访问入口" align="right">
           <template #default="scope">
-            <el-button size="small" type="primary" @click="jumpToNewTab(scope.row.accessUrl)">新窗口跳转</el-button>
+            <el-button size="small" type="primary" v-clipboard:copy="scope.row.accessUrl" v-clipboard:success="copySuccess"
+                       v-clipboard:error="copyFail">复制入口地址</el-button>
+            <el-button size="small" type="success" @click="jumpToNewTab(scope.row.accessUrl)">新窗口跳转</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -47,6 +49,18 @@ export default {
     },
     jumpToNewTab(url) {
       window.open(url, '_blank');
+    },
+    copySuccess() {
+      this.$message({
+        type: 'success',
+        message: `复制成功`
+      });
+    },
+    copyFail() {
+      this.$message({
+        type: 'warning',
+        message: '复制失败'
+      });
     },
   },
 }
