@@ -211,7 +211,7 @@ export default {
         return jsonPut(getBaseUrl() + url, dataObject);
     },
     formDataPost(url, formData) {
-        return jsonPost(getBaseUrl() + url, formData);
+        return formDataPost(getBaseUrl() + url, formData);
     },
     isValidHttpUrl(url) {
         return isValidHttpUrl(url);

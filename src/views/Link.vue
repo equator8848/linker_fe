@@ -205,31 +205,73 @@
             </div>
           </template>
           <template #extra>
-            <el-button type="info"
-                       size="small"
-                       v-show="instance.isOwner || instance.editable"
-                       @click="handleClickUpdateInstance(instance)">编辑
-            </el-button>
-            <el-button type="info"
-                       size="small"
-                       v-show="instance.isOwner"
-                       @click="handleSetPublicEntrance(instance)">开放入口配置
-            </el-button>
-            <el-button type="primary"
-                       size="small"
-                       @click="handleClickStarAction(instance)">
-              {{ instance.stared ? "取消收藏" : "收藏" }}
-            </el-button>
-            <el-button type="danger"
-                       size="small"
-                       v-show="instance.isOwner"
-                       @click="handleClickDeleteInstance(instance.id)">删除
-            </el-button>
-            <el-button type="success"
-                       size="small"
-                       :loading="getPipelineBuildLoadingStatus(instance)"
-                       @click="handleClickBuildInstance(instance)">构建
-            </el-button>
+            <div class="instanceOpsBoard">
+              <el-button type="info"
+                         class="instanceOpsBoardItem"
+                         size="small"
+                         v-show="instance.isOwner || instance.editable"
+                         @click="handleClickUpdateInstance(instance)">编辑
+              </el-button>
+              <el-button type="primary"
+                         class="instanceOpsBoardItem"
+                         size="small"
+                         @click="handleClickStarAction(instance)">
+                {{ instance.stared ? "取消收藏" : "收藏" }}
+              </el-button>
+              <el-badge is-dot class="item" :hidden="!instance.commitIsChange">
+                <el-button type="success"
+                           class="instanceOpsBoardItem"
+                           size="small"
+                           :loading="getPipelineBuildLoadingStatus(instance)"
+                           @click="handleClickBuildInstance(instance)">构建
+                </el-button>
+              </el-badge>
+              <el-dropdown size="small" class="instanceOpsBoardItem" split-button type="primary">
+                更多操作
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item>
+                      <el-button type="info"
+                                 class="instanceOpsBoardItem"
+                                 size="small"
+                                 v-show="instance.isOwner"
+                                 @click="handleSetPublicEntrance(instance)">开放入口配置
+                      </el-button>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <el-button type="info"
+                                 class="instanceOpsBoardItem"
+                                 size="small"
+                                 v-show="instance.isOwner"
+                                 @click="handleSetAutoBuildConfig(instance)">自动构建配置
+                      </el-button>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <el-button type="success"
+                                 class="instanceOpsBoardItem"
+                                 size="small"
+                                 @click="handleClickGetInstanceBuildLog(instance.id)">查看构建历史
+                      </el-button>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <el-button type="warning"
+                                 class="instanceOpsBoardItem"
+                                 size="small"
+                                 @click="handleClickCopyInstance(instance.id)">克隆当前实例
+                      </el-button>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <el-button type="danger"
+                                 class="instanceOpsBoardItem"
+                                 size="small"
+                                 v-show="instance.isOwner"
+                                 @click="handleClickDeleteInstance(instance.id)">删除当前实例
+                      </el-button>
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           </template>
 
           <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
@@ -587,7 +629,7 @@
     </el-dialog>
 
 
-    <el-dialog title="公开入口设置" v-model="publicEntranceOpsDialogueVisible" width="80%">
+    <el-dialog title="公开入口配置" v-model="publicEntranceOpsDialogueVisible" width="80%">
       <el-form label-position="top">
         <el-form-item label="温馨提示：" label-width="150px">
           <div class="warn-tips">
@@ -612,6 +654,44 @@
         </el-button>
       </span>
       </template>
+    </el-dialog>
+
+    <el-dialog title="自动构建配置" v-model="autoBuildConfigOpsDialogueVisible" width="80%">
+      <el-form label-position="top">
+        <el-form-item label="温馨提示：" label-width="150px">
+          <div class="warn-tips">
+            配置自动构建后，系统判断代码有变化，会自动触发构建
+          </div>
+        </el-form-item>
+        <el-form-item label="是否启用自动构建" label-width="150px">
+          <el-switch v-model="autoBuildConfigOpsForm.enabledFlag"/>
+        </el-form-item>
+        <el-form-item label="自动构建检查间隔" prop="checkInterval">
+          <el-radio-group v-model="autoBuildConfigOpsForm.checkInterval">
+            <el-radio :label="10">10分钟</el-radio>
+            <el-radio :label="30">30分钟</el-radio>
+            <el-radio :label="60">1小时</el-radio>
+            <el-radio :label="720">12小时</el-radio>
+            <el-radio :label="1440">24小时</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+      <span class="dialog-footer">
+        <el-button type="warning" @click="doSetAutoBuildConfig">
+          确定
+        </el-button>
+      </span>
+      </template>
+    </el-dialog>
+
+    <el-dialog v-model="instanceBuildLogDialogVisible" title="实例构建历史" width="80%">
+      <el-table :data="instanceBuildLogList" style="width: 100%;" stripe>
+        <el-table-column property="id" label="操作历史ID"/>
+        <el-table-column property="createTime" label="创建时间"/>
+        <el-table-column property="buildUserName" label="操作用户"/>
+        <el-table-column property="remark" label="备注"/>
+      </el-table>
     </el-dialog>
 
     <el-dialog id="pipelineLogDialog" title="流水线构建日志" v-model="pipelineBuildLog.visible" width="80%">
@@ -732,6 +812,16 @@ export default {
         name: null,
         intro: null
       },
+
+      autoBuildConfigOpsDialogueVisible: false,
+      autoBuildConfigOpsForm: {
+        instanceId: null,
+        enabledFlag: false,
+        checkInterval: null,
+      },
+
+      instanceBuildLogDialogVisible: false,
+      instanceBuildLogList: [],
 
       locationInput: null,
       proxyPassInput: null,
@@ -912,6 +1002,46 @@ export default {
         return false;
       }
       return instance.buildingFlag;
+    },
+    handleClickGetInstanceBuildLog(instanceId) {
+      this.$httpUtil.get('/linker-server/api/v1/instance/get-instance-build-log', {
+        instanceId
+      }).then(res => {
+        if (res) {
+          this.instanceBuildLogList = res.data;
+        }
+        this.instanceBuildLogDialogVisible = true;
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
+    handleClickCopyInstance(instanceId) {
+      this.$confirm('正在克隆实例，是否继续？', '确认是否克隆实例', {
+        confirmButtonText: '确认克隆',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$httpUtil.formDataPost('/linker-server/api/v1/instance/copy', {
+          instanceId
+        }).then(res => {
+          if (res) {
+            this.$notify.success({
+              title: '成功',
+              message: '实例克隆成功'
+            });
+          }
+        }, res => {
+          console.log(res);
+        }).finally(() => {
+          setTimeout(() => {
+            this.reload();
+          }, 1000);
+        });
+      }).catch(() => {
+        //
+      });
     },
     handleClickDeleteInstance(instanceId) {
       this.$confirm('正在删除实例，是否继续？', '确认是否删除实例', {
@@ -1188,6 +1318,10 @@ export default {
       this.publicEntranceOpsForm.instanceId = instance.id;
       this.getPublicEntranceDetails(instance.id);
     },
+    handleSetAutoBuildConfig(instance) {
+      this.autoBuildConfigOpsForm.instanceId = instance.id;
+      this.getAutoBuildConfigDetails(instance.id);
+    },
     getScmRepositoryUrl() {
       if (!this.currentProjectDetails || !this.currentProjectDetails.scmConfig) {
         return ""
@@ -1221,6 +1355,40 @@ export default {
             type: 'success'
           });
           this.publicEntranceOpsDialogueVisible = false;
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
+
+    getAutoBuildConfigDetails(instanceId) {
+      this.$httpUtil.get('/linker-server/api/v1/instance/auto-build-config-details', {instanceId}).then(res => {
+        if (res) {
+          this.autoBuildConfigOpsForm = res.data;
+          this.autoBuildConfigOpsDialogueVisible = true;
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
+    doSetAutoBuildConfig() {
+      this.$httpUtil.jsonPost('/linker-server/api/v1/instance/update-auto-build-config',
+          {
+            instanceId: this.autoBuildConfigOpsForm.instanceId,
+            enabledFlag: this.autoBuildConfigOpsForm.enabledFlag,
+            checkInterval: this.autoBuildConfigOpsForm.checkInterval,
+          }).then(res => {
+        if (res) {
+          this.$notify({
+            title: '成功',
+            message: '操作成功',
+            type: 'success'
+          });
+          this.autoBuildConfigOpsDialogueVisible = false;
         }
       }, res => {
         console.log(res);
@@ -1410,6 +1578,12 @@ export default {
   .instanceOpsForm {
     .el-form-item:not(:first-child) {
       margin-top: 32px;
+    }
+  }
+
+  .instanceOpsBoard {
+    .instanceOpsBoardItem {
+      margin-left: 4px;
     }
   }
 
