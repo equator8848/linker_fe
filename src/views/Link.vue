@@ -180,6 +180,10 @@
                      style="margin-right: 8px">
           只看收藏
         </el-checkbox>
+        <el-checkbox v-model="instanceListBriefMode" @change="briefModeFlagChange(this.currentProject.id)"
+                     style="margin-right: 8px">
+          简约模式
+        </el-checkbox>
         <el-input
             placeholder="请输入内容后键入回车键进行搜索"
             @keydown.enter="getInstanceList(this.currentProject.id)"
@@ -193,7 +197,7 @@
 
       <el-empty description="空空如也" v-show="instanceList.length===0"></el-empty>
       <div class="instance-details" v-for="instance in instanceList" :key="instance.id">
-        <el-descriptions class="margin-top" :column="2" border direction="vertical">
+        <el-descriptions class="margin-top" :column="2" border direction="vertical" v-show="!instanceListBriefMode">
           <template #title>
             <div style="display: flex;align-items: center">
               <el-tag>{{ instance.accessLevelCn }}</el-tag>
@@ -412,7 +416,8 @@
           </el-descriptions-item>
 
           <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
-                                class-name="elDescriptionsItemContentStyle">
+                                class-name="elDescriptionsItemContentStyle"
+                                v-show="!instanceListBriefMode">
             <template #label>
               <div class="cell-item">
                 <el-icon>
@@ -427,7 +432,143 @@
           </el-descriptions-item>
 
         </el-descriptions>
-        <div class="instance-proxy-config">
+        <el-descriptions class="margin-top" :column="1" border v-show="instanceListBriefMode">
+          <template #title>
+            <div style="display: flex;align-items: center">
+              <el-tag>{{ instance.accessLevelCn }}</el-tag>
+              <span style="margin: 2px">{{ instance.name }}</span>
+              <el-icon v-clipboard:copy="instance.name" v-clipboard:success="copySuccess"
+                       v-clipboard:error="copyFail">
+                <CopyDocument/>
+              </el-icon>
+            </div>
+          </template>
+          <template #extra>
+            <div class="instanceOpsBoard">
+              <el-button type="info"
+                         class="instanceOpsBoardItem"
+                         size="small"
+                         v-show="instance.isOwner || instance.editable"
+                         @click="handleClickUpdateInstance(instance)">编辑
+              </el-button>
+              <el-button type="primary"
+                         class="instanceOpsBoardItem"
+                         size="small"
+                         @click="handleClickStarAction(instance)">
+                {{ instance.stared ? "取消收藏" : "收藏" }}
+              </el-button>
+              <el-badge is-dot class="item" :hidden="!instance.commitIsChange">
+                <el-button type="success"
+                           class="instanceOpsBoardItem"
+                           size="small"
+                           :loading="getPipelineBuildLoadingStatus(instance)"
+                           @click="handleClickBuildInstance(instance)">构建
+                </el-button>
+              </el-badge>
+              <el-dropdown size="small" class="instanceOpsBoardItem" split-button type="primary">
+                更多操作
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item>
+                      <el-button type="info"
+                                 class="instanceOpsBoardItem"
+                                 size="small"
+                                 v-show="instance.isOwner"
+                                 @click="handleSetPublicEntrance(instance)">开放入口配置
+                      </el-button>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <el-button type="info"
+                                 class="instanceOpsBoardItem"
+                                 size="small"
+                                 v-show="instance.isOwner"
+                                 @click="handleSetAutoBuildConfig(instance)">自动构建配置
+                      </el-button>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <el-button type="success"
+                                 class="instanceOpsBoardItem"
+                                 size="small"
+                                 @click="handleClickGetInstanceBuildLog(instance.id)">查看构建历史
+                      </el-button>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <el-button type="warning"
+                                 class="instanceOpsBoardItem"
+                                 size="small"
+                                 @click="handleClickCopyInstance(instance.id)">克隆当前实例
+                      </el-button>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <el-button type="danger"
+                                 class="instanceOpsBoardItem"
+                                 size="small"
+                                 v-show="instance.isOwner"
+                                 @click="handleClickDeleteInstance(instance.id)">删除当前实例
+                      </el-button>
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+          </template>
+
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <Setting/>
+                </el-icon>
+                构建信息（构建时间超过10分钟后，可重新构建，丢弃上一次构建）
+              </div>
+            </template>
+            <div style="display: flex;align-items: center">
+              <el-tag :type="getBuildTagStatus(instance)">{{ buildInstancePipelineBuildInfo(instance) }}</el-tag>
+
+              <el-tag style="margin-left: 4px">镜像版本：{{ instance.imageVersion }}</el-tag>
+
+              <el-button type="info"
+                         size="small"
+                         style="margin-left: 4px"
+                         v-show="instance.imageArchiveUrl"
+                         @click="jumpToNewTab(instance.imageArchiveUrl)">
+                下载归档文件
+              </el-button>
+              <el-button type="success"
+                         size="small"
+                         style="margin-left: 4px"
+                         v-show="instance.imageArchiveUrl"
+                         v-clipboard:copy="instance.imageArchiveUrl" v-clipboard:success="copySuccess"
+                         v-clipboard:error="copyFail">
+                复制归档文件链接
+              </el-button>
+              <el-button type="primary" size="small" @click="clickGetPipelineLog(instance)" style="margin-left: 4px">
+                查看构建日志
+              </el-button>
+            </div>
+          </el-descriptions-item>
+
+          <el-descriptions-item label-class-name="elDescriptionsItemLabelStyle"
+                                class-name="elDescriptionsItemContentStyle">
+            <template #label>
+              <div class="cell-item">
+                <el-icon>
+                  <TopRight/>
+                </el-icon>
+                访问地址
+              </div>
+            </template>
+            <el-button @click="jumpToNewTab(instance.accessUrl)" size="small" type="primary">新窗口打开
+              {{ instance.accessUrl }}
+            </el-button>
+            <el-button v-clipboard:copy="instance.accessUrl" v-clipboard:success="copySuccess"
+                       v-clipboard:error="copyFail" size="small" type="success">复制访问地址
+            </el-button>
+          </el-descriptions-item>
+
+        </el-descriptions>
+        <div class="instance-proxy-config" v-show="!instanceListBriefMode">
           <el-table :data="instance.proxyConfig.proxyPassConfigs" style="width: 100%" max-height="250">
             <el-table-column prop="location" label="匹配模式（nginx的location）"/>
             <el-table-column prop="proxyPass" label="API代理（nginx的proxy_pass）"/>
@@ -775,6 +916,7 @@ export default {
 
       instanceListSearch: null,
       instanceListOnlyStar: localStorage.getItem("instanceListOnlyStar") === "true",
+      instanceListBriefMode: localStorage.getItem("instanceListBriefMode") === "true",
       instanceListLoading: false,
       instanceList: [],
 
@@ -1101,6 +1243,9 @@ export default {
     onlyStarInstanceFlagChange(projectId) {
       this.getInstanceList(projectId, false);
       localStorage.setItem("instanceListOnlyStar", this.instanceListOnlyStar);
+    },
+    briefModeFlagChange(projectId) {
+      localStorage.setItem("instanceListBriefMode", this.instanceListBriefMode);
     },
     clickGetPipelineLog(instance) {
       this.doGetPipelineBuildLog(instance);
