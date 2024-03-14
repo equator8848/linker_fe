@@ -23,12 +23,12 @@
           <el-input v-model="projectOpsForm.scmConfig.username"></el-input>
         </el-form-item>
         <el-form-item label="SCM仓库地址（最后是.git结尾的，不要直接复制地址栏的地址）" prop="scmConfig.repositoryUrl">
-          <el-input v-model="projectOpsForm.scmConfig.repositoryUrl" @change="tryGetProjectBranchList"></el-input>
+          <el-input v-model="projectOpsForm.scmConfig.repositoryUrl" @change="tryGetProjectBranchList(null)"></el-input>
         </el-form-item>
         <el-form-item label="SCM AccessKey（如果你看不到项目设置中的AccessToken，说明你不是项目的管理员，叫对应管理员发你）"
                       prop="scmConfig.accessToken">
           <el-input v-model="projectOpsForm.scmConfig.accessToken" show-password
-                    @change="tryGetProjectBranchList" @blur="tryGetProjectBranchList"></el-input>
+                    @change="tryGetProjectBranchList(null)"></el-input>
         </el-form-item>
 
         <el-form-item label="选择或输入默认分支" prop="scmConfig.defaultBranch">
@@ -423,10 +423,10 @@ export default {
       });
     },
     searchBranch(searchKeyword) {
-      console.log("searchBranch on remote");
       this.tryGetProjectBranchList(searchKeyword);
     },
     tryGetProjectBranchList(searchKeyword) {
+      console.log("tryGetProjectBranchList ", searchKeyword);
       const scmConfig = this.projectOpsForm.scmConfig;
       if (scmConfig.repositoryUrl && scmConfig.accessToken) {
         this.getProjectBranchList(searchKeyword);
