@@ -651,6 +651,22 @@
           <el-input v-model="instanceOpsForm.deployFolder"></el-input>
         </el-form-item>
 
+        <el-form-item label="路由模式，如果不填则使用项目的配置【决定资源访问方式】"
+                      prop="routeModeOverrideFlag">
+          <el-radio-group v-model="instanceOpsForm.routeModeOverrideFlag">
+            <el-radio :label="false">使用项目路由模式</el-radio>
+            <el-radio :label="true">覆盖项目路由模式</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="路由模式（有#的是hash，否则选history）" prop="routeMode"
+                      v-show="instanceOpsForm.routeModeOverrideFlag"
+        >
+          <el-radio-group v-model="instanceOpsForm.routeMode">
+            <el-radio :label="0">hash</el-radio>
+            <el-radio :label="1">history</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
         <el-form-item label="入口相对路径配置【用于测试环境拼接指定入口，如/login?login=4】"
                       prop="accessEntranceOverrideFlag">
           <el-radio-group v-model="instanceOpsForm.accessEntranceOverrideFlag">
@@ -1014,6 +1030,9 @@ export default {
 
         deployFolderOverrideFlag: false,
         deployFolder: null,
+
+        routeModeOverrideFlag: false,
+        routeMode: null,
 
         accessEntranceOverrideFlag: false,
         accessEntrance: null,
