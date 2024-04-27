@@ -523,7 +523,7 @@
                 构建信息（构建时间超过10分钟后，可重新构建，丢弃上一次构建）
               </div>
             </template>
-            <div style="display: flex;align-items: center">
+            <div style="display: flex;align-items: center;flex-wrap: wrap">
               <el-tag :type="getBuildTagStatus(instance)">{{ buildInstancePipelineBuildInfo(instance) }}</el-tag>
 
               <el-tag style="margin-left: 4px">镜像版本：{{ instance.imageVersion }}</el-tag>
