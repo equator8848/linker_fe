@@ -8,7 +8,9 @@
       </el-carousel-item>
     </el-carousel>
     <div id="build-statistical-show">
-      <h1>Linker已累计构建<span
+      <h1>Linker接入项目<span style="font-size: 64px;color: greenyellow">{{
+          buildStatisticalResult.projectCount
+        }}</span>个，累计构建<span
           style="font-size: 64px;color: greenyellow">{{ buildStatisticalResult.instanceBuildTimes }}</span>次</h1>
     </div>
     <div id="exhibition">
@@ -46,7 +48,8 @@ export default {
         "痛点三：后端做了大量重构，而项目本身没有写单元测试，不知道重构是否影响正常功能，使用postman调接口太麻烦",
       ],
       buildStatisticalResult: {
-        instanceBuildTimes: 0
+        instanceBuildTimes: 0,
+        projectCount: 0
       }
     };
   },
