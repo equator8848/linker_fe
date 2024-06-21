@@ -8,7 +8,7 @@
       </el-carousel-item>
     </el-carousel>
     <div id="build-statistical-show">
-      <h1>Linker接入项目<span style="font-size: 64px;color: greenyellow">{{
+      <h1>当前接入项目<span style="font-size: 64px;color: greenyellow">{{
           buildStatisticalResult.projectCount
         }}</span>个，累计构建<span
           style="font-size: 64px;color: greenyellow">{{ buildStatisticalResult.instanceBuildTimes }}</span>次</h1>

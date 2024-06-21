@@ -230,6 +230,12 @@
                            @click="handleClickBuildInstance(instance)">构建
                 </el-button>
               </el-badge>
+              <el-button type="warning"
+                         class="instanceOpsBoardItem"
+                         size="small"
+                         v-show="instance.buildingFlag"
+                         @click="handleClickStopBuildInstance(instance)">终止构建
+              </el-button>
               <el-dropdown size="small" class="instanceOpsBoardItem" split-button type="primary">
                 更多操作
                 <template #dropdown>
@@ -465,6 +471,12 @@
                            @click="handleClickBuildInstance(instance)">构建
                 </el-button>
               </el-badge>
+              <el-button type="warning"
+                         class="instanceOpsBoardItem"
+                         size="small"
+                         v-show="instance.buildingFlag"
+                         @click="handleClickStopBuildInstance(instance)">终止构建
+              </el-button>
               <el-dropdown size="small" class="instanceOpsBoardItem" split-button type="primary">
                 更多操作
                 <template #dropdown>
@@ -1159,9 +1171,9 @@ export default {
       return instance.instancePipelineBuildResult.pipelineUrl;
     },
     getPipelineBuildLoadingStatus(instance) {
-      if (instance.instancePipelineBuildResult.canReBuildFlag) {
+      /**if (instance.instancePipelineBuildResult.canReBuildFlag) {
         return false;
-      }
+      }**/
       return instance.buildingFlag;
     },
     handleClickGetInstanceBuildLog(instanceId) {
@@ -1599,21 +1611,29 @@ export default {
         //
       });
     },
-    handleClickStopInstance(instance) {
-      this.$httpUtil.urlEncoderPut('/linker-server/api/v1/instance/stop-pipeline', {
-        instanceId: instance.id
-      }).then(res => {
-        if (res) {
-          this.$notify({
-            title: '成功',
-            message: '成功终止构建',
-            type: 'success'
-          });
-          this.refreshPage();
-        }
-      }, res => {
-        console.log(res);
-      }).finally(() => {
+    handleClickStopBuildInstance(instance) {
+      this.$confirm('正在终止构建，是否继续？', '确认是否终止构建', {
+        confirmButtonText: '确认终止',
+        cancelButtonText: '我点错了',
+        type: 'warning'
+      }).then(() => {
+        this.$httpUtil.urlEncoderPut('/linker-server/api/v1/instance/stop-pipeline', {
+          instanceId: instance.id
+        }).then(res => {
+          if (res) {
+            this.$notify({
+              title: '成功',
+              message: '成功终止构建',
+              type: 'success'
+            });
+            this.refreshPage();
+          }
+        }, res => {
+          console.log(res);
+        }).finally(() => {
+          //
+        });
+      }).catch(() => {
         //
       });
     },
