@@ -445,7 +445,7 @@ export default {
           this.branchIsDefaultData = res.data.isDefaultData;
           this.branchOptions = branches.map(x => {
             return {
-              name: `分支名：${x.name}，commit标题：${x.latestCommitTitle}，commitId：${x.latestCommitId}，时间：${x.latestCommitTime}`,
+              name: `分支名：${x.name}，最新commit标题：${x.latestCommitTitle}，commitId：${x.latestCommitId}，时间：${x.latestCommitTime}`,
               value: x.name
             }
           });

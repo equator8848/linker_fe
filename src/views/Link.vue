@@ -374,7 +374,7 @@
                 <el-icon>
                   <Setting/>
                 </el-icon>
-                构建信息（构建时间超过10分钟后，可重新构建，丢弃上一次构建）
+                构建信息
               </div>
             </template>
             <div style="display: flex;align-items: center;flex-wrap: wrap">
@@ -532,7 +532,7 @@
                 <el-icon>
                   <Setting/>
                 </el-icon>
-                构建信息（构建时间超过10分钟后，可重新构建，丢弃上一次构建）
+                构建信息
               </div>
             </template>
             <div style="display: flex;align-items: center;flex-wrap: wrap">
@@ -599,7 +599,7 @@
         <el-form-item label="实例描述" prop="intro">
           <el-input v-model="instanceOpsForm.intro" type="textarea" rows="2" show-word-limit maxlength="250"></el-input>
         </el-form-item>
-        <el-form-item prop="scmConfig.defaultBranch">
+        <el-form-item prop="scmBranch">
           <template #label>
             <span>选择或输入默认分支（支持搜索或自行输入）
               <el-tag :type="this.branchIsDefaultData?'danger':'success'">{{
@@ -608,6 +608,7 @@
             </span>
           </template>
           <el-select v-model="instanceOpsForm.scmBranch"
+                     @change="getInstanceCommitList(this.instanceOpsForm.id, this.instanceOpsForm.scmBranch)"
                      style="width: 100%"
                      placeholder="选择或输入默认分支，拉取该分支代码进行打包"
                      filterable
@@ -616,6 +617,28 @@
                      allow-create>
             <el-option
                 v-for="item in branchOptions"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item prop="scmCommit">
+          <template #label>
+            <span>选择或输入Commit（支持选择或自行输入，默认为最新Commit HEAD）
+              <el-tag :type="this.branchIsDefaultData?'danger':'success'">{{
+                  this.branchIsDefaultData ? "无法获取git分支数据，降级使用默认配置，请稍后重试" : "已从git获取相关分支数据"
+                }}</el-tag>
+            </span>
+          </template>
+          <el-select v-model="instanceOpsForm.scmCommit"
+                     style="width: 100%"
+                     placeholder="选择或输入Commit，拉取该Commit代码进行打包"
+                     filterable
+                     allow-create>
+            <el-option
+                v-for="item in commitOptions"
                 :key="item.value"
                 :label="item.name"
                 :value="item.value">
@@ -902,6 +925,7 @@ export default {
     this.getProjectDetails(this.currentProject.id);
     this.getInstanceList(this.currentProject.id);
     this.getProjectBranchList(this.currentProject.id, null);
+    // this.getProjectCommitList(this.currentProject.id, null);
 
     this.throttler = new Throttle(32, () => {
       this.getInstanceList(this.currentProject.id, this.refreshInstanceListFlag);
@@ -974,6 +998,12 @@ export default {
           value: "dev"
         }
       ],
+      commitOptions: [
+        {
+          name: 'HEAD(最新Commit)',
+          value: 'HEAD'
+        }
+      ],
 
       publicEntranceOpsDialogueVisible: false,
       publicEntranceOpsForm: {
@@ -1032,6 +1062,7 @@ export default {
         name: null,
         intro: null,
         scmBranch: '',
+        scmCommit: 'HEAD',
 
         packageScriptOverrideFlag: false,
         packageScript: null,
@@ -1367,10 +1398,40 @@ export default {
           this.branchIsDefaultData = res.data.isDefaultData;
           this.branchOptions = branches.map(x => {
             return {
-              name: `分支名：${x.name}，commit标题：${x.latestCommitTitle}，commitId：${x.latestCommitId}，时间：${x.latestCommitTime}`,
+              name: `分支名：${x.name}，最新commit标题：${x.latestCommitTitle}，commitId：${x.latestCommitId}，时间：${x.latestCommitTime}`,
               value: x.name
             }
           });
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
+      });
+    },
+    getInstanceCommitList(instanceId, refName) {
+      if (!instanceId) {
+        return;
+      }
+      this.$httpUtil.jsonPost('/linker-server/api/v1/project/commits-info', {
+        instanceId,
+        refName
+      }).then(res => {
+        if (res) {
+          let commits = res.data;
+          if (!commits) {
+            return;
+          }
+          this.commitOptions = commits.map(x => {
+            return {
+              name: `commit标题：${x.title}，commitId：${x.shortId}，commit时间：${x.committedDate}`,
+              value: x.shortId
+            }
+          });
+          this.commitOptions.push({
+            name: 'HEAD(最新Commit)',
+            value: 'HEAD'
+          })
         }
       }, res => {
         console.log(res);
@@ -1489,6 +1550,7 @@ export default {
     handleClickUpdateInstance(instance) {
       this.instanceOpsDialogVisible = true;
       this.instanceOpsForm = instance;
+      this.getInstanceCommitList(instance.id, null);
     },
     handleSetPublicEntrance(instance) {
       this.publicEntranceOpsForm.instanceId = instance.id;

@@ -1,6 +1,6 @@
 <template>
   <div id="container">
-    <span style="text-align: center;color: dimgray">这里的公开入口所有人可见，无需登录本系统</span>
+    <span style="text-align: center;color: dimgray">这里的公开入口所有人可见，无需登录本系统，注意保密</span>
     <div v-for="publicEntrance in publicEntranceList" :key="publicEntrance.projectId" class="publicEntranceBoard">
       <el-divider content-position="center">{{ publicEntrance.projectName }}</el-divider>
       <el-table :data="publicEntrance.publicEntranceListInfos" stripe style="width: 100%">
