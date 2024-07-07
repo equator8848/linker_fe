@@ -1338,9 +1338,10 @@ export default {
     getPackageConfig(currentProjectDetails, instance) {
       // instance.scmBranch 必定不为空
       const scmBranch = instance.scmBranch;
+      const scmCommit = instance.scmCommit ? instance.scmCommit : 'HEAD';
       const packageOutputDir = instance.packageOutputDir ? instance.packageOutputDir : currentProjectDetails.packageOutputDir + "（继承自项目）";
       const deployFolder = instance.deployFolder ? instance.deployFolder : currentProjectDetails.deployFolder + "（继承自项目）";
-      return `打包分支：${scmBranch}，打包输出目录：${packageOutputDir}，部署目录：${deployFolder}`;
+      return `打包分支：${scmBranch}，打包commit：${scmCommit}，打包输出目录：${packageOutputDir}，部署目录：${deployFolder}`;
     },
     getInstanceList(projectId, autoFresh = false) {
       if (!projectId) {
