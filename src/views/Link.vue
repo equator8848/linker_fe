@@ -227,7 +227,7 @@
                            class="instanceOpsBoardItem"
                            size="small"
                            :loading="getPipelineBuildLoadingStatus(instance)"
-                           @click="handleClickBuildInstance(instance)">构建
+                           @click="handleClickBuildInstance(instance.id)">构建
                 </el-button>
               </el-badge>
               <el-button type="warning"
@@ -468,7 +468,7 @@
                            class="instanceOpsBoardItem"
                            size="small"
                            :loading="getPipelineBuildLoadingStatus(instance)"
-                           @click="handleClickBuildInstance(instance)">构建
+                           @click="handleClickBuildInstance(instance.id)">构建
                 </el-button>
               </el-badge>
               <el-button type="warning"
@@ -805,18 +805,25 @@
         </el-form-item>
         <el-form-item label="自定义镜像版本类型" prop="imageVersionType" v-show="instanceOpsForm.imageArchiveFlag">
           <el-radio-group v-model="instanceOpsForm.imageVersionType">
-            <el-radio :label="0">自定义</el-radio>
+            <el-radio :label="0">自定义，取自定义镜像版本名称的值</el-radio>
             <el-radio :label="1">版本递增，格式为1.0.0，最大版本为999</el-radio>
             <el-radio :label="2">时间作为版本，格式形如202311302145</el-radio>
+            <el-radio :label="3">自定义前缀+时间作为版本，格式形如xxx-202311302145</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="自定义镜像版本" prop="imageVersion" v-show="instanceOpsForm.imageArchiveFlag">
+        <el-form-item label="自定义镜像版本名称" prop="imageVersion" v-show="instanceOpsForm.imageArchiveFlag">
           <el-input v-model="instanceOpsForm.imageVersion"></el-input>
         </el-form-item>
 
-        <el-button type="primary" @click="handleOpsInstance" style="width: 100%">
-          {{ getInstanceOpsName(this.instanceOpsForm.id) }}
-        </el-button>
+        <div style="display: flex;justify-content: space-around;">
+          <el-button type="primary" @click="handleOpsInstance(false)" style="width: 100%">
+            {{ getInstanceOpsName(this.instanceOpsForm.id) }}
+          </el-button>
+          <el-button type="success" @click="handleOpsInstance(true)" style="width: 100%"
+                     v-show="this.instanceOpsForm.id">
+            保存并构建
+          </el-button>
+        </div>
       </el-form>
     </el-dialog>
 
@@ -1476,12 +1483,12 @@ export default {
     refreshPage() {
       this.reload();
     },
-    handleOpsInstance() {
+    handleOpsInstance(buildFlag) {
       this.$refs['instanceOpsForm'].validate((valid) => {
         if (valid) {
           const instanceId = this.instanceOpsForm.id;
           if (instanceId) {
-            this.doUpdateInstance(instanceId);
+            this.doUpdateInstance(instanceId, buildFlag);
           } else {
             this.doCreateInstance();
           }
@@ -1515,7 +1522,7 @@ export default {
         //
       });
     },
-    doUpdateInstance(instanceId) {
+    doUpdateInstance(instanceId, buildFlag) {
       this.instanceOpsForm.id = instanceId;
       this.instanceOpsForm.projectId = this.currentProject.id;
       this.$httpUtil.jsonPut('/linker-server/api/v1/instance/update', this.instanceOpsForm).then(res => {
@@ -1525,6 +1532,9 @@ export default {
             message: '实例更新成功',
             type: 'success'
           });
+          if (buildFlag) {
+            this.handleClickBuildInstance(instanceId);
+          }
           setTimeout(() => {
             this.instanceOpsForm.id = null;
             this.instanceOpsForm.name = null;
@@ -1656,9 +1666,9 @@ export default {
         //
       });
     },
-    handleClickBuildInstance(instance) {
+    handleClickBuildInstance(instanceId) {
       this.$httpUtil.urlEncoderPut('/linker-server/api/v1/instance/build-pipeline', {
-        instanceId: instance.id
+        instanceId
       }).then(res => {
         if (res) {
           this.$notify({
