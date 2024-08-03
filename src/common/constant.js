@@ -88,6 +88,13 @@ const eventType = {
     CHANGE_PROJECT: "CHANGE_PROJECT"
 }
 
+const imageVersionType = {
+    CUSTOM: 0,
+    COMPARABLE_VERSION: 1,
+    TIMESTAMP: 2,
+    CUSTOM_PREFIX_TIMESTAMP: 3
+}
+
 export {
     responseCode,
     operationStatusStr,
@@ -101,6 +108,7 @@ export {
     roleType,
     loginStatus,
     userStatus,
-    eventType
+    eventType,
+    imageVersionType
 }
 

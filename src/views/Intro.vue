@@ -26,7 +26,7 @@
     <div id="usage-step">
       <h2>简单几步即可使用Linker</h2>
       <el-steps :active="3" finish-status="success" align-center>
-        <el-step title="进入项目" description="创建或加入项目，一般由项目负责人创建一个项目即可"></el-step>
+        <el-step title="进入项目" description="创建或加入项目（一般由项目负责人创建一个项目即可）"></el-step>
         <el-step title="配置实例" description="人手一个实例，互不干扰"></el-step>
         <el-step title="使用" description="开始联调之旅"></el-step>
       </el-steps>
