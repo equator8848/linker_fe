@@ -23,6 +23,7 @@ const cachedBaseDomain = getKeyFromStorage('base_domain');
 const cachedBaseUrl = getDefaultBaseUrl();
 const cachedExpiredAt = getKeyFromStorage('expired_at');
 const cachedCurrentProject = getKeyFromStorage('current_project')
+const cachedCurrentInstanceId = getKeyFromStorage('current_instance_id')
 
 
 export default createStore({
@@ -36,7 +37,8 @@ export default createStore({
         refreshingInterval: null,
         refreshSwitch: true,
         currentProject: cachedCurrentProject ? JSON.parse(cachedCurrentProject) : null,
-        projectList: []
+        projectList: [],
+        currentInstanceId: cachedCurrentInstanceId ? cachedCurrentInstanceId : null,
     },
     getters: {
         userInfo(state) {
@@ -65,6 +67,9 @@ export default createStore({
         },
         projectList(state) {
             return state.projectList;
+        },
+        currentInstanceId(state) {
+            return state.currentInstanceId;
         },
         baseUrl(state) {
             return state.baseUrl;
@@ -100,6 +105,10 @@ export default createStore({
         },
         setProjectList(state, val) {
             state.projectList = val;
+        },
+        setCurrentInstanceId(state, instanceId) {
+            state.currentInstanceId = instanceId;
+            localStorage.setItem('current_instance_id', instanceId);
         },
         setBaseUrl(state, val) {
             console.log("切换baseUrl", val);
