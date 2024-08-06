@@ -38,7 +38,7 @@
           <el-icon>
             <Odometer/>
           </el-icon>
-          <span>主页</span>
+          <span>联调</span>
         </el-menu-item>
 
 
@@ -288,6 +288,12 @@ export default {
   #main {
     padding: 8px;
     min-height: 100vh;
+    //position: absolute;
+    //top: 59px;
+    //left: 0;
+    //right: 0;
+    //bottom: 0;
+    //overflow: auto;
   }
 }
 </style>

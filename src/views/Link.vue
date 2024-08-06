@@ -194,8 +194,10 @@
                    :loading="instanceListLoading">刷新
         </el-button>
       </div>
-      <el-tabs tab-position="left" id="instance-tab" lazy="true" @tab-click="tableTabClick">
-        <el-tab-pane v-for="instance in instanceList" :key="instance.id" class="instance-tab-panel">
+      <el-tabs tab-position="left" id="instance-tab" @tab-click="tableTabClick" v-model="activeTab"
+               v-if="!instanceListLoading">
+        <el-tab-pane v-for="(instance, index) in instanceList" lazy :key="`${instance.id}-${index}`"
+                     class="instance-tab-panel" :name="instance.id">
           <template #label>
             <el-tooltip :content="instance.name" placement="right" :show-after=600>
               <div class="instance-tab-label">
@@ -927,8 +929,6 @@
 </template>
 
 <script>
-import {getPlaningStrList, nodeIdMask} from '@/common/format'
-import * as echarts from "echarts/core";
 import {useStore} from "vuex";
 import Throttle from "@/common/throttle";
 import {deepCopy} from "@/common/clone";
@@ -939,11 +939,16 @@ import {eventType, imageVersionType} from "@/common/constant";
 export default {
   name: "Link",
   inject: ['reload'],
+  unmounted() {
+    if (this.refreshInstanceListInterval) {
+      clearInterval(this.refreshInstanceListInterval);
+    }
+  },
   mounted() {
     this.store = useStore();
     this.getProjectDetails(this.currentProject.id);
     this.getInstanceList(this.currentProject.id);
-    this.getProjectBranchList(this.currentProject.id, null);
+    // this.getProjectBranchList(this.currentProject.id, null);
     // this.getProjectCommitList(this.currentProject.id, null);
 
     this.throttler = new Throttle(32, () => {
@@ -967,6 +972,10 @@ export default {
         this.getBuildStatisticalResult(project.id);
       }
     });
+
+    if (this.currentInstanceId) {
+      this.activeTab = this.currentInstanceId;
+    }
   },
   computed: {
     currentProject() {
@@ -976,10 +985,24 @@ export default {
         this.getProjectBranchList(currentProjectInStore.id, null);
       }
       return currentProjectInStore ? currentProjectInStore : {}
+    },
+    currentInstanceId() {
+      const currentInstanceIdInStore = this.$storage.getters['currentInstanceId'];
+      console.log("currentInstanceId computed", currentInstanceIdInStore)
+      if (currentInstanceIdInStore) {
+        return currentInstanceIdInStore
+      }
+      let firstInstance = this.instanceList[0];
+      if (firstInstance) {
+        return firstInstance.id;
+      }
+      return null;
     }
   },
   data() {
     return {
+      activeTab: '',
+
       currentProjectDetails: {},
       instanceOpsDialogVisible: false,
 
@@ -1187,7 +1210,7 @@ export default {
           console.log(res);
         }).finally(() => {
           setTimeout(() => {
-            this.reload();
+            this.refreshPage();
           }, 1000);
         });
       }).catch(() => {
@@ -1259,7 +1282,7 @@ export default {
           console.log(res);
         }).finally(() => {
           setTimeout(() => {
-            this.reload();
+            this.refreshPage();
           }, 1000);
         });
       }).catch(() => {
@@ -1285,7 +1308,7 @@ export default {
           console.log(res);
         }).finally(() => {
           setTimeout(() => {
-            this.reload();
+            this.refreshPage();
           }, 1000);
         });
       }).catch(() => {
@@ -1373,7 +1396,7 @@ export default {
         onlyStar: this.instanceListOnlyStar
       }).then(res => {
         if (res) {
-          this.instanceList = res.data;
+          this.instanceList = res.data.sort((a, b) => Number(b.id) - Number(a.id));
           if (autoFresh) {
             this.$message({
               message: '存在构建中的实例，自动刷新实例列表....',
@@ -1387,7 +1410,7 @@ export default {
           } else {
             this.refreshInstanceListFlag = false;
             if (this.refreshInstanceListInterval) {
-              console.log("清理自动刷新实例列表执行器 >>>");
+              // console.log("清理自动刷新实例列表执行器 >>>");
               clearInterval(this.refreshInstanceListInterval);
             }
           }
@@ -1403,7 +1426,11 @@ export default {
       this.getProjectBranchList(this.currentProject.id, searchKeyword);
     },
     tableTabClick(panel, event) {
+      // console.log("tab点击", panel, event, panel.index, this.activeTab);
       const instance = this.instanceList[panel.index];
+      // console.log("依据panel.index获取到的实例", instance.name, this.instanceList);
+      this.activeTab = instance.id;
+      this.store.commit("setCurrentInstanceId", instance.id);
       this.getInstanceCodeUpdateFlag(instance);
     },
     getInstanceCodeUpdateFlag(instance) {
@@ -1510,7 +1537,7 @@ export default {
       this.rewriteConfigInput = proxyPassConfig.rewriteConfig;
     },
     refreshPage() {
-      this.reload();
+      this.getInstanceList(this.currentProject.id);
     },
     showImageVersionPrefix(obj) {
       if (!obj.imageArchiveFlag) {
@@ -1563,7 +1590,7 @@ export default {
             this.instanceOpsForm.proxyConfig.proxyPassConfigs = [];
             this.instanceOpsForm.accessLevel = 'PUBLIC'
             this.instanceOpsDialogVisible = false;
-            this.reload();
+            this.refreshPage();
           }, 1000)
         }
       }, res => {
