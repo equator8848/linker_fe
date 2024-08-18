@@ -1537,7 +1537,7 @@ export default {
       this.rewriteConfigInput = proxyPassConfig.rewriteConfig;
     },
     refreshPage() {
-      this.getInstanceList(this.currentProject.id);
+      this.reload();
     },
     showImageVersionPrefix(obj) {
       if (!obj.imageArchiveFlag) {
