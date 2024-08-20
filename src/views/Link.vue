@@ -988,7 +988,7 @@ export default {
     },
     currentInstanceId() {
       const currentInstanceIdInStore = this.$storage.getters['currentInstanceId'];
-      console.log("currentInstanceId computed", currentInstanceIdInStore)
+      console.log("currentInstanceId computed", currentInstanceIdInStore);
       if (currentInstanceIdInStore) {
         return currentInstanceIdInStore
       }
@@ -1412,6 +1412,15 @@ export default {
             if (this.refreshInstanceListInterval) {
               // console.log("清理自动刷新实例列表执行器 >>>");
               clearInterval(this.refreshInstanceListInterval);
+            }
+          }
+
+          // 如果选中的实例不在当前项目的实例中，则选中第一个实例
+          const currentInstance = this.instanceList.find(instance => instance.id === this.currentInstanceId);
+          if (currentInstance == null) {
+            let firstInstance = this.instanceList[0];
+            if (firstInstance) {
+              this.activeTab = firstInstance.id;
             }
           }
         }
