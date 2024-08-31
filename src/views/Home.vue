@@ -16,7 +16,7 @@
           <router-link to="/boarding"><img src="../assets/logo.png"></router-link>
         </div>
 
-        <el-dropdown>
+        <el-dropdown id="projectList" :max-height="684">
           <span class="el-dropdown-link">
             <span style="color: #ebeef5">{{ currentProjectName }}</span>
             <el-icon class="el-icon--right">
@@ -281,6 +281,11 @@ export default {
       display: flex;
       justify-content: space-around;
       align-items: center;
+    }
+
+    #projectList {
+      max-height: 384px;
+      overflow: scroll;
     }
   }
 

@@ -973,8 +973,9 @@ export default {
       }
     });
 
-    if (this.currentInstanceId) {
-      this.activeTab = this.currentInstanceId;
+    let currentInstanceId = this.currentInstanceId;
+    if (currentInstanceId) {
+      this.activeTab = currentInstanceId;
     }
   },
   computed: {
@@ -988,12 +989,13 @@ export default {
     },
     currentInstanceId() {
       const currentInstanceIdInStore = this.$storage.getters['currentInstanceId'];
-      console.log("currentInstanceId computed", currentInstanceIdInStore);
+      // console.log("currentInstanceId computed", currentInstanceIdInStore);
       if (currentInstanceIdInStore) {
         return currentInstanceIdInStore
       }
       let firstInstance = this.instanceList[0];
       if (firstInstance) {
+        // console.log("pick first instance", firstInstance);
         return firstInstance.id;
       }
       return null;
@@ -1419,9 +1421,13 @@ export default {
           const currentInstance = this.instanceList.find(instance => instance.id === this.currentInstanceId);
           if (currentInstance == null) {
             let firstInstance = this.instanceList[0];
+            // console.log("选中的实例不在当前项目的实例中，选中第一个实例", firstInstance);
             if (firstInstance) {
               this.activeTab = firstInstance.id;
             }
+          } else {
+            // console.log("当前选中实例", currentInstance);
+            this.activeTab = currentInstance.id;
           }
         }
       }, res => {
@@ -1875,6 +1881,8 @@ export default {
   #instance-tab {
     .card-item();
     width: 100%;
+    height: 684px;
+    overflow: scroll;
 
     .instance-tab-label {
       max-width: 128px;

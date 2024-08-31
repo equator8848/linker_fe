@@ -6,6 +6,7 @@ module.exports = defineConfig({
         port: 8889,
         proxy: {
             "/linker-server": {
+                // "http://localhost:8888"、"http://192.168.0.10"
                 target: "http://localhost:8888",
                 changeOrigin: true,
             }
