@@ -1224,9 +1224,11 @@ export default {
         return "";
       }
       const instancePipelineBuildResult = instance.instancePipelineBuildResult;
-      return `流水线序号：${instancePipelineBuildResult.id}，提交时间：${instancePipelineBuildResult.submitTimeStr}前，
+      return `流水线序号：${instancePipelineBuildResult.id}，
+      提交时间：${instancePipelineBuildResult.submitTimeStr === '未知' ? '从未构建' : instancePipelineBuildResult.submitTimeStr + '前'}，
       耗时：${instancePipelineBuildResult.durationStr}，构建状态：${instancePipelineBuildResult.pipelineResultStr}`;
     },
+
     getBuildTagStatus(instance) {
       switch (instance.instancePipelineBuildResult.pipelineResultStr) {
         case "成功":
