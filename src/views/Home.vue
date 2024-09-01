@@ -16,7 +16,7 @@
           <router-link to="/boarding"><img src="../assets/logo.png"></router-link>
         </div>
 
-        <el-dropdown id="projectList" :max-height="684">
+        <el-dropdown id="projectList" :max-height="384">
           <span class="el-dropdown-link">
             <span style="color: #ebeef5">{{ currentProjectName }}</span>
             <el-icon class="el-icon--right">
@@ -25,11 +25,15 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item :v-show="projectList.length!==0" v-for="project in projectList"
+              <el-dropdown-item style="max-width: 256px;overflow: hidden;text-overflow: clip;white-space: nowrap;"
+                                :v-show="projectList.length!==0"
+                                v-for="project in projectList"
                                 :key="project.id" @click="changeProject(project)">
                 <span :style="getProjectStyle(project)">{{ project.name }}</span>
               </el-dropdown-item>
-              <el-dropdown-item divided @click="gotoCreateProjectPage">新建项目</el-dropdown-item>
+              <el-dropdown-item divided @click="gotoCreateProjectPage">
+                <el-button type="primary" size="small">创建新项目</el-button>
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
