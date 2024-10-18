@@ -16,6 +16,7 @@ import UserList from '@/views/admin/UserList'
 import UserDetails from '@/views/admin/UserDetails'
 import ProjectList from '@/views/admin/ProjectList'
 import ProjectDetails from '@/views/admin/ProjectDetails'
+import PackageImage from '@/views/admin/PackageImage'
 
 import store from '../store/index'
 
@@ -91,6 +92,11 @@ const routes: Array<RouteRecordRaw> = [
                 path: '/admin/userDetails/:uid',
                 name: 'UserDetails',
                 component: UserDetails
+            },
+            {
+                path: '/admin/packageImage',
+                name: 'PackageImage',
+                component: PackageImage
             },
             {
                 path: '/admin/appSetting',

@@ -915,7 +915,7 @@
         <el-button type="info"
                    v-show="this.pipelineBuildLog.imageArchiveUrl"
                    @click="jumpToNewTab(this.pipelineBuildLog.imageArchiveUrl)">
-          下载归档文件Jenkins归档文件
+          下载归档文件（从Jenkins下载）
         </el-button>
         <el-button type="info" @click="jumpToNewTab(buildInstancePipelineBuildInfoUrl(this.pipelineBuildLog.instance))">
           跳转Jenkins
@@ -1086,6 +1086,9 @@ export default {
 
         deployFolderOverrideFlag: false,
         deployFolder: null,
+
+        routeModeOverrideFlag: false,
+        routeMode: null,
 
         accessEntranceOverrideFlag: false,
         accessEntrance: null,

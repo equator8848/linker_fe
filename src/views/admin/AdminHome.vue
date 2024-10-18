@@ -52,6 +52,7 @@
           </template>
           <el-menu-item index="/admin/userList">用户管理</el-menu-item>
           <el-menu-item index="/admin/loginLogList">登录记录</el-menu-item>
+          <el-menu-item index="/admin/packageImage">打包镜像管理</el-menu-item>
           <el-menu-item index="/admin/appSetting">系统动态配置</el-menu-item>
         </el-sub-menu>
 

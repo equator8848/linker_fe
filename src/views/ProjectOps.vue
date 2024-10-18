@@ -191,16 +191,12 @@ export default {
       this.projectOpsForm.id = parseInt(projectId);
       this.getProjectDetails(projectId);
     }
+    this.getPackageImageOptions();
     this.getProjectTemplateList();
   },
   data() {
     return {
-      packageImageOptions: [
-        {
-          name: "node 16.13.1 + pnpm 7.5.1",
-          value: "lsage/pnpm-circleci-node:16.13.1-pnpm7.5.1"
-        }
-      ],
+      packageImageOptions: [],
       projectTemplateList: [],
 
       locationInput: null,
@@ -294,6 +290,17 @@ export default {
         } else {
           return false;
         }
+      });
+    },
+    getPackageImageOptions() {
+      this.$httpUtil.get('/linker-server/api/v1/package-image/get-package-image-option', {}).then(res => {
+        if (res) {
+          this.packageImageOptions = res.data;
+        }
+      }, res => {
+        console.log(res);
+      }).finally(() => {
+        //
       });
     },
     getProjectDetails(projectId) {
